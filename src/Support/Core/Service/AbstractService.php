@@ -3,7 +3,9 @@ namespace ImmediateSolutions\Support\Core\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use ImmediateSolutions\Support\Framework\ContainerInterface;
+use ImmediateSolutions\Support\Validation\Source\ClearableAwareInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>

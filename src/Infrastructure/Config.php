@@ -1,5 +1,6 @@
 <?php
 namespace ImmediateSolutions\Infrastructure;
+use ImmediateSolutions\Config\ConfigProvider;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
@@ -12,11 +13,11 @@ class Config
     private $source = [];
 
     /**
-     * @param array $source
+     * @param ConfigProvider $provider
      */
-    public function __construct(array $source)
+    public function __construct(ConfigProvider $provider)
     {
-        $this->source = $source;
+        $this->source = $provider->getConfig();
     }
 
     /**

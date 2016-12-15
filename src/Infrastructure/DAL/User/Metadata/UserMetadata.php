@@ -2,6 +2,7 @@
 namespace ImmediateSolutions\Infrastructure\DAL\User\Metadata;
 
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
+use ImmediateSolutions\Core\Agent\Entities\Agent;
 use ImmediateSolutions\Infrastructure\Doctrine\Metadata\AbstractMetadataProvider;
 
 /**
@@ -15,7 +16,11 @@ class UserMetadata extends AbstractMetadataProvider
      */
     public function define(ClassMetadataBuilder $builder)
     {
-        $builder->setTable('users');
+        $builder
+            ->setTable('users')
+            ->setSingleTableInheritance()
+            ->setDiscriminatorColumn('type', 'string', 20)
+            ->addDiscriminatorMapClass('agent', Agent::class);
 
         $builder
             ->createField('id', 'integer')
@@ -24,20 +29,12 @@ class UserMetadata extends AbstractMetadataProvider
             ->build();
 
         $builder
-            ->createField('email', 'string')
+            ->createField('username', 'string')
             ->unique()
             ->build();
 
         $builder
             ->createField('password', 'string')
-            ->build();
-
-        $builder
-            ->createField('firstName', 'string')
-            ->build();
-
-        $builder
-            ->createField('lastName', 'string')
             ->build();
 
         $builder

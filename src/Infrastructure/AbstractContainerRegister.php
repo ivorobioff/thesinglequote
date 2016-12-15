@@ -25,9 +25,7 @@ abstract class AbstractContainerRegister implements ContainerRegisterInterface
     public function register(ContainerPopulatorInterface $populator)
     {
         $populator
-            ->service(ConfigInterface::class, function(){
-                return new Config(require  APP_PATH.'/config/config.php');
-            })
+            ->service(ConfigInterface::class, Config::class)
             ->instance(ResponseFactoryInterface::class, JsonResponseFactory::class)
             ->service(EntityManagerInterface::class, new EntityManagerFactory())
             ->service(EnvironmentInterface::class, Environment::class)
