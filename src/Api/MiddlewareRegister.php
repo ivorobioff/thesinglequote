@@ -1,5 +1,5 @@
 <?php
-namespace ImmediateSolutions\Api\Support;
+namespace ImmediateSolutions\Api;
 use ImmediateSolutions\Support\Framework\MiddlewarePipeline;
 use ImmediateSolutions\Support\Framework\MiddlewareRegisterInterface;
 use ImmediateSolutions\Support\Api\ExceptionMiddleware;

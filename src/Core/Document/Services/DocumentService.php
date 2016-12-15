@@ -4,8 +4,8 @@ namespace ImmediateSolutions\Core\Document\Services;
 use ImmediateSolutions\Core\Document\Entities\Document;
 use ImmediateSolutions\Core\Document\Interfaces\DocumentPreferenceInterface;
 use ImmediateSolutions\Core\Document\Interfaces\StorageInterface;
+use ImmediateSolutions\Core\Support\Service;
 use ImmediateSolutions\Support\Core\Interfaces\TokenGeneratorInterface;
-use ImmediateSolutions\Support\Core\Service\AbstractService;
 use ImmediateSolutions\Support\Other\Tracker;
 use Psr\Http\Message\UploadedFileInterface;
 use Traversable;
@@ -14,7 +14,7 @@ use DateTime;
 /**
  * @author Igor Vorobiov <igor.vorobioff@gmail.com>
  */
-class DocumentService extends AbstractService
+class DocumentService extends Service
 {
     /**
      * @param UploadedFileInterface $file

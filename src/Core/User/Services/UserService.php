@@ -2,15 +2,15 @@
 namespace ImmediateSolutions\Core\User\Services;
 
 use ImmediateSolutions\Core\Session\Entities\Session;
+use ImmediateSolutions\Core\Support\Service;
 use ImmediateSolutions\Core\User\Entities\User;
 use ImmediateSolutions\Core\User\Interfaces\PasswordEncryptorInterface;
 use ImmediateSolutions\Core\User\Payloads\CredentialsPayload;
-use ImmediateSolutions\Support\Core\Service\AbstractService;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
  */
-class UserService extends AbstractService
+class UserService extends Service
 {
     /**
      * @param string $username

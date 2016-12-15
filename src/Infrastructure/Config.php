@@ -1,6 +1,6 @@
 <?php
 namespace ImmediateSolutions\Infrastructure;
-use ImmediateSolutions\Config\ConfigProvider;
+use ImmediateSolutions\ConfigProvider;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>

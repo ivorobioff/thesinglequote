@@ -16,10 +16,8 @@ use ImmediateSolutions\Support\Validation\Rules\Moment;
 use ImmediateSolutions\Support\Validation\Rules\StringCast;
 use ImmediateSolutions\Support\Validation\Rules\Walk;
 use ImmediateSolutions\Support\Validation\Source\ArraySourceHandler;
-use ImmediateSolutions\Support\Validation\Source\ClearableAwareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
@@ -213,34 +211,5 @@ abstract class AbstractProcessor
                 ->setIdentifier('cast')
                 ->setMessage('The field should be an array.')
         ];
-    }
-
-    /**
-     * @param $object
-     * @param $property
-     * @param callable $modifier
-     * @param bool $nullable
-     */
-    protected function set($object, $property, callable $modifier = null, $nullable = true)
-    {
-        if (!$this->has($property)){
-            return ;
-        }
-
-        $accessor = PropertyAccess::createPropertyAccessor();
-
-        $value = $this->get($property);
-
-        if ($modifier !== null){
-            $value = $modifier($value);
-        }
-
-        if ($nullable || $value !== null){
-            $accessor->setValue($object, $property, $value);
-        }
-
-        if ($nullable && $value === null && $object instanceof ClearableAwareInterface){
-            $object->addClearable($property);
-        }
     }
 }

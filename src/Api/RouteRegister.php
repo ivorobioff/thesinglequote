@@ -1,5 +1,5 @@
 <?php
-namespace ImmediateSolutions\Api\Support;
+namespace ImmediateSolutions\Api;
 use ImmediateSolutions\Api\Document\Routes\DocumentRoutes;
 use ImmediateSolutions\Api\Session\Routes\SessionRoutes;
 use ImmediateSolutions\Support\Framework\RouteRegisterInterface;

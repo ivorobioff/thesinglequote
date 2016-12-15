@@ -1,5 +1,5 @@
 <?php
-namespace ImmediateSolutions\Web\Support;
+namespace ImmediateSolutions\Web;
 use ImmediateSolutions\Support\Framework\RouteRegisterInterface;
 use ImmediateSolutions\Support\Framework\RouterInterface;
 

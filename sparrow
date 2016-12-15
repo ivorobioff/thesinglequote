@@ -7,7 +7,7 @@
 require __DIR__.'/vendor/autoload.php';
 
 use ImmediateSolutions\Support\Framework\Console;
-use ImmediateSolutions\Console\Support\ContainerRegister;
+use ImmediateSolutions\Console\ContainerRegister;
 
 define('APP_PATH', __DIR__);
 

@@ -1,5 +1,5 @@
 <?php
-namespace ImmediateSolutions\Config;
+namespace ImmediateSolutions;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use ImmediateSolutions\Api\Support\Protectors\AllProtector;

@@ -1,8 +1,8 @@
 <?php
-namespace ImmediateSolutions\Web\Support;
+namespace ImmediateSolutions\Console;
 use ImmediateSolutions\Infrastructure\AbstractContainerRegister;
+use ImmediateSolutions\Support\Framework\CommandRegisterInterface;
 use ImmediateSolutions\Support\Framework\ContainerPopulatorInterface;
-use ImmediateSolutions\Support\Framework\RouteRegisterInterface;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
@@ -16,6 +16,7 @@ class ContainerRegister extends AbstractContainerRegister
     {
         parent::register($populator);
 
-        $populator->instance(RouteRegisterInterface::class, RouteRegister::class);
+        $populator
+            ->instance(CommandRegisterInterface::class, CommandRegister::class);
     }
 }

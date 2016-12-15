@@ -1,5 +1,7 @@
 <?php
-namespace ImmediateSolutions\Api\Support;
+namespace ImmediateSolutions\Api;
+
+use ImmediateSolutions\Api\Support\SessionFactory;
 use ImmediateSolutions\Core\Session\Entities\Session;
 use ImmediateSolutions\Infrastructure\AbstractContainerRegister;
 use ImmediateSolutions\Infrastructure\ConfigInterface;

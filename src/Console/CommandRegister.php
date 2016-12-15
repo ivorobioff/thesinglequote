@@ -1,5 +1,5 @@
 <?php
-namespace ImmediateSolutions\Console\Support;
+namespace ImmediateSolutions\Console;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
