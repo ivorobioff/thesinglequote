@@ -20,11 +20,7 @@ class AgentMetadata extends AbstractMetadataProvider
             ->build();
 
         $builder
-            ->createField('firstName', 'string')
-            ->build();
-
-        $builder
-            ->createField('lastName', 'string')
+            ->createField('fullName', 'string')
             ->build();
     }
 }

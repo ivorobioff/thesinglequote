@@ -11,10 +11,9 @@
 
             {
                 ... User Object
-                
-                "firstName": string,
-                "lastName": string,
-                "email": string
+           
+                "email": string,
+                "fullName": string
             }
 
 
@@ -23,8 +22,7 @@
             {                
                 "email": string,
                 "password": string,
-                "firstName": string,
-                "lastName": string
+                "fullName": string
             }
 
 

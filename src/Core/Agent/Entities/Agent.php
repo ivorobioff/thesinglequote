@@ -22,14 +22,7 @@ class Agent extends User
     /**
      * @var string
      */
-    private $firstName;
-    public function setFirstName($firstName) { $this->firstName = $firstName; }
-    public function getFirstName() { return $this->firstName; }
-
-    /**
-     * @var string
-     */
-    private $lastName;
-    public function setLastName($lastName) { $this->lastName = $lastName; }
-    public function getLastName() { return $this->lastName; }
+    private $fullName;
+    public function setFullName($fullName) { $this->fullName = $fullName; }
+    public function getFullName() { return $this->fullName; }
 }
