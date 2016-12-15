@@ -2,10 +2,6 @@
 namespace ImmediateSolutions\Api\Support;
 use ImmediateSolutions\Api\Document\Routes\DocumentRoutes;
 use ImmediateSolutions\Api\Session\Routes\SessionRoutes;
-use ImmediateSolutions\Api\Thing\Routes\CategoryRoutes;
-use ImmediateSolutions\Api\Thing\Routes\LocationRoutes;
-use ImmediateSolutions\Api\Thing\Routes\ThingRoutes;
-use ImmediateSolutions\Api\User\Routes\UserRoutes;
 use ImmediateSolutions\Support\Framework\RouteRegisterInterface;
 use ImmediateSolutions\Support\Framework\RouterInterface;
 
