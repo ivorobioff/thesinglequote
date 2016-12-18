@@ -1,7 +1,7 @@
 {
-  "name": "the-things",
+  "name": "the-single-quote",
   "version": "1.0.0",
-  "description": "The app to add bad and good things",
+  "description": "The Single Quote",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/webpack/bin/webpack.js"
