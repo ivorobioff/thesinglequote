@@ -25,65 +25,12 @@
 </head>
 <body>
 
-<!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="index.html">TheSingleQuote.com</a>
-        </div>
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li>
-                    <a href="dashboard.html">Dashboard</a>
-                </li>
-                <li>
-                    <a href="post.html">Post a Quote</a>
-                </li>
-                <li>
-                    <a href="login.html">Log In</a>
-                </li>
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container -->
-</nav>
+<?=$this->section('page');?>
 
-<!-- Page Content -->
-<div class="container">
-
-    <hr>
-    
-    <?=$this->section('page');?>
-
-    <!-- Footer -->
-    <footer>
-        <div class="row">
-            <div class="col-lg-12">
-                <p>Copyright &copy; Tapo Insurance Agency 2016</p>
-            </div>
-        </div>
-    </footer>
-
-</div>
-<!-- /.container -->
-
-<!-- jQuery -->
-<script src="/js/jquery.min.js"></script>
-
-<!-- Bootstrap Core JavaScript -->
+<script src="/js/jquery-3.1.1.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 
 <script src="/js/app.js"></script>
-
 
 </body>
 
