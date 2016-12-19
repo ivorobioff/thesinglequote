@@ -24254,6 +24254,8 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactRedux = __webpack_require__(199);
+
 	var _SignIn = __webpack_require__(227);
 
 	var _SignIn2 = _interopRequireDefault(_SignIn);
@@ -24280,14 +24282,22 @@
 	    }
 
 	    _createClass(Login, [{
-	        key: 'getFormError',
-	        value: function getFormError() {
-	            return this.props.session.error;
+	        key: 'getGlobalError',
+	        value: function getGlobalError() {
+	            if (this.props.signInForm && typeof this.props.signInForm.error === 'string') {
+	                return this.props.signInForm.error;
+	            }
+
+	            if (this.props.signUpForm && typeof this.props.signUpForm.error === 'string') {
+	                return this.props.signUpForm.error;
+	            }
+
+	            return null;
 	        }
 	    }, {
-	        key: 'getFieldError',
-	        value: function getFieldError(field) {
-	            return null;
+	        key: 'hasGlobalError',
+	        value: function hasGlobalError() {
+	            return this.getGlobalError() !== null;
 	        }
 	    }, {
 	        key: 'render',
@@ -24322,6 +24332,11 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'modal-body' },
+	                        this.hasGlobalError() ? _react2.default.createElement(
+	                            'div',
+	                            { className: 'alert alert-danger' },
+	                            this.getGlobalError()
+	                        ) : '',
 	                        _react2.default.createElement(
 	                            'div',
 	                            { className: 'row' },
@@ -24337,7 +24352,12 @@
 	    return Login;
 	}(_react.Component);
 
-	exports.default = Login;
+	exports.default = (0, _reactRedux.connect)(function (state) {
+	    return {
+	        signInForm: state.forms.signIn,
+	        signUpForm: state.forms.signUp
+	    };
+	})(Login);
 
 /***/ },
 /* 227 */
@@ -24405,6 +24425,7 @@
 	                        _react2.default.createElement(_Email2.default, {
 	                            label: 'Email',
 	                            name: 'username',
+	                            alias: 'credentials',
 	                            required: true,
 	                            placeholder: 'Email' }),
 	                        _react2.default.createElement(_Password2.default, {
@@ -24437,6 +24458,8 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -24494,20 +24517,21 @@
 	        value: function render() {
 	            var _this2 = this;
 
+	            var props = {
+	                registerControl: this.registerControl.bind(this),
+	                disabled: this.props.form.loading
+	            };
+
+	            if (_typeof(this.props.form.error) === 'object') {
+	                props.errors = this.props.form.error;
+	            }
+
 	            return _react2.default.createElement(
 	                'form',
 	                { onSubmit: function onSubmit(e) {
 	                        return _this2.onSubmit(e);
 	                    } },
-	                this.props.error ? _react2.default.createElement(
-	                    'p',
-	                    null,
-	                    this.props.error
-	                ) : '',
-	                (0, _form.normalizeControls)(this.props.children, {
-	                    registerControl: this.registerControl.bind(this),
-	                    disabled: this.props.form.loading
-	                })
+	                (0, _form.normalizeControls)(this.props.children, props)
 	            );
 	        }
 	    }]);
@@ -24607,8 +24631,18 @@
 	            return dispatch(formSuccess(form, data));
 	        });
 
-	        promise.fail(function () {
-	            dispatch(formFail(form, 'Uknown error!'));
+	        promise.fail(function (x) {
+
+	            var error = 'Unknown error';
+	            var data = $.parseJSON(x.responseText);
+
+	            if (x.status == 422) {
+	                error = data.errors;
+	            } else if (x.status < 500) {
+	                error = data.message;
+	            }
+
+	            dispatch(formFail(form, error));
 	        });
 	    };
 	}
@@ -24848,6 +24882,24 @@
 	            });
 	        }
 	    }, {
+	        key: 'hasError',
+	        value: function hasError() {
+	            return this.getError() !== null;
+	        }
+	    }, {
+	        key: 'getError',
+	        value: function getError() {
+	            if (typeof this.props.errors[this.props.name] !== 'undefined') {
+	                return this.props.errors[this.props.name].message;
+	            }
+
+	            if (this.props.alias && typeof this.props.errors[this.props.alias] !== 'undefined') {
+	                return this.props.errors[this.props.alias].message;
+	            }
+
+	            return null;
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var _this3 = this;
@@ -24872,15 +24924,26 @@
 	                attributes.required = 'required';
 	            }
 
+	            var groupClass = 'form-group';
+
+	            if (this.hasError()) {
+	                groupClass += ' has-error';
+	            }
+
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'form-group' },
+	                { className: groupClass },
 	                this.props.label ? _react2.default.createElement(
 	                    'label',
 	                    { htmlFor: '_id-' + this.props.name },
 	                    this.props.label
 	                ) : '',
-	                _react2.default.createElement('input', attributes)
+	                _react2.default.createElement('input', attributes),
+	                this.hasError() ? _react2.default.createElement(
+	                    'span',
+	                    { className: 'help-block' },
+	                    this.getError()
+	                ) : ''
 	            );
 	        }
 	    }]);
@@ -24890,17 +24953,20 @@
 
 	Input.propTypes = {
 	    name: _react.PropTypes.string.isRequired,
+	    alias: _react.PropTypes.string,
 	    type: _react.PropTypes.oneOf(['password', 'email', 'text']).isRequired,
 	    required: _react.PropTypes.bool,
 	    placeholder: _react.PropTypes.string,
 	    label: _react.PropTypes.string,
-	    disabled: _react.PropTypes.bool
+	    disabled: _react.PropTypes.bool,
+	    errors: _react.PropTypes.object
 	};
 
 	Input.defaultProps = {
 	    required: false,
 	    type: 'text',
-	    disabled: false
+	    disabled: false,
+	    errors: {}
 	};
 
 	exports.default = Input;

@@ -28,12 +28,17 @@ class Form extends Component {
     }
 
     render(){
+        var props = { 
+            registerControl: this.registerControl.bind(this),
+            disabled: this.props.form.loading
+        };
+
+        if (typeof this.props.form.error === 'object'){
+            props.errors = this.props.form.error;
+        }
+
         return <form onSubmit={e => this.onSubmit(e)}>
-            { this.props.error ? <p>{this.props.error}</p> : '' }
-            {normalizeControls(this.props.children, { 
-                registerControl: this.registerControl.bind(this),
-                disabled: this.props.form.loading
-            })}
+            {normalizeControls(this.props.children, props)}
         </form>
     }
 }

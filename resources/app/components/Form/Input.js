@@ -14,6 +14,22 @@ class Input extends Component {
         });
     }
 
+    hasError(){        
+        return this.getError() !== null;
+    }
+
+    getError(){
+        if (typeof this.props.errors[this.props.name] !== 'undefined'){
+            return this.props.errors[this.props.name].message;
+        }
+
+        if (this.props.alias && typeof this.props.errors[this.props.alias] !== 'undefined'){
+            return this.props.errors[this.props.alias].message;
+        }
+
+        return null;
+    }
+
     render(){
         var attributes = {
             id: '_id-' + this.props.name,
@@ -33,26 +49,36 @@ class Input extends Component {
             attributes.required = 'required';
         }
 
-        return <div className="form-group">
+        var groupClass = 'form-group'
+
+        if (this.hasError()){
+            groupClass += ' has-error';
+        }
+
+        return <div className={groupClass}>
             { this.props.label ? <label htmlFor={'_id-' + this.props.name}>{this.props.label}</label> : ''}
             <input {...attributes} />
+            {this.hasError() ? <span className="help-block">{this.getError()}</span>: ''}
         </div>;
     }
 }
 
 Input.propTypes = {
     name: PropTypes.string.isRequired,
+    alias: PropTypes.string,
     type: PropTypes.oneOf(['password', 'email', 'text']).isRequired,
     required: PropTypes.bool,
     placeholder: PropTypes.string,
     label: PropTypes.string,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    errors: PropTypes.object
 }
 
 Input.defaultProps = {
     required: false,
     type: 'text',
-    disabled: false
+    disabled: false,
+    errors: {}
 }
 
 export default Input;

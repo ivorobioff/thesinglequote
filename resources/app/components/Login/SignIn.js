@@ -12,6 +12,7 @@ class SignIn extends Component {
                     <Email 
                         label="Email" 
                         name="username" 
+                        alias="credentials"
                         required={true} 
                         placeholder="Email" />
                         

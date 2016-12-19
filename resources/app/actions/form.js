@@ -11,8 +11,18 @@ export function formSubmit(form, request){
         
         promise.done(data => dispatch(formSuccess(form, data)))
 
-        promise.fail(() => {
-            dispatch(formFail(form, 'Uknown error!'))
+        promise.fail((x) => {
+                        
+            var error = 'Unknown error';
+            var data = $.parseJSON(x.responseText);
+
+            if (x.status == 422){
+                error = data.errors;
+            } else if(x.status < 500) {
+                error = data.message;
+            }
+            
+            dispatch(formFail(form, error))
         });
     }
 }
