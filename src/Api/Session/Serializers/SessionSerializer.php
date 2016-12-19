@@ -1,7 +1,7 @@
 <?php
 namespace ImmediateSolutions\Api\Session\Serializers;
 use ImmediateSolutions\Api\Support\Serializer;
-use ImmediateSolutions\Api\User\Serializers\UserSerializer;
+use ImmediateSolutions\Api\User\Serializers\UserByTypeSerializer;
 use ImmediateSolutions\Core\Session\Entities\Session;
 
 /**
@@ -18,7 +18,7 @@ class SessionSerializer extends Serializer
         return [
             'id' => $session->getId(),
             'token' => $session->getToken(),
-            'user' => $this->delegate(UserSerializer::class, $session->getUser()),
+            'user' => $this->delegate(UserByTypeSerializer::class, $session->getUser()),
             'createdAt' => $this->datetime($session->getCreatedAt()),
             'expiresAt' => $this->datetime($session->getExpiresAt())
         ];
