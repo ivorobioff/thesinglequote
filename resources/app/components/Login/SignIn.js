@@ -4,17 +4,11 @@ import Form from '../Form';
 import Email from '../Form/Email';
 import Password from '../Form/Password';
 import Submit from '../Form/Submit';
-import { sessionStore } from '../../actions/session';
 
 class SignIn extends Component {
     render(){
         return <div className="col-xs-6"><div className="well">
-            <Form 
-                name="singIn"
-                request={{ method: 'POST', url: '/sessions', session: false}}
-                actions={{
-                    success: (form, data) => sessionStore(data),
-                }}>
+            <Form name="singIn" request={{ method: 'POST', url: '/sessions', session: false}}>
                     <Email 
                         label="Email" 
                         name="username" 

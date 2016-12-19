@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
-import session from './session';
+import auth from './auth';
 import redirect from './redirect';
 import server from './server';
 import forms from './forms';
 
 const reducers = combineReducers({
-    session,
+    session: auth,
     redirect,
     server,
     forms

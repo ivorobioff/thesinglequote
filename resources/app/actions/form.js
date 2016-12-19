@@ -1,23 +1,19 @@
 import { backend } from '../helpers';
 
-export function formSubmit(form, data, options){
+export function formSubmit(form, request){
     return (dispatch) => {
-        var request = options.request;
-        request.data = data;
-
-        var actions = options.actions;
-
-        actions.start.forEach(action => dispatch(action(form)));
+        
+        dispatch(formStart(form));
 
         var promise = backend(request).run(dispatch);   
 
-        actions.complete.forEach(action => promise.always(() => dispatch(action(form))));
+        promise.always(() => dispatch(formComplete(form)))
         
-        actions.success.forEach(action => promise.done(data => dispatch(action(form, data))));
+        promise.done(data => dispatch(formSuccess(form, data)))
 
-        actions.fail.forEach(action => promise.fail(() => {
-            dispatch(action(form, 'Uknown error!'))
-        }));
+        promise.fail(() => {
+            dispatch(formFail(form, 'Uknown error!'))
+        });
     }
 }
 
