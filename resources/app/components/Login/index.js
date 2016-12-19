@@ -6,11 +6,15 @@ import SignUp from './SignUp';
 class Login extends Component {
 
     getGlobalError(){
-        if (this.props.signInForm && typeof this.props.signInForm.error === 'string'){
+        if (this.props.signUpForm.status === 'success'){
+            return null;
+        }
+
+        if (typeof this.props.signInForm.error === 'string'){
             return this.props.signInForm.error;
         }
 
-        if (this.props.signUpForm && typeof this.props.signUpForm.error === 'string'){
+        if (typeof this.props.signUpForm.error === 'string'){
             return this.props.signUpForm.error;
         }
         
@@ -29,6 +33,7 @@ class Login extends Component {
                 </div>
                  <div className="modal-body">
                     {this.hasGlobalError() ? <div className="alert alert-danger">{this.getGlobalError()}</div> : ''}
+                    {this.props.signUpForm.status == 'success' ? <div className="alert alert-success">The agent has been registered successfully!</div> :''}
                     <div className="row">
                         <SignIn />
                         <SignUp />
@@ -37,6 +42,11 @@ class Login extends Component {
             </div>
         </div>
     }
+}
+
+Login.defaultProps = {
+    signInForm: {},
+    signUpForm: {}
 }
 
 export default connect(state => {

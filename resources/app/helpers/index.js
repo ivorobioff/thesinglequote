@@ -1,12 +1,9 @@
-import { serverError } from '../actions/server';
+import { serverError, serverForbidden } from '../actions/server';
 import Session from './Session';
+import { sessionRefresh, sessionDestroy } from '../actions/auth';
 
 export function backend (options) {
-
-    if (typeof options.session === 'undefined'){
-        options.session = true;
-    }
-
+    
     var config = {
         url: '/api' + options.url,
         type: options.method,
@@ -23,35 +20,33 @@ export function backend (options) {
     
     return {
         run(dispatch) {
-            if (options.session == true){
-                var s = Session.get();
+            var s = Session.get();
                 
-                if (s !== null){
+            if (s !== null){
 
-                    var expiresAt = new Date(s.expiresAt);
-                    var now = new Date();
+                var expiresAt = new Date(s.expiresAt);
+                var now = new Date();
 
-                    // gives 10 minutes to refresh the session
-                    
-                    if (now.getTime() >= (expiresAt.getTime() - 600000)){
-                        backend({ method: 'POST', url: '/sessions/' + s.id + '/refresh'}).run(dispatch).done(function(data){
-                            localStorage.setItem('session', JSON.stringify(data));
-                            s = data;
-                        }).fail(function(){
-                            localStorage.removeItem('session');
-                            dispatch(redirectTo('/'));
-                        });
-                    }
-        
-                    config.headers = { token: s.token }
-                } else {
-                    dispatch(redirectTo('/'));
+                // gives 10 minutes to refresh the session
+                
+                if (now.getTime() >= (expiresAt.getTime() - 600000)){
+                    backend({ method: 'POST', url: '/sessions/' + s.id + '/refresh'}).run(dispatch).done(function(data){
+                        sessionRefresh(data);
+                    }).fail(function(){
+                        sessionDestroy();
+                    });
                 }
+    
+                config.headers = { token: s.token }
             }
 
             return $.ajax(config).fail(function(x){
                 if (x.status >= 500){
                     dispatch(serverError('You got an internal server error. Please contact our support center.'));
+                }
+
+                if (x.status == 403){
+                    dispatch(serverForbidden());
                 }
             });
         }

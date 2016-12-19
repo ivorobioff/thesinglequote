@@ -30,7 +30,7 @@ class Form extends Component {
     render(){
         var props = { 
             registerControl: this.registerControl.bind(this),
-            disabled: this.props.form.loading
+            disabled: this.props.form.status === 'start'
         };
 
         if (typeof this.props.form.error === 'object'){
@@ -53,7 +53,7 @@ Form.propTypes = {
 }
 
 Form.defaultProps = {
-    form: { loading: false }
+    form: { status: 'none' }
 }
 
 export default connect((state, props) => {

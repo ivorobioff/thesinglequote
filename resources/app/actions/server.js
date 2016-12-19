@@ -14,3 +14,9 @@ export function serverErrorDismiss(id){
         id
     }
 }
+
+export function serverForbidden(){
+    return {
+        type: 'SERVER_FORBIDDEN'
+    }
+}

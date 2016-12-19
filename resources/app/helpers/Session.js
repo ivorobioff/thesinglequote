@@ -7,6 +7,10 @@ export default {
         }
         return $.parseJSON(session);
     },
+
+    set(data){
+        localStorage.setItem('session', JSON.stringify(data));
+    },
     
     has(){
         return localStorage.getItem('session') !== null;

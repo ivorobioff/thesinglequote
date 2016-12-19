@@ -8,7 +8,7 @@ import Submit from '../Form/Submit';
 class SignIn extends Component {
     render(){
         return <div className="col-xs-6"><div className="well">
-            <Form name="singIn" request={{ method: 'POST', url: '/sessions', session: false}}>
+            <Form name="signIn" request={{ method: 'POST', url: '/sessions' }}>
                     <Email 
                         label="Email" 
                         name="username" 

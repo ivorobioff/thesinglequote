@@ -8,7 +8,7 @@ import Input from '../Form/Input';
 class SignUp extends Component {
     render(){
         return <div className="col-xs-6"><div className="well">
-            <Form name="signUp" request={{ method: 'POST', url: '/agents', session: false}}>
+            <Form name="signUp" request={{ method: 'POST', url: '/agents' }}>
                     <Input 
                         label="Full Name" 
                         name="fullName" 
