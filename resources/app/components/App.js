@@ -25,14 +25,14 @@ class App extends Component {
             }
         }
 
-        if (this.props.session.data.id !== nextProps.session.data.id){
+        if (this.props.session.id !== nextProps.session.id){
            this.handleAuthLocation(nextProps.session);
         }
     }
 
     handleAuthLocation(session) {
         var currentLocation = this.props.location.pathname;
-        var isAuth = typeof session.data.id !== 'undefined';
+        var isAuth = typeof session.id !== 'undefined';
 
         if (currentLocation == '/login' && isAuth){
             this.props.redirectTo('/', false);
@@ -43,15 +43,43 @@ class App extends Component {
     
     render(){
         return <div>
-            <div>
-                <h1>Header</h1>
+             <nav className="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                <div className="container">
+                    <div className="navbar-header">
+                        <button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                            <span className="sr-only">Toggle navigation</span>
+                            <span className="icon-bar"></span>
+                            <span className="icon-bar"></span>
+                            <span className="icon-bar"></span>
+                        </button>
+                        <a className="navbar-brand" href="index.html">TheSingleQuote.com</a>
+                    </div>
+                    <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul className="nav navbar-nav">
+                            <li>
+                                <a href="dashboard.html">Dashboard</a>
+                            </li>
+                            <li>
+                                <a href="post.html">Post a Quote</a>
+                            </li>
+                            <li>
+                                <a href="login.html">Log In</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div className="container">
                 <hr/>
+                {this.props.children}
             </div>
-            {this.props.children}
-            <div>
-                <hr/>
-                <h1>Footer</h1>
-            </div>
+            <footer>
+                <div className="row">
+                    <div className="col-lg-12">
+                        <p>Copyright &copy; Tapo Insurance Agency 2016</p>
+                    </div>
+                </div>
+            </footer>
         </div>
     }
 }

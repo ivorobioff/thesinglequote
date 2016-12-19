@@ -3,7 +3,7 @@ import Button from './Button';
 
 class Submit extends Component {
     render(){
-        return <Button type="submit">{this.props.children}</Button>
+        return <Button {...this.props} type="submit">{this.props.children}</Button>
     }
 }
 

@@ -1,5 +1,4 @@
 module.exports = {
-
     entry: './resources/app/main.js',
 
     output: {
@@ -10,7 +9,7 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.jsx?$/,
+                test: /\.js?$/,
                 exclude: /node_modules/,
                 loader: 'babel',
 

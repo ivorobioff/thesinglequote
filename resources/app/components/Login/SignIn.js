@@ -4,20 +4,16 @@ import Form from '../Form';
 import Email from '../Form/Email';
 import Password from '../Form/Password';
 import Submit from '../Form/Submit';
-
-import { sessionSuccess, sessionComplete, sessionFail, sessionStart } from '../../actions/auth';
+import { sessionStore } from '../../actions/session';
 
 class SignIn extends Component {
     render(){
         return <div className="col-xs-6"><div className="well">
             <Form 
-                lock={this.props.session.loading}
+                name="singIn"
                 request={{ method: 'POST', url: '/sessions', session: false}}
                 actions={{
-                    start: () => sessionStart(),
-                    complete: () => sessionComplete(),
-                    success: (data) => sessionSuccess(data),
-                    fail: (error) => sessionFail(error)
+                    success: (form, data) => sessionStore(data),
                 }}>
                     <Email 
                         label="Email" 
@@ -37,9 +33,4 @@ class SignIn extends Component {
     }
 }
 
-
-export default connect(state => {
-    return {
-        session: state.session
-    }
-})(SignIn);
+export default SignIn;

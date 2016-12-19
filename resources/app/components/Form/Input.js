@@ -15,20 +15,44 @@ class Input extends Component {
     }
 
     render(){
-        var input = <input ref={el => this.el = el } name={this.props.name} type={this.props.type} value={this.props.value} />;
+        var attributes = {
+            id: '_id-' + this.props.name,
+            ref: el => this.el = el,
+            name: this.props.name,
+            type: this.props.type,
+            value: this.props.value,
+            placeholder: this.props.placeholder,
+            className: 'form-control'
+        };
 
-        if (this.props.label){
-            return <label>{this.props.label} {input}</label>
+        if (this.props.disabled){
+            attributes.disabled = 'disabled';
         }
 
-        return input;
+        if (this.props.required){
+            attributes.required = 'required';
+        }
+
+        return <div className="form-group">
+            { this.props.label ? <label htmlFor={'_id-' + this.props.name}>{this.props.label}</label> : ''}
+            <input {...attributes} />
+        </div>;
     }
 }
 
 Input.propTypes = {
     name: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    label: PropTypes.string
+    type: PropTypes.oneOf(['password', 'email', 'text']).isRequired,
+    required: PropTypes.bool,
+    placeholder: PropTypes.string,
+    label: PropTypes.string,
+    disabled: PropTypes.bool
+}
+
+Input.defaultProps = {
+    required: false,
+    type: 'text',
+    disabled: false
 }
 
 export default Input;

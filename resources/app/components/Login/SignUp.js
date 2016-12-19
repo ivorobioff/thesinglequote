@@ -8,14 +8,7 @@ import Input from '../Form/Input';
 class SignUp extends Component {
     render(){
         return <div className="col-xs-6"><div className="well">
-            <Form 
-                request={{ method: 'POST', url: '/agents', session: false}}
-                actions={{
-                    start: () => sessionStart(),
-                    complete: () => sessionComplete(),
-                    success: (data) => sessionSuccess(data),
-                    fail: (error) => sessionFail(error)
-                }}>
+            <Form name="signUp" request={{ method: 'POST', url: '/agents', session: false}}>
                     <Input 
                         label="Full Name" 
                         name="fullName" 

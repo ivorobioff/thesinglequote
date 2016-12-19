@@ -1,7 +1,7 @@
 import React, { Component, PropTypes, cloneElement, Children } from 'react';
 import { connect } from 'react-redux';
-import { submit } from '../../actions/form';
 import { normalizeControls } from '../../helpers/form';
+import * as formActions from '../../actions/form'; 
 
 class Form extends Component {
 
@@ -13,12 +13,23 @@ class Form extends Component {
     registerControl(control){
         this.controls.push(control);
     }
-
+    
     onSubmit(e){
         e.preventDefault();
+
+        var actions = {};
+
+        ['start', 'complete', 'success', 'fail'].forEach(type => {
+            actions[type] = [formActions['form' + type.substr(0, 1).toUpperCase() + type.substr(1)]];
+
+            if (this.props.actions[type]){
+                actions[type].push(this.props.actions[type]);
+            }
+        });
+
         var options = {
             request: this.props.request,
-            actions: this.props.actions
+            actions
         };
 
         var data = {};
@@ -27,13 +38,16 @@ class Form extends Component {
             data[c.name] = c.getValue();
         });
 
-        this.props.submit(data, options);
+        this.props.submit(this.props.name, data, options);
     }
 
     render(){
         return <form onSubmit={e => this.onSubmit(e)}>
             { this.props.error ? <p>{this.props.error}</p> : '' }
-            {normalizeControls(this.props.children, { registerControl: this.registerControl.bind(this) })}
+            {normalizeControls(this.props.children, { 
+                registerControl: this.registerControl.bind(this),
+                disabled: this.props.form.loading
+            })}
         </form>
     }
 }
@@ -49,11 +63,21 @@ Form.propTypes = {
         complete: PropTypes.func,
         success: PropTypes.func,
         fail: PropTypes.func
-    })
+    }),
+    name: PropTypes.string.isRequired
 }
 
-export default connect(undefined, (dispatch) => {
+Form.defaultProps = {
+    form: { loading: false },
+    actions: {}
+}
+
+export default connect((state, props) => {
     return {
-        submit: (d, o) => dispatch(submit(d, o))
+        form: state.forms[props.name]
+    }
+}, (dispatch) => {
+    return {
+        submit: (n, d, o) => dispatch(formActions.formSubmit(n, d, o))
     }
 })(Form);
