@@ -1,6 +1,4 @@
-import { serverError, serverForbidden } from '../actions/server';
 import Session from './Session';
-import { sessionRefresh, sessionDestroy } from '../actions/auth';
 
 export function backend (options) {
     
@@ -20,35 +18,13 @@ export function backend (options) {
     
     return {
         run(dispatch) {
-            var s = Session.get();
+            var auth = Session.get();
                 
-            if (s !== null){
-
-                var expiresAt = new Date(s.expiresAt);
-                var now = new Date();
-
-                // gives 10 minutes to refresh the session
-                
-                if (now.getTime() >= (expiresAt.getTime() - 600000)){
-                    backend({ method: 'POST', url: '/sessions/' + s.id + '/refresh'}).run(dispatch).done(function(data){
-                        sessionRefresh(data);
-                    }).fail(function(){
-                        sessionDestroy();
-                    });
-                }
-    
-                config.headers = { token: s.token }
+            if (auth){
+                config.headers = { token: auth.token }
             }
 
-            return $.ajax(config).fail(function(x){
-                if (x.status >= 500){
-                    dispatch(serverError('You got an internal server error. Please contact our support center.'));
-                }
-
-                if (x.status == 403){
-                    dispatch(serverForbidden());
-                }
-            });
+            return $.ajax(config);
         }
     }
 }

@@ -9,6 +9,8 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Session from './helpers/Session';
 import { redirectTo } from './actions/redirect';
+import { sessionRefresh } from './actions/auth';
+import { backend } from './helpers';
 
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 
@@ -72,6 +74,30 @@ store.subscribe(() => {
         handleAuthLocation(currentSession);
     }
 });
+
+
+setInterval(() => {
+
+    var auth = Session.get();
+
+    if (!auth){
+        return ;
+    }
+
+    var expiresAt = new Date(auth.expiresAt);
+    var now = new Date();
+
+    // gives 10 minutes to refresh the session
+    
+    if (now.getTime() >= (expiresAt.getTime() - 600000)){
+        backend({ 
+            method: 'POST', 
+            url: '/sessions/' + auth.id + '/refresh'
+        })
+        .run(store.dispatch)
+        .done(data => store.dispatch(sessionRefresh(data)));
+    }
+}, 10000);
 
 render(
     <Provider store={store}>
