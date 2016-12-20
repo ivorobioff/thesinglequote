@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
+import Logout from './Login/Logout';
 
 class App extends Component {
 
@@ -23,9 +25,7 @@ class App extends Component {
                             <li>
                                 <a href="post.html">Post a Quote</a>
                             </li>
-                            <li>
-                                <a href="login.html">Log In</a>
-                            </li>
+                            {this.props.session.id ? <Logout />  : ''}
                         </ul>
                     </div>
                 </div>
@@ -45,4 +45,10 @@ class App extends Component {
     }
 }
 
-export default App;
+
+
+export default connect(state => {
+    return {
+        session: state.session
+    };
+})(App);

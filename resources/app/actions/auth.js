@@ -7,7 +7,6 @@ export function sessionRefresh(data){
 
 export function sessionDestroy(){
     return {
-        type: 'SESSION_DESTROY',
-        data
+        type: 'SESSION_DESTROY'
     }
 }
