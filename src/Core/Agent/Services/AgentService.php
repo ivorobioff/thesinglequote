@@ -18,7 +18,7 @@ class AgentService extends Service
      */
     public function create(AgentPayload $payload)
     {
-        (new AgentValidator($this->container->get(UserService::class)))->validate($payload);
+        (new AgentValidator($this->container))->validate($payload);
 
         $agent = new Agent();
 
@@ -34,9 +34,22 @@ class AgentService extends Service
             return $encrypter->encrypt($password);
         });
 
+        $this->transfer($payload, $agent, 'insuranceLicenseNumber');
+
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
 
         return $agent;
+    }
+
+    /**
+     * @param string $number
+     * @return bool
+     */
+    public function existsByInsuranceLicenseNumber($number)
+    {
+        return $this->entityManager->getRepository(Agent::class)->exists([
+            'insuranceLicenseNumber' => $number
+        ]);
     }
 }

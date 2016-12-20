@@ -31,4 +31,11 @@ class AgentPayload implements ClearableAwareInterface
     private $fullName;
     public function setFullName($fullName) { $this->fullName = $fullName; }
     public function getFullName() { return $this->fullName; }
+
+    /**
+     * @var string
+     */
+    private $insuranceLicenseNumber;
+    public function setInsuranceLicenseNumber($number) { $this->insuranceLicenseNumber = $number; }
+    public function getInsuranceLicenseNumber() { return $this->insuranceLicenseNumber; }
 }

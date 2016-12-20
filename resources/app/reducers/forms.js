@@ -19,7 +19,17 @@ export default function redirect (state = { status: 'none' }, action){
             return state;
         case 'FORM_RESET':
             state = Object.assign({}, state);
-            state[action.form] = { status: 'none' };
+
+            var forms = action.form;
+
+            if (typeof forms === 'string'){
+                forms = [forms];
+            }
+
+            forms.forEach(form => {
+                state[form] = { status: 'none' };    
+            });
+
             return state;
         default: 
             return state;

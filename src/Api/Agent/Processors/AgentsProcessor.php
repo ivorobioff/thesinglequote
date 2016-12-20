@@ -13,7 +13,8 @@ class AgentsProcessor extends Processor
         return [
             'email' => 'string',
             'password' => 'string',
-            'fullName' => 'string'
+            'fullName' => 'string',
+            'insuranceLicenseNumber' => 'string'
         ];
     }
 
@@ -27,6 +28,7 @@ class AgentsProcessor extends Processor
         $this->set($payload, 'email');
         $this->set($payload, 'password');
         $this->set($payload, 'fullName');
+        $this->set($payload, 'insuranceLicenseNumber');
 
         return $payload;
     }

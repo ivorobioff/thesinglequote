@@ -1,6 +1,5 @@
-import React, { Component, PropTypes, cloneElement, Children } from 'react';
+import React, { Component, PropTypes, cloneElement, Children, isValidElement } from 'react';
 import { connect } from 'react-redux';
-import { normalizeControls } from '../../helpers/form';
 import { formSubmit } from '../../actions/form'; 
 
 class Form extends Component {
@@ -27,10 +26,40 @@ class Form extends Component {
         this.props.submit(this.props.name, request);
     }
 
+    static normalizeControls (children, props = {}) {
+    
+        return Children.map(children, child => {
+            if (!isValidElement(child)){
+                return child;
+            }
+            
+            if (!child.type || !child.type.name){
+                return child;
+            }
+
+            var types = [
+                'Submit',
+                'Button', 
+                'Input', 
+                'Email', 
+                'Password',
+                'Select', 
+                'Textarea',
+                'Checkbox'
+            ];
+            if (types.indexOf(child.type.name) === -1){
+                return child;
+            }
+
+            return cloneElement(child, props);
+        });
+    }   
+
     render(){
         var props = { 
             registerControl: this.registerControl.bind(this),
-            disabled: this.props.form.status === 'start'
+            disabled: this.props.form.status === 'start',
+            purge: this.props.purge
         };
 
         if (typeof this.props.form.error === 'object'){
@@ -38,7 +67,7 @@ class Form extends Component {
         }
 
         return <form onSubmit={e => this.onSubmit(e)}>
-            {normalizeControls(this.props.children, props)}
+            {Form.normalizeControls(this.props.children, props)}
         </form>
     }
 }
@@ -49,11 +78,13 @@ Form.propTypes = {
         url: PropTypes.string.isRequired,
         session: PropTypes.bool
     }).isRequired,
-    name: PropTypes.string.isRequired
+    name: PropTypes.string.isRequired,
+    purge: PropTypes.bool
 }
 
 Form.defaultProps = {
-    form: { status: 'none' }
+    form: { status: 'none' },
+    purge: false
 }
 
 export default connect((state, props) => {

@@ -1,42 +1,40 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
+import Control from './Control';
 
-class Input extends Component {
+class Input extends Control {
     
+    constructor(props){
+        super(props);
+        this.state = { value: props.value };
+    }
+
     componentWillMount(){
         
         var _this = this;
 
         this.props.registerControl({
-            name: this.props.name,
+            name: _this.props.name,
             getValue(){
-                return _this.el.value;
+                return _this.state.value;
             }
         });
     }
 
-    hasError(){        
-        return this.getError() !== null;
-    }
+    componentWillReceiveProps(newProps) {
 
-    getError(){
-        if (typeof this.props.errors[this.props.name] !== 'undefined'){
-            return this.props.errors[this.props.name].message;
+        if (this.props.purge !== newProps.purge && newProps.purge === true){
+            this.state = { value: Input.defaultProps.value};
         }
-
-        if (this.props.alias && typeof this.props.errors[this.props.alias] !== 'undefined'){
-            return this.props.errors[this.props.alias].message;
-        }
-
-        return null;
     }
 
     render(){
+
         var attributes = {
             id: '_id-' + this.props.name,
             ref: el => this.el = el,
             name: this.props.name,
             type: this.props.type,
-            value: this.props.value,
+            value: this.state.value,
             placeholder: this.props.placeholder,
             className: 'form-control'
         };
@@ -57,7 +55,7 @@ class Input extends Component {
 
         return <div className={groupClass}>
             { this.props.label ? <label htmlFor={'_id-' + this.props.name}>{this.props.label}</label> : ''}
-            <input {...attributes} />
+            <input {...attributes}  onChange={e => this.setState({ value: e.target.value }) } />
             {this.hasError() ? <span className="help-block">{this.getError()}</span>: ''}
         </div>;
     }
@@ -68,6 +66,7 @@ Input.propTypes = {
     alias: PropTypes.string,
     type: PropTypes.oneOf(['password', 'email', 'text']).isRequired,
     required: PropTypes.bool,
+    purge: PropTypes.bool,
     placeholder: PropTypes.string,
     label: PropTypes.string,
     disabled: PropTypes.bool,
@@ -76,8 +75,10 @@ Input.propTypes = {
 
 Input.defaultProps = {
     required: false,
+    purge: false,
     type: 'text',
     disabled: false,
+    value: '',
     errors: {}
 }
 

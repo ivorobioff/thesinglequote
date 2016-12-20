@@ -59,6 +59,7 @@ export function formFail(form, error){
 
 export function formReset(form){
     return {
-        type: 'FORM_RESET'
+        type: 'FORM_RESET',
+        form
     }
 }

@@ -1,7 +1,10 @@
 <?php
 namespace ImmediateSolutions\Core\Agent\Validation;
+use ImmediateSolutions\Core\Agent\Services\AgentService;
+use ImmediateSolutions\Core\Agent\Validation\Rules\InsuranceUnique;
 use ImmediateSolutions\Core\User\Services\UserService;
 use ImmediateSolutions\Core\User\Validation\Rules\Unique;
+use ImmediateSolutions\Support\Framework\ContainerInterface;
 use ImmediateSolutions\Support\Validation\AbstractThrowableValidator;
 use ImmediateSolutions\Support\Validation\Binder;
 use ImmediateSolutions\Support\Validation\Property;
@@ -21,11 +24,17 @@ class AgentValidator extends AbstractThrowableValidator
     private $userService;
 
     /**
-     * @param UserService $userService
+     * @var AgentService
      */
-    public function __construct(UserService $userService)
+    private $agentService;
+
+    /**
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
     {
-        $this->userService = $userService;
+        $this->userService = $container->get(UserService::class);
+        $this->agentService = $container->get(AgentService::class);
     }
 
     /**
@@ -53,6 +62,13 @@ class AgentValidator extends AbstractThrowableValidator
                 ->addRule(new Obligate())
                 ->addRule(new Blank())
                 ->addRule(new Length(0, 255));
+        });
+
+        $binder->bind('insuranceLicenseNumber', function(Property $property){
+            $property
+                ->addRule(new Obligate())
+                ->addRule(new Length(1, 255))
+                ->addRule(new InsuranceUnique($this->agentService));
         });
     }
 }

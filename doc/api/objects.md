@@ -13,7 +13,8 @@
                 ... User Object
            
                 "email": string,
-                "fullName": string
+                "fullName": string,
+                "insuranceLicenseNumber": string
             }
 
 
@@ -22,7 +23,8 @@
             {                
                 "email": string,
                 "password": string,
-                "fullName": string
+                "fullName": string,
+                "insuranceLicenseNumber": string
             }
 
 

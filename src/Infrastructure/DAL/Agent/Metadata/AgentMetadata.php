@@ -22,5 +22,9 @@ class AgentMetadata extends AbstractMetadataProvider
         $builder
             ->createField('fullName', 'string')
             ->build();
+
+        $builder
+            ->createField('insuranceLicenseNumber', 'string')
+            ->build();
     }
 }
