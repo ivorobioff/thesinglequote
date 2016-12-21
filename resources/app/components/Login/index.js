@@ -2,17 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
-import { formReset } from '../../actions/form'
 
 class Login extends Component {
 
     constructor(props){
         super(props);
         this.state = {};
-    }
-
-    componentWillMount(){
-        this.props.reset();
     }
 
     componentWillReceiveProps(newProps){
@@ -66,9 +61,5 @@ export default connect(state => {
     return {
         formSignIn: state.forms.signIn,
         formSignUp: state.forms.signUp
-    }
-}, dispatch => {
-    return {
-        reset: () => dispatch(formReset(['signIn', 'signUp']))
     }
 })(Login);

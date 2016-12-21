@@ -29172,11 +29172,6 @@
 	    }
 
 	    _createClass(Login, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-	            this.props.reset();
-	        }
-	    }, {
 	        key: 'componentWillReceiveProps',
 	        value: function componentWillReceiveProps(newProps) {
 	            var oldSignIn = this.props.formSignIn;
