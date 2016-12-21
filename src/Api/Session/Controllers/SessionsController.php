@@ -74,4 +74,13 @@ class SessionsController extends Controller
 
         return $this->reply->blank();
     }
+
+    /**
+     * @param int $sessionId
+     * @return bool
+     */
+    public function verify($sessionId)
+    {
+        return $this->sessionService->exists($sessionId);
+    }
 }

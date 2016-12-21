@@ -12,7 +12,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
  */
-abstract class AbstractController implements ProtectableInterface
+abstract class AbstractController implements ProtectableInterface, VerifiableInterface
 {
     /**
      * @var Reply
@@ -67,5 +67,13 @@ abstract class AbstractController implements ProtectableInterface
     public function show404()
     {
         throw new NotFoundHttpException();
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldVerify()
+    {
+        return true;
     }
 }

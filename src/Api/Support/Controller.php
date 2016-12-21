@@ -1,6 +1,6 @@
 <?php
 namespace ImmediateSolutions\Api\Support;
-use ImmediateSolutions\Core\Session\Entities\Session;
+
 use ImmediateSolutions\Support\Api\AbstractController;
 use ImmediateSolutions\Support\Framework\ContainerInterface;
 
@@ -10,14 +10,10 @@ use ImmediateSolutions\Support\Framework\ContainerInterface;
 abstract class Controller extends AbstractController
 {
     /**
-     * @var Session
+     * @param ContainerInterface $container
      */
-    protected $session;
-
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
-
-        $this->session = $container->get(Session::class);
     }
 }

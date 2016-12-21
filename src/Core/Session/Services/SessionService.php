@@ -126,4 +126,15 @@ class SessionService extends Service
             'expiresAt' => ['<', new DateTime()]
         ]);
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function exists($id)
+    {
+        return $this->entityManager
+            ->getRepository(Session::class)
+            ->exists(['id' => $id]);
+    }
 }

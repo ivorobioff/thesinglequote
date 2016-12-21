@@ -1,5 +1,6 @@
 <?php
 namespace ImmediateSolutions\Api;
+use ImmediateSolutions\Support\Api\VerifyMiddleware;
 use ImmediateSolutions\Support\Framework\ActionMiddlewareRegisterInterface;
 use ImmediateSolutions\Support\Framework\MiddlewarePipeline;
 use ImmediateSolutions\Support\Permissions\PermissionsMiddleware;
@@ -14,6 +15,7 @@ class ActionMiddlewareRegister implements ActionMiddlewareRegisterInterface
      */
     public function register(MiddlewarePipeline $pipeline)
     {
+        $pipeline->add(VerifyMiddleware::class);
         $pipeline->add(PermissionsMiddleware::class);
     }
 }

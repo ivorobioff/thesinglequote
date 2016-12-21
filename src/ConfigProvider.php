@@ -4,6 +4,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use ImmediateSolutions\Api\Support\Protectors\AllProtector;
 use ImmediateSolutions\Api\Support\Protectors\AuthProtector;
+use ImmediateSolutions\Api\Support\Protectors\OwnerProtector;
 use ImmediateSolutions\Infrastructure\AbstractConfigProvider;
 
 /**
@@ -60,7 +61,8 @@ class ConfigProvider extends AbstractConfigProvider
 
             'protectors' => [
                 'all' => AllProtector::class,
-                'auth' => AuthProtector::class
+                'auth' => AuthProtector::class,
+                'owner' => OwnerProtector::class
             ]
         ];
     }

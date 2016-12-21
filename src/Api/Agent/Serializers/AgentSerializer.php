@@ -15,7 +15,7 @@ class AgentSerializer extends Serializer
     public function __invoke(Agent $agent)
     {
         return [
-            'id' => $agent->getUsername(),
+            'id' => $agent->getId(),
             'username' => $agent->getUsername(),
             'email' => $agent->getEmail(),
             'fullName' => $agent->getFullName()

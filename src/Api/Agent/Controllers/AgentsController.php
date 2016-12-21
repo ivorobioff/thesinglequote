@@ -35,4 +35,48 @@ class AgentsController extends Controller
             $this->serializer(AgentSerializer::class)
         );
     }
+
+    /**
+     * @param int $agentId
+     * @return ResponseInterface
+     */
+    public function show($agentId)
+    {
+        return $this->reply->single(
+            $this->agentService->get($agentId),
+            $this->serializer(AgentSerializer::class)
+        );
+    }
+
+    /**
+     * @param int $agentId
+     * @param AgentsProcessor $processor
+     * @return ResponseInterface
+     */
+    public function update($agentId, AgentsProcessor $processor)
+    {
+        $this->agentService->update($agentId, $processor->createPayload());
+
+        return $this->reply->blank();
+    }
+
+    /**
+     * @param int $agentId
+     * @return ResponseInterface
+     */
+    public function destroy($agentId)
+    {
+        $this->agentService->delete($agentId);
+
+        return $this->reply->blank();
+    }
+
+    /**
+     * @param int $agentId
+     * @return bool
+     */
+    public function verify($agentId)
+    {
+        return $this->agentService->exists($agentId);
+    }
 }

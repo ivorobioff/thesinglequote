@@ -1,5 +1,6 @@
 <?php
 namespace ImmediateSolutions\Core\Agent\Validation;
+use ImmediateSolutions\Core\Agent\Entities\Agent;
 use ImmediateSolutions\Core\Agent\Services\AgentService;
 use ImmediateSolutions\Core\Agent\Validation\Rules\InsuranceUnique;
 use ImmediateSolutions\Core\User\Services\UserService;
@@ -29,12 +30,19 @@ class AgentValidator extends AbstractThrowableValidator
     private $agentService;
 
     /**
-     * @param ContainerInterface $container
+     * @var Agent
      */
-    public function __construct(ContainerInterface $container)
+    private $currentAgent;
+
+    /**
+     * @param ContainerInterface $container
+     * @param Agent $agent
+     */
+    public function __construct(ContainerInterface $container, Agent $agent = null)
     {
         $this->userService = $container->get(UserService::class);
         $this->agentService = $container->get(AgentService::class);
+        $this->currentAgent = $agent;
     }
 
     /**
@@ -47,7 +55,7 @@ class AgentValidator extends AbstractThrowableValidator
             $property
                 ->addRule(new Obligate())
                 ->addRule(new Email())
-                ->addRule((new Unique($this->userService))
+                ->addRule((new Unique($this->userService, $this->currentAgent))
                     ->setMessage('An agent with this email address is already registered.'));
         });
 
@@ -68,7 +76,7 @@ class AgentValidator extends AbstractThrowableValidator
             $property
                 ->addRule(new Obligate())
                 ->addRule(new Length(1, 255))
-                ->addRule(new InsuranceUnique($this->agentService));
+                ->addRule(new InsuranceUnique($this->agentService, $this->currentAgent));
         });
     }
 }

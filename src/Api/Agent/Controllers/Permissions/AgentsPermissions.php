@@ -13,7 +13,10 @@ class AgentsPermissions extends AbstractActionsPermissions
     protected function permissions()
     {
         return [
-            'store' => 'all'
+            'store' => 'all',
+            'update' => 'owner',
+            'show' => 'owner',
+            'destroy' => 'owner'
         ];
     }
 }

@@ -41,6 +41,47 @@
 ##### `DELETE /agents/{agentId}`
 
 
+##### Creates an agent post
+
+##### `POST /agents/{agentId}/posts`
+
++ Request
+            
+            {
+                ... Agent Post Payload
+            }
+            
++ Response
+
+            {
+                ... Agent Post Object
+            }
+            
+##### Gets all agent posts
+
+##### `GET /agents/posts`
+
++ Response
+            
+            {
+                "data": [
+                    {
+                        ... Agent Post Object
+                    }
+                ]
+            }
+
+##### Gets all posts of a specific agent
+
+##### `GET /agents/{agentId}/posts`
+            
++ Response
+
+            {
+                ... Agent Post Object
+            }
+
+
 ## Session
 
 ##### Gets a session

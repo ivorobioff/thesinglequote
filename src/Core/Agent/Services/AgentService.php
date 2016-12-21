@@ -13,6 +13,15 @@ use ImmediateSolutions\Core\User\Services\UserService;
 class AgentService extends Service
 {
     /**
+     * @param int $id
+     * @return Agent
+     */
+    public function get($id)
+    {
+        return $this->entityManager->find(Agent::class, $id);
+    }
+
+    /**
      * @param AgentPayload $payload
      * @return Agent
      */
@@ -22,6 +31,38 @@ class AgentService extends Service
 
         $agent = new Agent();
 
+        $this->exchange($payload, $agent);
+
+        $this->entityManager->persist($agent);
+        $this->entityManager->flush();
+
+        return $agent;
+    }
+
+    /**
+     * @param int $id
+     * @param AgentPayload $payload
+     */
+    public function update($id, AgentPayload $payload)
+    {
+        /**
+         * @var Agent $agent
+         */
+        $agent = $this->entityManager->find(Agent::class, $id);
+
+        (new AgentValidator($this->container, $agent))->validate($payload, true);
+
+        $this->exchange($payload, $agent);
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param AgentPayload $payload
+     * @param Agent $agent
+     */
+    private function exchange(AgentPayload $payload, Agent $agent)
+    {
         $this->transfer($payload, $agent, 'email');
         $this->transfer($payload, $agent, 'fullName');
 
@@ -35,11 +76,25 @@ class AgentService extends Service
         });
 
         $this->transfer($payload, $agent, 'insuranceLicenseNumber');
+    }
 
-        $this->entityManager->persist($agent);
-        $this->entityManager->flush();
+    /**
+     * @param int $id
+     */
+    public function delete($id)
+    {
+        $this->entityManager->getRepository(Agent::class)->delete(['id' => $id]);
+    }
 
-        return $agent;
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function exists($id)
+    {
+        return $this->entityManager
+            ->getRepository(Agent::class)
+            ->exists(['id' => $id]);
     }
 
     /**

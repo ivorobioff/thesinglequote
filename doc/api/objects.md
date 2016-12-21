@@ -28,6 +28,28 @@
             }
 
 
+##### Agent Post Object
+
+            {
+                "id": int,
+                "title": string,
+                "publicMessage": string,
+                "privateMessage": string,
+                "clientName": string,
+                "clientPhone": string
+            }
+            
+##### Agent Post Payload
+
+            {
+                "title": string,
+                "publicMessage": string,
+                "privateMessage": string,
+                "clientName": string,
+                "clientPhone": string
+            }
+
+
 ##### Session Object
 
             {
