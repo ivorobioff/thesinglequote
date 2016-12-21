@@ -3,31 +3,6 @@ import Control from './Control';
 
 class Textarea extends Control {
     
-    constructor(props){
-        super(props);
-        this.state = { value: props.value };
-        this.initialValue = props.value;
-    }
-
-    componentWillMount(){
-        
-        var _this = this;
-
-        this.props.registerControl({
-            name: _this.props.name,
-            getValue(){
-                return _this.state.value;
-            }
-        });
-    }
-
-    componentWillReceiveProps(newProps) {
-
-        if (this.props.purge !== newProps.purge && newProps.purge === true){
-            this.state = { value: this.initialValue };
-        }
-    }
-
     render(){
 
         var attributes = {
@@ -51,14 +26,14 @@ class Textarea extends Control {
 
         var groupClass = 'form-group'
 
-        if (this.hasError()){
+        if (this.state.error){
             groupClass += ' has-error';
         }
 
         return <div className={groupClass}>
             { this.props.label ? <label htmlFor={'_id-' + this.props.name}>{this.props.label}</label> : ''}
             <textarea {...attributes}  onChange={e => this.setState({ value: e.target.value }) }></textarea>
-            {this.hasError() ? <span className="help-block">{this.getError()}</span>: ''}
+            {this.state.error ? <span className="help-block">{this.state.error}</span>: ''}
         </div>;
     }
 }

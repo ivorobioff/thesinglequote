@@ -29149,8 +29149,6 @@
 
 	var _SignUp2 = _interopRequireDefault(_SignUp);
 
-	var _form = __webpack_require__(282);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29260,12 +29258,6 @@
 	    return {
 	        formSignIn: state.forms.signIn,
 	        formSignUp: state.forms.signUp
-	    };
-	}, function (dispatch) {
-	    return {
-	        reset: function reset() {
-	            return dispatch((0, _form.formReset)(['signIn', 'signUp']));
-	        }
 	    };
 	})(Login);
 
@@ -29714,46 +29706,21 @@
 	var Input = function (_Control) {
 	    _inherits(Input, _Control);
 
-	    function Input(props) {
+	    function Input() {
 	        _classCallCheck(this, Input);
 
-	        var _this2 = _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).call(this, props));
-
-	        _this2.state = { value: props.value };
-	        _this2.initialValue = props.value;
-	        return _this2;
+	        return _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).apply(this, arguments));
 	    }
 
 	    _createClass(Input, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-
-	            var _this = this;
-
-	            this.props.registerControl({
-	                name: _this.props.name,
-	                getValue: function getValue() {
-	                    return _this.state.value;
-	                }
-	            });
-	        }
-	    }, {
-	        key: 'componentWillReceiveProps',
-	        value: function componentWillReceiveProps(newProps) {
-
-	            if (this.props.purge !== newProps.purge && newProps.purge === true) {
-	                this.state = { value: this.initialValue };
-	            }
-	        }
-	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this3 = this;
+	            var _this2 = this;
 
 	            var attributes = {
 	                id: '_id-' + this.props.name,
 	                ref: function ref(el) {
-	                    return _this3.el = el;
+	                    return _this2.el = el;
 	                },
 	                name: this.props.name,
 	                type: this.props.type,
@@ -29772,7 +29739,7 @@
 
 	            var groupClass = 'form-group';
 
-	            if (this.hasError()) {
+	            if (this.state.error) {
 	                groupClass += ' has-error';
 	            }
 
@@ -29785,12 +29752,12 @@
 	                    this.props.label
 	                ) : '',
 	                _react2.default.createElement('input', _extends({}, attributes, { onChange: function onChange(e) {
-	                        return _this3.setState({ value: e.target.value });
+	                        return _this2.setState({ value: e.target.value });
 	                    } })),
-	                this.hasError() ? _react2.default.createElement(
+	                this.state.error ? _react2.default.createElement(
 	                    'span',
 	                    { className: 'help-block' },
-	                    this.getError()
+	                    this.state.error
 	                ) : ''
 	            );
 	        }
@@ -29849,29 +29816,46 @@
 	var Control = function (_Component) {
 	    _inherits(Control, _Component);
 
-	    function Control() {
+	    function Control(props) {
 	        _classCallCheck(this, Control);
 
-	        return _possibleConstructorReturn(this, (Control.__proto__ || Object.getPrototypeOf(Control)).apply(this, arguments));
+	        var _this2 = _possibleConstructorReturn(this, (Control.__proto__ || Object.getPrototypeOf(Control)).call(this, props));
+
+	        _this2.state = { value: props.value };
+	        _this2.initialValue = props.value;
+	        return _this2;
 	    }
 
 	    _createClass(Control, [{
-	        key: 'hasError',
-	        value: function hasError() {
-	            return this.getError() !== null;
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {
+
+	            var _this = this;
+
+	            this.props.registerControl({
+	                name: _this.props.name,
+	                getValue: function getValue() {
+	                    return _this.state.value;
+	                }
+	            });
 	        }
 	    }, {
-	        key: 'getError',
-	        value: function getError() {
-	            if (typeof this.props.errors[this.props.name] !== 'undefined') {
-	                return this.props.errors[this.props.name].message;
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(newProps) {
+
+	            if (this.props.purge !== newProps.purge && newProps.purge === true) {
+	                this.state = { value: this.initialValue };
 	            }
 
-	            if (this.props.alias && typeof this.props.errors[this.props.alias] !== 'undefined') {
-	                return this.props.errors[this.props.alias].message;
+	            if (this.props.errors[this.props.name] !== newProps.errors[this.props.name]) {
+	                var error = newProps.errors[this.props.name];
+	                this.state = Object.assign({}, this.state, { error: error ? error.message : error });
 	            }
 
-	            return null;
+	            if (this.props.alias && this.props.errors[this.props.alias] !== newProps.errors[this.props.alias]) {
+	                var error = newProps.errors[this.props.alias];
+	                this.state = Object.assign({}, this.state, { error: error ? error.message : error });
+	            }
 	        }
 	    }]);
 
@@ -30221,46 +30205,21 @@
 	var Checkbox = function (_Control) {
 	    _inherits(Checkbox, _Control);
 
-	    function Checkbox(props) {
+	    function Checkbox() {
 	        _classCallCheck(this, Checkbox);
 
-	        var _this2 = _possibleConstructorReturn(this, (Checkbox.__proto__ || Object.getPrototypeOf(Checkbox)).call(this, props));
-
-	        _this2.state = { value: props.value };
-	        _this2.initialValue = props.value;
-	        return _this2;
+	        return _possibleConstructorReturn(this, (Checkbox.__proto__ || Object.getPrototypeOf(Checkbox)).apply(this, arguments));
 	    }
 
 	    _createClass(Checkbox, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-
-	            var _this = this;
-
-	            this.props.registerControl({
-	                name: _this.props.name,
-	                getValue: function getValue() {
-	                    return _this.state.value;
-	                }
-	            });
-	        }
-	    }, {
-	        key: 'componentWillReceiveProps',
-	        value: function componentWillReceiveProps(newProps) {
-
-	            if (this.props.purge !== newProps.purge && newProps.purge === true) {
-	                this.state = { value: this.initialValue };
-	            }
-	        }
-	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this3 = this;
+	            var _this2 = this;
 
 	            var attributes = {
 	                id: '_id-' + this.props.name,
 	                ref: function ref(el) {
-	                    return _this3.el = el;
+	                    return _this2.el = el;
 	                },
 	                name: this.props.name
 	            };
@@ -30274,7 +30233,7 @@
 	            }
 
 	            var input = _react2.default.createElement('input', _extends({ checked: this.state.value, onChange: function onChange(e) {
-	                    return _this3.setState({ value: e.target.checked ? true : false });
+	                    return _this2.setState({ value: e.target.checked ? true : false });
 	                }, type: 'checkbox' }, attributes));
 
 	            if (this.props.label) {
@@ -30289,7 +30248,7 @@
 
 	            var groupClass = 'form-group';
 
-	            if (this.hasError()) {
+	            if (this.state.error) {
 	                groupClass += ' has-error';
 	            }
 
@@ -30300,10 +30259,10 @@
 	                    'div',
 	                    { className: 'checkbox' },
 	                    input,
-	                    this.hasError() ? _react2.default.createElement(
+	                    this.state.error ? _react2.default.createElement(
 	                        'span',
 	                        { className: 'help-block' },
-	                        this.getError()
+	                        this.state.error
 	                    ) : ''
 	                )
 	            );
@@ -30548,46 +30507,21 @@
 	var Textarea = function (_Control) {
 	    _inherits(Textarea, _Control);
 
-	    function Textarea(props) {
+	    function Textarea() {
 	        _classCallCheck(this, Textarea);
 
-	        var _this2 = _possibleConstructorReturn(this, (Textarea.__proto__ || Object.getPrototypeOf(Textarea)).call(this, props));
-
-	        _this2.state = { value: props.value };
-	        _this2.initialValue = props.value;
-	        return _this2;
+	        return _possibleConstructorReturn(this, (Textarea.__proto__ || Object.getPrototypeOf(Textarea)).apply(this, arguments));
 	    }
 
 	    _createClass(Textarea, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-
-	            var _this = this;
-
-	            this.props.registerControl({
-	                name: _this.props.name,
-	                getValue: function getValue() {
-	                    return _this.state.value;
-	                }
-	            });
-	        }
-	    }, {
-	        key: 'componentWillReceiveProps',
-	        value: function componentWillReceiveProps(newProps) {
-
-	            if (this.props.purge !== newProps.purge && newProps.purge === true) {
-	                this.state = { value: this.initialValue };
-	            }
-	        }
-	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this3 = this;
+	            var _this2 = this;
 
 	            var attributes = {
 	                id: '_id-' + this.props.name,
 	                ref: function ref(el) {
-	                    return _this3.el = el;
+	                    return _this2.el = el;
 	                },
 	                name: this.props.name,
 	                value: this.state.value,
@@ -30607,7 +30541,7 @@
 
 	            var groupClass = 'form-group';
 
-	            if (this.hasError()) {
+	            if (this.state.error) {
 	                groupClass += ' has-error';
 	            }
 
@@ -30620,12 +30554,12 @@
 	                    this.props.label
 	                ) : '',
 	                _react2.default.createElement('textarea', _extends({}, attributes, { onChange: function onChange(e) {
-	                        return _this3.setState({ value: e.target.value });
+	                        return _this2.setState({ value: e.target.value });
 	                    } })),
-	                this.hasError() ? _react2.default.createElement(
+	                this.state.error ? _react2.default.createElement(
 	                    'span',
 	                    { className: 'help-block' },
-	                    this.getError()
+	                    this.state.error
 	                ) : ''
 	            );
 	        }

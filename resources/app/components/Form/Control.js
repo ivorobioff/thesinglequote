@@ -1,20 +1,40 @@
 import React, { Component } from 'react';
 
 class Control extends Component {
-    hasError(){        
-        return this.getError() !== null;
+   
+    constructor(props){
+        super(props);
+        this.state = { value: props.value };
+        this.initialValue = props.value;
     }
 
-    getError(){
-        if (typeof this.props.errors[this.props.name] !== 'undefined'){
-            return this.props.errors[this.props.name].message;
+    componentWillMount(){
+        
+        var _this = this;
+
+        this.props.registerControl({
+            name: _this.props.name,
+            getValue(){
+                return _this.state.value;
+            }
+        });
+    }
+
+    componentWillReceiveProps(newProps) {
+
+        if (this.props.purge !== newProps.purge && newProps.purge === true){
+            this.state = { value: this.initialValue };
         }
 
-        if (this.props.alias && typeof this.props.errors[this.props.alias] !== 'undefined'){
-            return this.props.errors[this.props.alias].message;
+        if (this.props.errors[this.props.name] !== newProps.errors[this.props.name]){
+            var error = newProps.errors[this.props.name];
+            this.state = Object.assign({}, this.state, { error: error ? error.message : error });
         }
 
-        return null;
+        if (this.props.alias && this.props.errors[this.props.alias] !== newProps.errors[this.props.alias]){
+            var error = newProps.errors[this.props.alias];
+            this.state = Object.assign({}, this.state, { error: error ? error.message : error });
+        }
     }
 }
 

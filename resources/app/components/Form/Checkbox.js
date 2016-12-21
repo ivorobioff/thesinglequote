@@ -3,31 +3,6 @@ import Control from './Control';
 
 class Checkbox extends Control {
     
-    constructor(props){
-        super(props);
-        this.state = { value: props.value};
-        this.initialValue = props.value;
-    }
-
-    componentWillMount(){
-        
-        var _this = this;
-
-        this.props.registerControl({
-            name: _this.props.name,
-            getValue(){
-                return _this.state.value;
-            }
-        });
-    }
-
-    componentWillReceiveProps(newProps) {
-
-        if (this.props.purge !== newProps.purge && newProps.purge === true){
-            this.state = { value: this.initialValue };
-        }
-    }
-
     render(){
         var attributes = {
             id: '_id-' + this.props.name,
@@ -51,14 +26,14 @@ class Checkbox extends Control {
 
         var groupClass = 'form-group'
 
-        if (this.hasError()){
+        if (this.state.error){
             groupClass += ' has-error';
         }
 
         return <div className={groupClass}>
             <div className="checkbox">
                 {input}
-                {this.hasError() ? <span className="help-block">{this.getError()}</span>: ''}
+                {this.state.error ? <span className="help-block">{this.state.error}</span>: ''}
             </div>
         </div>
     }
