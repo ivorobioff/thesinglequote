@@ -36,7 +36,7 @@ class NewPost extends Component {
                     <Form
                         name="newPost" 
                         purge={this.props.form.status === 'success'}
-                        request={{method: 'POST', url: '/agents/' + this.props.session.id + '/posts' }}>
+                        request={{method: 'POST', url: '/agents/' + this.props.session.user.id + '/posts' }}>
                         <h1>Public Information</h1>
                         <span className="help-block">Will be shared with all agents.</span>
                         <Input 

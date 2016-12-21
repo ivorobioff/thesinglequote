@@ -6,6 +6,7 @@ class Input extends Control {
     constructor(props){
         super(props);
         this.state = { value: props.value };
+        this.initialValue = props.value;
     }
 
     componentWillMount(){
@@ -23,7 +24,7 @@ class Input extends Control {
     componentWillReceiveProps(newProps) {
 
         if (this.props.purge !== newProps.purge && newProps.purge === true){
-            this.state = { value: Input.defaultProps.value};
+            this.state = { value: this.initialValue };
         }
     }
 

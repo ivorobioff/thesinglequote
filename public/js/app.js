@@ -29725,6 +29725,7 @@
 	        var _this2 = _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).call(this, props));
 
 	        _this2.state = { value: props.value };
+	        _this2.initialValue = props.value;
 	        return _this2;
 	    }
 
@@ -29746,7 +29747,7 @@
 	        value: function componentWillReceiveProps(newProps) {
 
 	            if (this.props.purge !== newProps.purge && newProps.purge === true) {
-	                this.state = { value: Input.defaultProps.value };
+	                this.state = { value: this.initialValue };
 	            }
 	        }
 	    }, {
@@ -30231,6 +30232,7 @@
 	        var _this2 = _possibleConstructorReturn(this, (Checkbox.__proto__ || Object.getPrototypeOf(Checkbox)).call(this, props));
 
 	        _this2.state = { value: props.value };
+	        _this2.initialValue = props.value;
 	        return _this2;
 	    }
 
@@ -30252,7 +30254,7 @@
 	        value: function componentWillReceiveProps(newProps) {
 
 	            if (this.props.purge !== newProps.purge && newProps.purge === true) {
-	                this.state = { value: Checkbox.defaultProps.value };
+	                this.state = { value: this.initialValue };
 	            }
 	        }
 	    }, {
@@ -30435,7 +30437,7 @@
 	                            {
 	                                name: 'newPost',
 	                                purge: this.props.form.status === 'success',
-	                                request: { method: 'POST', url: '/agents/' + this.props.session.id + '/posts' } },
+	                                request: { method: 'POST', url: '/agents/' + this.props.session.user.id + '/posts' } },
 	                            _react2.default.createElement(
 	                                'h1',
 	                                null,
@@ -30485,7 +30487,7 @@
 	                                cols: 40,
 	                                rows: 10,
 	                                placeholder: 'First driver is Mary Allen and second driver is David Allen. They live on 123 Sunshine Rd. Beverly Hills, CA 90210.' }),
-	                            _react2.default.createElement(_Checkbox2.default, { name: 'noPersonalInfo', label: 'I have not posted any personal information in the public information sections.' }),
+	                            _react2.default.createElement(_Checkbox2.default, { name: 'noPersonalInfoInPublic', label: 'I have not posted any personal information in the public information sections.' }),
 	                            this.state.message ? _react2.default.createElement(
 	                                'div',
 	                                { className: 'alert alert-' + this.state.message.color },
@@ -30557,6 +30559,7 @@
 	        var _this2 = _possibleConstructorReturn(this, (Textarea.__proto__ || Object.getPrototypeOf(Textarea)).call(this, props));
 
 	        _this2.state = { value: props.value };
+	        _this2.initialValue = props.value;
 	        return _this2;
 	    }
 
@@ -30578,7 +30581,7 @@
 	        value: function componentWillReceiveProps(newProps) {
 
 	            if (this.props.purge !== newProps.purge && newProps.purge === true) {
-	                this.state = { value: Input.defaultProps.value };
+	                this.state = { value: this.initialValue };
 	            }
 	        }
 	    }, {
