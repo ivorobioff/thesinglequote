@@ -41,7 +41,7 @@ class SignUp extends Component {
 
                     <Checkbox name="agreeToTOS" required={true} label="I agree to the TOS" />
 
-                    <Submit color="warning">Register</Submit>
+                    <Submit position="block" color="warning">Register</Submit>
             </Form>
         </div></div>
     }

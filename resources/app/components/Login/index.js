@@ -36,19 +36,23 @@ class Login extends Component {
     }
 
     render(){
-        return <div id="login-overlay" className="modal-dialog">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <h4 className="modal-title" id="myModalLabel">Login to <b>TheSingleQuote.com</b></h4> or go back to our <a href="www.thesinglequote.com">main site</a>.
-                </div>
-                 <div className="modal-body">
-                    { this.state.message ? <div className={'alert alert-' + this.state.message.color}>{this.state.message.content}</div> : ''}
-                     <div className="row">
-                        <SignIn />
-                        <SignUp />
+        return <div>
+            <hr/>
+            <div id="login-overlay" className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h4 className="modal-title" id="myModalLabel">Login to <b>TheSingleQuote.com</b></h4> or go back to our <a href="www.thesinglequote.com">main site</a>.
                     </div>
-                 </div>
+                    <div className="modal-body">
+                        { this.state.message ? <div className={'alert alert-' + this.state.message.color}>{this.state.message.content}</div> : ''}
+                        <div className="row">
+                            <SignIn />
+                            <SignUp />
+                        </div>
+                    </div>
+                </div>
             </div>
+            <hr/>
         </div>
     }
 }

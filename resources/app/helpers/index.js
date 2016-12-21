@@ -28,6 +28,3 @@ export function backend (options) {
         }
     }
 }
-
-
-export const BOOTSTRAP_COLOR_SCHEMAS = ['active', 'success', 'info', 'warning', 'danger'];

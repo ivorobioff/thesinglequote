@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react';
 import Control from './Control';
 
-class Checkbox extends Control {
+class Textarea extends Control {
     
     constructor(props){
         super(props);
-        this.state = { value: props.value};
+        this.state = { value: props.value };
     }
 
     componentWillMount(){
@@ -23,15 +23,21 @@ class Checkbox extends Control {
     componentWillReceiveProps(newProps) {
 
         if (this.props.purge !== newProps.purge && newProps.purge === true){
-            this.state = { value: Checkbox.defaultProps.value };
+            this.state = { value: Input.defaultProps.value};
         }
     }
 
     render(){
+
         var attributes = {
             id: '_id-' + this.props.name,
             ref: el => this.el = el,
             name: this.props.name,
+            value: this.state.value,
+            placeholder: this.props.placeholder,
+            cols: this.props.cols,
+            rows: this.props.rows,
+            className: 'form-control'
         };
 
         if (this.props.disabled){
@@ -42,12 +48,6 @@ class Checkbox extends Control {
             attributes.required = 'required';
         }
 
-        var input = <input checked={this.state.value} onChange={e => this.setState({value: e.target.checked ? true : false})} type="checkbox"  {...attributes} />;
-
-        if (this.props.label){
-            input = <label>{input} {this.props.label}</label>
-        }
-
         var groupClass = 'form-group'
 
         if (this.hasError()){
@@ -55,31 +55,34 @@ class Checkbox extends Control {
         }
 
         return <div className={groupClass}>
-            <div className="checkbox">
-                {input}
-                {this.hasError() ? <span className="help-block">{this.getError()}</span>: ''}
-            </div>
-        </div>
+            { this.props.label ? <label htmlFor={'_id-' + this.props.name}>{this.props.label}</label> : ''}
+            <textarea {...attributes}  onChange={e => this.setState({ value: e.target.value }) }></textarea>
+            {this.hasError() ? <span className="help-block">{this.getError()}</span>: ''}
+        </div>;
     }
 }
 
-Checkbox.propTypes = {
+Textarea.propTypes = {
     name: PropTypes.string.isRequired,
-    value: PropTypes.bool,
     alias: PropTypes.string,
     required: PropTypes.bool,
     purge: PropTypes.bool,
+    placeholder: PropTypes.string,
     label: PropTypes.string,
     disabled: PropTypes.bool,
-    errors: PropTypes.object
+    errors: PropTypes.object,
+    cols: PropTypes.number,
+    rows: PropTypes.number
 }
 
-Checkbox.defaultProps = {
+Textarea.defaultProps = {
     required: false,
     purge: false,
     disabled: false,
-    value: false,
+    value: '',
+    cols: 20,
+    rows: 5,
     errors: {}
 }
 
-export default Checkbox;
+export default Textarea;

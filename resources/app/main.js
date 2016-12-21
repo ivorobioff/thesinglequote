@@ -11,6 +11,7 @@ import Session from './helpers/Session';
 import { redirectTo } from './actions/redirect';
 import { sessionRefresh } from './actions/auth';
 import { backend } from './helpers';
+import NewPost from './components/Post/NewPost';
 
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 
@@ -109,6 +110,9 @@ render(
             <Route path='/' component={App}>
                 <IndexRoute component={Home} />
                 <Route path="login" component={Login} />
+                <Route path="posts">
+                    <Route path="new" component={NewPost} />
+                </Route>
             </Route>
         </Router>
     </Provider>,

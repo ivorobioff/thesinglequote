@@ -1,13 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { BOOTSTRAP_COLOR_SCHEMAS } from '../../helpers';
 
 class Button extends Component {
     render() {
+        var className = 'btn btn-' + this.props.color;
 
-        var className = 'btn btn-block';
-
-        if (this.props.color){
-            className +=' btn-' + this.props.color;
+        if (this.props.position === 'block'){
+            className += ' btn-block';
         }
 
         var attributes = {
@@ -18,17 +16,20 @@ class Button extends Component {
         if (this.props.disabled){
             attributes.disabled = 'disabled';
         }
-        return <button {...attributes}>{this.props.children}</button>
+        return <div className="form-group"><div><button {...attributes}>{this.props.children}</button></div></div>  
     }
 }
 
 Button.propTypes = {
-    color: PropTypes.oneOf(BOOTSTRAP_COLOR_SCHEMAS),
-    disabled: PropTypes.bool
+    color: PropTypes.oneOf(['default', 'info', 'success', 'primary', 'warning', 'danger', 'link']),
+    disabled: PropTypes.bool,
+    position: PropTypes.oneOf(['default', 'block'])
 }
 
 Button.defaultProps = {
-    disabled: false
+    disabled: false,
+    color: 'default',
+    position: 'default'
 }
 
 export default Button;

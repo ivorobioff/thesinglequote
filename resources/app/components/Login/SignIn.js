@@ -23,7 +23,7 @@ class SignIn extends Component {
                         required={true} 
                         placeholder="Password" />
 
-                    <Submit color="success">Login</Submit>
+                    <Submit position="block" color="success">Login</Submit>
             </Form>
         </div></div>
     }
