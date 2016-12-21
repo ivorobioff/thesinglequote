@@ -29543,7 +29543,7 @@
 
 	            if (x.status == 422) {
 	                error = data.errors;
-	            } else if (x.status < 500) {
+	            } else {
 	                error = data.message;
 	            }
 
@@ -30386,13 +30386,29 @@
 	var NewPost = function (_Component) {
 	    _inherits(NewPost, _Component);
 
-	    function NewPost() {
+	    function NewPost(props) {
 	        _classCallCheck(this, NewPost);
 
-	        return _possibleConstructorReturn(this, (NewPost.__proto__ || Object.getPrototypeOf(NewPost)).apply(this, arguments));
+	        var _this = _possibleConstructorReturn(this, (NewPost.__proto__ || Object.getPrototypeOf(NewPost)).call(this, props));
+
+	        _this.state = {};
+	        return _this;
 	    }
 
 	    _createClass(NewPost, [{
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(newProps) {
+	            if (this.props.form.status !== newProps.form.status) {
+	                if (newProps.form.status === 'success') {
+	                    this.state = { message: { content: 'The post has been created successfully!', color: 'success' } };
+	                } else if (newProps.form.status === 'fail' && typeof newProps.form.error === 'string') {
+	                    this.state = { message: { content: newProps.form.error, color: 'danger' } };
+	                } else {
+	                    this.state = {};
+	                }
+	            }
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
@@ -30418,6 +30434,7 @@
 	                            _Form2.default,
 	                            {
 	                                name: 'newPost',
+	                                purge: this.props.form.status === 'success',
 	                                request: { method: 'POST', url: '/agents/' + this.props.session.id + '/posts' } },
 	                            _react2.default.createElement(
 	                                'h1',
@@ -30469,6 +30486,11 @@
 	                                rows: 10,
 	                                placeholder: 'First driver is Mary Allen and second driver is David Allen. They live on 123 Sunshine Rd. Beverly Hills, CA 90210.' }),
 	                            _react2.default.createElement(_Checkbox2.default, { name: 'noPersonalInfo', label: 'I have not posted any personal information in the public information sections.' }),
+	                            this.state.message ? _react2.default.createElement(
+	                                'div',
+	                                { className: 'alert alert-' + this.state.message.color },
+	                                this.state.message.content
+	                            ) : '',
 	                            _react2.default.createElement(
 	                                _Submit2.default,
 	                                { color: 'primary' },
@@ -30485,9 +30507,14 @@
 	    return NewPost;
 	}(_react.Component);
 
+	NewPost.defaultProps = {
+	    form: {}
+	};
+
 	exports.default = (0, _reactRedux.connect)(function (state) {
 	    return {
-	        session: state.session
+	        session: state.session,
+	        form: state.forms.newPost
 	    };
 	})(NewPost);
 

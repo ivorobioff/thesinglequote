@@ -61,6 +61,13 @@ class Post
     public function getClientPhone() { return $this->clientName; }
 
     /**
+     * @var bool
+     */
+    private $noPersonalInfoInPublic = false;
+    public function setNoPersonalInfoInPublic($flag) { $this->noPersonalInfoInPublic = $flag; }
+    public function getNoPersonalInfoInPublic() { return $this->noPersonalInfoInPublic; }
+
+    /**
      * @var DateTime
      */
     private $createdAt;

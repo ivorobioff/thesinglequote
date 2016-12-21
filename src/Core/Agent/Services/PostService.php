@@ -72,6 +72,7 @@ class PostService extends Service
         $this->transfer($payload, $post, 'publicMessage');
         $this->transfer($payload, $post, 'clientName');
         $this->transfer($payload, $post, 'clientPhone');
+        $this->transfer($payload, $post, 'noPersonalInfoInPublic');
     }
 
     /**

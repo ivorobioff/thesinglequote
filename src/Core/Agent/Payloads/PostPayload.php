@@ -44,4 +44,11 @@ class PostPayload implements ClearableAwareInterface
     private $clientPhone;
     public function setClientPhone($phone) { $this->clientPhone = $phone; }
     public function getClientPhone() { return $this->clientName; }
+
+    /**
+     * @var bool
+     */
+    private $noPersonalInfoInPublic;
+    public function setNoPersonalInfoInPublic($flag) { $this->noPersonalInfoInPublic = $flag; }
+    public function getNoPersonalInfoInPublic() { return $this->noPersonalInfoInPublic; }
 }

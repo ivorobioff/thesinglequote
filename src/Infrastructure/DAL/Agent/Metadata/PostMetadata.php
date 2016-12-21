@@ -45,6 +45,10 @@ class PostMetadata extends AbstractMetadataProvider
             ->build();
 
         $builder
+            ->createField('noPersonalInfoInPublic', 'boolean')
+            ->build();
+
+        $builder
             ->createField('createdAt', 'datetime')
             ->build();
 

@@ -38,7 +38,8 @@
                 "privateMessage": string,
                 "clientName": string,
                 "clientPhone": string,
-                "createdAt": string
+                "createdAt": string,
+                "noPersonalInfoInPublic": bool
             }
             
 ##### Agent Post Payload
@@ -48,7 +49,8 @@
                 "publicMessage": string,
                 "privateMessage": string,
                 "clientName": string,
-                "clientPhone": string
+                "clientPhone": string,
+                "noPersonalInfoInPublic": bool
             }
 
 

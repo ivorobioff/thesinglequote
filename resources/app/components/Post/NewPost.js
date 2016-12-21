@@ -7,6 +7,24 @@ import Submit from '../Form/Submit';
 import { connect } from 'react-redux';
 
 class NewPost extends Component {
+
+    constructor(props){
+        super(props);
+        this.state = {};
+    }
+
+    componentWillReceiveProps(newProps){
+        if (this.props.form.status !== newProps.form.status){
+            if (newProps.form.status === 'success'){
+                this.state = { message: { content: 'The post has been created successfully!', color: 'success'}}
+            } else if (newProps.form.status === 'fail' && typeof newProps.form.error === 'string'){
+                this.state = { message: { content: newProps.form.error, color: 'danger'}}
+            } else {
+                this.state = {};
+            }
+        }
+    }
+
     render(){
         return <div>
             <header className="jumbotron hero-spacer">
@@ -17,6 +35,7 @@ class NewPost extends Component {
                 <div className="col-md-6 col-sm-6 col-xs-12">
                     <Form
                         name="newPost" 
+                        purge={this.props.form.status === 'success'}
                         request={{method: 'POST', url: '/agents/' + this.props.session.id + '/posts' }}>
                         <h1>Public Information</h1>
                         <span className="help-block">Will be shared with all agents.</span>
@@ -57,8 +76,10 @@ class NewPost extends Component {
                             rows={10} 
                             placeholder="First driver is Mary Allen and second driver is David Allen. They live on 123 Sunshine Rd. Beverly Hills, CA 90210." />
                    
-                        <Checkbox name="noPersonalInfo" label="I have not posted any personal information in the public information sections." />
-                    
+                        <Checkbox name="noPersonalInfoInPublic" label="I have not posted any personal information in the public information sections." />
+
+                        {this.state.message ? <div className={'alert alert-' + this.state.message.color}>{this.state.message.content}</div> : ''}
+
                         <Submit color="primary">Submit</Submit>
                     </Form>
                     
@@ -69,8 +90,13 @@ class NewPost extends Component {
     }
 }
 
+NewPost.defaultProps = {
+    form: {}
+}
+
 export default connect(state => {
     return {
-        session: state.session
+        session: state.session,
+        form: state.forms.newPost
     }
 })(NewPost);

@@ -15,7 +15,8 @@ class PostsProcessor extends Processor
             'publicMessage' => 'string',
             'privateMessage' => 'string',
             'clientName' => 'string',
-            'clientPhone' => 'string'
+            'clientPhone' => 'string',
+            'noPersonalInfoInPublic' => 'bool'
         ];
     }
 
@@ -31,6 +32,7 @@ class PostsProcessor extends Processor
         $this->set($payload, 'privateMessage');
         $this->set($payload, 'clientName');
         $this->set($payload, 'clientPhone');
+        $this->set($payload, 'noPersonalInfoInPublic', null, false);
 
         return $payload;
     }
