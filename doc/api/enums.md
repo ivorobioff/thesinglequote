@@ -2,6 +2,6 @@
 
 `agent`
 
-##### Quote Status Enum
+##### Agent Post Status Enum
 
 `open | done`

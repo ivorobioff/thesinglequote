@@ -41,6 +41,8 @@
 ##### `DELETE /agents/{agentId}`
 
 
+### Post
+
 ##### Creates an agent post
 
 ##### `POST /agents/{agentId}/posts`
@@ -57,9 +59,24 @@
                 ... Agent Post Object
             }
             
+            
+##### Updates an agent post
+
+##### `PATCH /agents/{agentId}/posts/{postId}`
+
++ Request
+            
+            {
+                ... Agent Post Payload
+            }
+            
 ##### Gets all agent posts
 
 ##### `GET /agents/posts`
+
++ Parameters
+    + page: int
+    + perPage: int
 
 + Response
             
@@ -68,18 +85,39 @@
                     {
                         ... Agent Post Object
                     }
-                ]
+                ],
+                "meta": {
+                    "pagination": {
+                        ... Pagination Object
+                    }
+                }
             }
 
 ##### Gets all posts of a specific agent
-
 ##### `GET /agents/{agentId}/posts`
             
-+ Response
++ Parameters
+    + page: int
+    + perPage: int
 
++ Response
+            
             {
-                ... Agent Post Object
+                "data": [
+                    {
+                        ... Agent Post Object
+                    }
+                ],
+                "meta": {
+                    "pagination": {
+                        ... Pagination Object
+                    }
+                }
             }
+
+
+##### Deletes an agent post
+##### `DELETE /agents/{agentId}/posts/{postId}`
 
 
 ## Session

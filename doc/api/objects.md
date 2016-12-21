@@ -32,11 +32,13 @@
 
             {
                 "id": int,
+                "status": Agent Post Status Enum,
                 "title": string,
                 "publicMessage": string,
                 "privateMessage": string,
                 "clientName": string,
-                "clientPhone": string
+                "clientPhone": string,
+                "createdAt": string
             }
             
 ##### Agent Post Payload
@@ -86,4 +88,13 @@
             {
                 "id": int,
                 "token": string
+            }
+            
+##### Pagination Object
+
+            {
+                "total": int,
+                "perPage": int,
+                "page": int,
+                "totalPages": int,
             }

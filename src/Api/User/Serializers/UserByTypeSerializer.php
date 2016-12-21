@@ -14,7 +14,11 @@ class UserByTypeSerializer extends Serializer
     public function __invoke(User $user)
     {
         if ($user instanceof Agent){
-            return $this->delegate(AgentSerializer::class, $user);
+
+            $data = $this->delegate(AgentSerializer::class, $user);
+            $data['type'] = 'agent';
+
+            return $data;
         }
 
         throw new RuntimeException('Unable to find a serializer for the "'.get_class($user).'" type.');

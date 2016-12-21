@@ -1,11 +1,11 @@
 <?php
 namespace ImmediateSolutions\Core\Agent\Services;
 use ImmediateSolutions\Core\Agent\Entities\Agent;
+use ImmediateSolutions\Core\Agent\Entities\Post;
 use ImmediateSolutions\Core\Agent\Payloads\AgentPayload;
 use ImmediateSolutions\Core\Agent\Validation\AgentValidator;
 use ImmediateSolutions\Core\Support\Service;
 use ImmediateSolutions\Core\User\Interfaces\PasswordEncryptorInterface;
-use ImmediateSolutions\Core\User\Services\UserService;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
@@ -106,5 +106,17 @@ class AgentService extends Service
         return $this->entityManager->getRepository(Agent::class)->exists([
             'insuranceLicenseNumber' => $number
         ]);
+    }
+
+    /**
+     * @param int $agentId
+     * @param int $postId
+     * @return bool
+     */
+    public function hasPost($agentId, $postId)
+    {
+        return $this->entityManager
+            ->getRepository(Post::class)
+            ->exists(['id' => $postId, 'agent' => $agentId]);
     }
 }

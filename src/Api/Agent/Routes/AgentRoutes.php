@@ -11,8 +11,8 @@ class AgentRoutes
     public function __invoke(RouterInterface $router)
     {
         $router->post('/agents', AgentsController::class.'@store');
-        $router->get('/agents/{agentId}', AgentsController::class.'@show');
-        $router->patch('/agents/{agentId}', AgentsController::class.'@update');
-        $router->delete('/agents/{agentId}', AgentsController::class.'@destroy');
+        $router->get('/agents/{agentId:\d+}', AgentsController::class.'@show');
+        $router->patch('/agents/{agentId:\d+}', AgentsController::class.'@update');
+        $router->delete('/agents/{agentId:\d+}', AgentsController::class.'@destroy');
     }
 }
