@@ -18,7 +18,7 @@ export function formSubmit(form, request){
 
             if (x.status == 422){
                 error = data.errors;
-            } else if(x.status < 500) {
+            } else {
                 error = data.message;
             }
             
