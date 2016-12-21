@@ -8,7 +8,6 @@ import App from './components/App';
 import Home from './components/Home';
 import Login from './components/Login';
 import Session from './helpers/Session';
-import { redirectTo } from './actions/redirect';
 import { sessionRefresh } from './actions/auth';
 import { backend } from './helpers';
 import NewPost from './components/Post/NewPost';
@@ -17,31 +16,6 @@ import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 
 let store = createStore(reducers, applyMiddleware(thunk));
 
-// takes care of redirection
-var prevRedirect, nextRedirect = store.getState().redirect;
-
-store.subscribe(() => {
-    
-    prevRedirect = nextRedirect;
-
-    nextRedirect = store.getState().redirect;
-    var nextLocation = nextRedirect.location;
-    var currentLocation = browserHistory.getCurrentLocation().pathname;
-
-    if (prevRedirect.id !== nextRedirect.id){
-        if (nextLocation === currentLocation){
-            return ;
-        }
-
-        if (nextRedirect.historical){
-            browserHistory.push(nextLocation);
-        } else {
-            browserHistory.replace(nextLocation);
-        }
-    }
-});
-
-
 // takes care of session storage
 
 function handleAuthLocation(session) {
@@ -49,9 +23,9 @@ function handleAuthLocation(session) {
     var isAuth = typeof session.id !== 'undefined';
 
     if (currentLocation == '/login' && isAuth){
-        store.dispatch(redirectTo('/', false));
+        browserHistory.replace('/');
     } else if (currentLocation !== '/login' && !isAuth){
-        store.dispatch(redirectTo('/login', false));
+        browserHistory.replace('/login');
     }
 }
 

@@ -4,14 +4,11 @@ import Input from '../Form/Input';
 import Textarea from '../Form/Textarea';
 import Checkbox from '../Form/Checkbox';
 import Submit from '../Form/Submit';
-import Session from '../../helpers/Session';
+import { connect } from 'react-redux';
 
 class NewPost extends Component {
     
     render(){
-
-        var user = Session.get().user.id;
-
         return <div>
             <header className="jumbotron hero-spacer">
                 <h1>Post a New Quote</h1>
@@ -21,7 +18,7 @@ class NewPost extends Component {
                 <div className="col-md-6 col-sm-6 col-xs-12">
                     <Form
                         name="newPost" 
-                        request={{method: 'POST', url: '/agents/' + user + '/posts' }}>
+                        request={{method: 'POST', url: '/agents/' + this.props.session.id + '/posts' }}>
                         <h1>Public Information</h1>
                         <span className="help-block">Will be shared with all agents.</span>
                         <Input 
@@ -73,4 +70,8 @@ class NewPost extends Component {
     }
 }
 
-export default NewPost;
+export default connect(state => {
+    return {
+        session: state.session
+    }
+})(NewPost);
