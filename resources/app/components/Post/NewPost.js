@@ -7,7 +7,6 @@ import Submit from '../Form/Submit';
 import { connect } from 'react-redux';
 
 class NewPost extends Component {
-    
     render(){
         return <div>
             <header className="jumbotron hero-spacer">

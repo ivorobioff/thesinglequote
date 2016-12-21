@@ -18,8 +18,14 @@ let store = createStore(reducers, applyMiddleware(thunk));
 
 // takes care of session storage
 
-function handleAuthLocation(session) {
-    var currentLocation = browserHistory.getCurrentLocation().pathname;
+function handleAuthLocation(currentLocation = undefined) {
+    
+    var session = store.getState().session;
+
+    if (typeof currentLocation === 'undefined'){
+        currentLocation = browserHistory.getCurrentLocation().pathname;
+    }
+
     var isAuth = typeof session.id !== 'undefined';
 
     if (currentLocation == '/login' && isAuth){
@@ -31,7 +37,7 @@ function handleAuthLocation(session) {
 
 var prevSession, currentSession = store.getState().session;
 
-handleAuthLocation(currentSession);
+handleAuthLocation();
 
 store.subscribe(() => {
 
@@ -50,9 +56,13 @@ store.subscribe(() => {
     // takes care of auth location
 
     if (prevSession.id !== currentSession.id){
-        handleAuthLocation(currentSession);
+        handleAuthLocation();
     }
 });
+
+function onRouteChange(oldState, newState){
+    handleAuthLocation(newState.location.pathname);
+}
 
 
 setInterval(() => {
@@ -78,10 +88,11 @@ setInterval(() => {
     }
 }, 10000);
 
+
 render(
     <Provider store={store}>
         <Router history={browserHistory}>
-            <Route path='/' component={App}>
+            <Route onChange={onRouteChange} path='/' component={App}>
                 <IndexRoute component={Home} />
                 <Route path="login" component={Login} />
                 <Route path="posts">

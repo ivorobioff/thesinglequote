@@ -96,8 +96,16 @@
 
 	// takes care of session storage
 
-	function handleAuthLocation(session) {
-	    var currentLocation = _reactRouter.browserHistory.getCurrentLocation().pathname;
+	function handleAuthLocation() {
+	    var currentLocation = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
+
+
+	    var session = store.getState().session;
+
+	    if (typeof currentLocation === 'undefined') {
+	        currentLocation = _reactRouter.browserHistory.getCurrentLocation().pathname;
+	    }
+
 	    var isAuth = typeof session.id !== 'undefined';
 
 	    if (currentLocation == '/login' && isAuth) {
@@ -110,7 +118,7 @@
 	var prevSession,
 	    currentSession = store.getState().session;
 
-	handleAuthLocation(currentSession);
+	handleAuthLocation();
 
 	store.subscribe(function () {
 
@@ -129,9 +137,13 @@
 	    // takes care of auth location
 
 	    if (prevSession.id !== currentSession.id) {
-	        handleAuthLocation(currentSession);
+	        handleAuthLocation();
 	    }
 	});
+
+	function onRouteChange(oldState, newState) {
+	    handleAuthLocation(newState.location.pathname);
+	}
 
 	setInterval(function () {
 
@@ -164,7 +176,7 @@
 	        { history: _reactRouter.browserHistory },
 	        _react2.default.createElement(
 	            _reactRouter.Route,
-	            { path: '/', component: _App2.default },
+	            { onChange: onRouteChange, path: '/', component: _App2.default },
 	            _react2.default.createElement(_reactRouter.IndexRoute, { component: _Home2.default }),
 	            _react2.default.createElement(_reactRouter.Route, { path: 'login', component: _Login2.default }),
 	            _react2.default.createElement(
