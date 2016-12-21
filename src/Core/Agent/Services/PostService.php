@@ -8,6 +8,7 @@ use ImmediateSolutions\Core\Agent\Payloads\PostPayload;
 use ImmediateSolutions\Core\Agent\Validation\PostValidator;
 use ImmediateSolutions\Core\Support\Service;
 use ImmediateSolutions\Support\Core\Criteria\Paginator;
+use DateTime;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
@@ -34,7 +35,7 @@ class PostService extends Service
 
         $post->setAgent($agent);
 
-        $this->entityManager->persist($agent);
+        $this->entityManager->persist($post);
         $this->entityManager->flush();
 
         return $post;
@@ -46,14 +47,16 @@ class PostService extends Service
      */
     public function update($id, PostPayload $payload)
     {
+        (new PostValidator())->validate($payload, true);
+
         /**
          * @var Post $post
          */
         $post = $this->entityManager->find(Post::class, $id);
 
-        (new PostValidator())->validate($payload, true);
-
         $this->exchange($payload, $post);
+
+        $post->setUpdatedAt(new DateTime());
 
         $this->entityManager->flush();
     }
@@ -120,7 +123,7 @@ class PostService extends Service
         if ($options->isInverted()){
             $builder->andWhere($builder->expr()->neq('p.agent', ':agent'));
         } else {
-            $builder->andWhere($builder->expr()->neq('p.agent', ':agent'));
+            $builder->andWhere($builder->expr()->eq('p.agent', ':agent'));
         }
 
         $builder->setParameter('agent', $agentId);

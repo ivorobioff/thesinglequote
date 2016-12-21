@@ -50,6 +50,7 @@ class PostMetadata extends AbstractMetadataProvider
 
         $builder
             ->createField('updatedAt', 'datetime')
+            ->nullable(true)
             ->build();
 
         $builder
