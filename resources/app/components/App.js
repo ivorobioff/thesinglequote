@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import PublicNav from './Nav/PublicNav';
 import AgentNav from './Nav/AgentNav';
+import { Link } from 'react-router';
 
 class App extends Component {
 
@@ -16,7 +17,7 @@ class App extends Component {
                             <span className="icon-bar"></span>
                             <span className="icon-bar"></span>
                         </button>
-                        <a className="navbar-brand" href="index.html">TheSingleQuote.com</a>
+                        <Link className="navbar-brand" to="/">TheSingleQuote.com</Link>
                     </div>
                     <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         {this.props.session.id ? <AgentNav />  : <PublicNav />}

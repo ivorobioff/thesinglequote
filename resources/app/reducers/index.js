@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
-import forms from './forms';
+import ask from './ask';
 
 const reducers = combineReducers({
     session: auth,
-    forms
+    ask
 });
 
 export default reducers;

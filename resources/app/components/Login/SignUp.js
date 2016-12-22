@@ -53,6 +53,6 @@ SignUp.defaultProps = {
 
 export default connect(state => {
     return {
-        form: state.forms.signUp
+        form: state.ask.signUp
     }
 })(SignUp);

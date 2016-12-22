@@ -1,6 +1,6 @@
 import React, { Component, PropTypes, cloneElement, Children, isValidElement } from 'react';
 import { connect } from 'react-redux';
-import { formSubmit } from '../../actions/form'; 
+import { ask } from '../../actions/ask'; 
 
 class Form extends Component {
 
@@ -89,10 +89,10 @@ Form.defaultProps = {
 
 export default connect((state, props) => {
     return {
-        form: state.forms[props.name]
+        form: state.ask[props.name]
     }
 }, (dispatch) => {
     return {
-        submit: (n, r) => dispatch(formSubmit(n, r))
+        submit: (n, r) => dispatch(ask(Object.assign(r, { what: n })))
     }
 })(Form);

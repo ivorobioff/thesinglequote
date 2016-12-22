@@ -82,7 +82,6 @@ class NewPost extends Component {
 
                         <Submit color="primary">Submit</Submit>
                     </Form>
-                    
                 </div>
             </div>
             <hr />
@@ -97,6 +96,6 @@ NewPost.defaultProps = {
 export default connect(state => {
     return {
         session: state.session,
-        form: state.forms.newPost
+        form: state.ask.newPost
     }
 })(NewPost);

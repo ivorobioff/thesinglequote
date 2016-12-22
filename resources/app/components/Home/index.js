@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
+import Header from './Header';
+import OwnPosts from './OwnPosts';
 
 class Home extends Component {
     render(){
         return <div>
-            <h3>Home</h3>
+            <Header />
+            <hr />
+            <OwnPosts />
         </div>
     }
 }

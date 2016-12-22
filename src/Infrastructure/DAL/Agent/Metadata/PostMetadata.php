@@ -2,6 +2,7 @@
 namespace ImmediateSolutions\Infrastructure\DAL\Agent\Metadata;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use ImmediateSolutions\Core\Agent\Entities\Agent;
+use ImmediateSolutions\Infrastructure\DAL\Agent\Types\StatusType;
 use ImmediateSolutions\Infrastructure\Doctrine\Metadata\AbstractMetadataProvider;
 
 /**
@@ -42,6 +43,10 @@ class PostMetadata extends AbstractMetadataProvider
 
         $builder
             ->createField('clientPhone', 'string')
+            ->build();
+
+        $builder
+            ->createField('status', StatusType::class)
             ->build();
 
         $builder

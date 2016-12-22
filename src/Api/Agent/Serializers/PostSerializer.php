@@ -22,7 +22,8 @@ class PostSerializer extends Serializer
             'clientName' => $post->getClientName(),
             'clientPhone' => $post->getClientPhone(),
             'noPersonalInfoInPublic' => $post->getNoPersonalInfoInPublic(),
-            'createdAt' => $this->datetime($post->getCreatedAt())
+            'createdAt' => $this->datetime($post->getCreatedAt()),
+            'status' => $this->enum($post->getStatus())
         ];
     }
 }

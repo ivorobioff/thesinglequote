@@ -4,7 +4,7 @@ const init = Session.has() ? Session.get() : {};
 
 export default function auth (state = init, action) {
 
-    if (action.type === 'FORM_SUCCESS' && action.form === 'signIn'){
+    if (action.type === 'ASK_SUCCESS' && action.what === 'signIn'){
         return action.data;
     }
 

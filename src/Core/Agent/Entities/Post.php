@@ -18,6 +18,7 @@ class Post
     private $agent;
     public function setAgent(Agent $agent) { $this->agent = $agent; }
     public function getAgent() { return $this->agent; }
+
     /**
      * @var Status
      */

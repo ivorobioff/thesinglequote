@@ -1,11 +1,9 @@
-import Session from './Session';
-
 export function backend (options) {
     
     var config = {
         url: '/api' + options.url,
         type: options.method,
-        contentType: 'application/json'
+        contentType: 'application/json; charset=utf-8'
     };
 
     if (typeof options.data !== 'undefined'){
@@ -17,8 +15,8 @@ export function backend (options) {
     }
     
     return {
-        run(dispatch) {
-            var auth = Session.get();
+        run(dispatch, getState) {
+            var auth = getState().session;
                 
             if (auth){
                 config.headers = { token: auth.token }
