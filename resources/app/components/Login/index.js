@@ -53,8 +53,8 @@ class Login extends Component {
 }
 
 Login.defaultProps = {
-    formSignIn: { status: 'none' },
-    formSignUp: { status: 'none' }
+    formSignIn: { },
+    formSignUp: { }
 }
 
 export default connect(state => {

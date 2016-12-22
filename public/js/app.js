@@ -23954,10 +23954,8 @@
 	    value: true
 	});
 	exports.default = ask;
-	function ask() {
-	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var action = arguments[1];
 
+	function askDefault(state, action) {
 	    switch (action.type) {
 	        case 'ASK_START':
 	            state = Object.assign({}, state);
@@ -23986,13 +23984,32 @@
 	            }
 
 	            whats.forEach(function (form) {
-	                state[what] = { status: 'none' };
+	                state[what] = {};
 	            });
 
 	            return state;
 	        default:
 	            return state;
 	    }
+	}
+
+	function askCases(state, action) {
+	    if (action.type === 'ASK_SUCCESS' && action.what === 'newPost') {
+	        state = Object.assign({}, state);
+	        state['ownPosts'] = {};
+	        return state;
+	    }
+
+	    return state;
+	}
+
+	function ask() {
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    var action = arguments[1];
+
+	    state = askDefault(state, action);
+	    state = askCases(state, action);
+	    return state;
 	}
 
 /***/ },
@@ -29247,14 +29264,16 @@
 
 	    var _this = _possibleConstructorReturn(this, (OwnPosts.__proto__ || Object.getPrototypeOf(OwnPosts)).call(this, props));
 
-	    _this.state = { data: [] };
+	    _this.state = { data: _this.props.response.data ? _this.props.response.data.data : [] };
 	    return _this;
 	  }
 
 	  _createClass(OwnPosts, [{
 	    key: 'componentWillMount',
 	    value: function componentWillMount() {
-	      this.props.request({ what: 'ownPosts', method: 'GET', url: '/agents/' + this.props.session.user.id + '/posts' });
+	      if (typeof this.props.response.data === 'undefined') {
+	        this.props.request({ what: 'ownPosts', method: 'GET', url: '/agents/' + this.props.session.user.id + '/posts' });
+	      }
 	    }
 	  }, {
 	    key: 'componentWillReceiveProps',
@@ -29310,7 +29329,7 @@
 	                null,
 	                _react2.default.createElement(
 	                  'th',
-	                  { style: { width: '130px' } },
+	                  { style: { minWidth: '90px' } },
 	                  'Quote #'
 	                ),
 	                _react2.default.createElement(
@@ -29325,7 +29344,7 @@
 	                ),
 	                _react2.default.createElement(
 	                  'th',
-	                  { style: { width: '130px' } },
+	                  { style: { minWidth: '130px' } },
 	                  'Status / Actions'
 	                )
 	              )
@@ -29598,6 +29617,9 @@
 	    }
 
 	    _createClass(OnwPostAction, [{
+	        key: 'onDelete',
+	        value: function onDelete() {}
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var data = this.props.data;
@@ -29787,8 +29809,8 @@
 	}(_react.Component);
 
 	Login.defaultProps = {
-	    formSignIn: { status: 'none' },
-	    formSignUp: { status: 'none' }
+	    formSignIn: {},
+	    formSignUp: {}
 	};
 
 	exports.default = (0, _reactRedux.connect)(function (state) {
@@ -30011,7 +30033,7 @@
 	};
 
 	Form.defaultProps = {
-	    form: { status: 'none' },
+	    form: {},
 	    purge: false
 	};
 

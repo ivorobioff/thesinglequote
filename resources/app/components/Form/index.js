@@ -83,7 +83,7 @@ Form.propTypes = {
 }
 
 Form.defaultProps = {
-    form: { status: 'none' },
+    form: { },
     purge: false
 }
 

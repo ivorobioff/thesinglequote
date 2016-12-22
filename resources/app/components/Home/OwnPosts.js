@@ -8,11 +8,13 @@ class OwnPosts extends Component {
 
     constructor(props){
         super(props);
-        this.state = { data: []}
+        this.state = { data: this.props.response.data ? this.props.response.data.data : [] }
     }
 
     componentWillMount(){
-        this.props.request({ what: 'ownPosts', method: 'GET', url: '/agents/' + this.props.session.user.id + '/posts' });
+        if (typeof this.props.response.data === 'undefined'){
+            this.request();
+        }
     }
 
     componentWillReceiveProps(newProps){
@@ -21,9 +23,11 @@ class OwnPosts extends Component {
         }
     }
 
+    request(){
+        this.props.request({ what: 'ownPosts', method: 'GET', url: '/agents/' + this.props.session.user.id + '/posts' });
+    }
+
     render(){
-
-
 
         return <div className="panel panel-default panel-table">
               <div className="panel-heading">
@@ -40,10 +44,10 @@ class OwnPosts extends Component {
                 <table className="table table-striped table-bordered table-list">
                   <thead>
                     <tr>
-                        <th style={{width: '130px'}}>Quote #</th>
+                        <th style={{minWidth: '90px'}}>Quote #</th>
                         <th style={{minWidth: '160px'}}>Client Name</th>
                         <th>Public Message</th>
-                        <th style={{width: '130px'}}>Status / Actions</th>
+                        <th style={{minWidth: '130px'}}>Status / Actions</th>
                     </tr> 
                   </thead>
                   <tbody>{ this.state.data.map(item => { return <OwnPostItem key={item.id} data={item} /> })}</tbody>
@@ -57,7 +61,7 @@ class OwnPosts extends Component {
 }
 
 OwnPosts.defaultProps = {
-    response: { }
+    response: {}
 }
 
 export default connect(state => {

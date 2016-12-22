@@ -1,4 +1,5 @@
-export default function ask (state = {}, action){
+
+function askDefault(state, action){
     switch (action.type){
         case 'ASK_START':
             state = Object.assign({}, state);
@@ -27,11 +28,27 @@ export default function ask (state = {}, action){
             }
 
             whats.forEach(form => {
-                state[what] = { status: 'none' };    
+                state[what] = { };    
             });
 
             return state;
         default: 
             return state;
     }
+}
+
+function askCases(state, action){
+    if (action.type === 'ASK_SUCCESS' && action.what === 'newPost'){
+        state = Object.assign({}, state);
+        state['ownPosts'] = {};
+        return state;
+    }
+
+    return state;
+}
+
+export default function ask (state = {}, action){
+    state = askDefault(state, action);
+    state = askCases(state, action);
+    return state;
 }
