@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { ask } from '../../actions/ask';
 
 class OnwPostAction extends Component {
-    onDelete(){
-        
+
+    onDelete(e, id){
+        e.preventDefault();
+        var session = this.props.session;
+        this.props.request({ what: 'deletePost', method: 'DELETE', url: '/agents/' + session.user.id + '/posts/' + id});
     }
     
     render(){
@@ -21,7 +26,7 @@ class OnwPostAction extends Component {
             </button>
             <ul className="dropdown-menu" aria-labelledby={'dropdownMenu' + data.id}>
                 <li><a href="#">Edit</a></li>
-                <li><a href="#">Delete</a></li>
+                <li><a href="#" onClick={e => this.onDelete(e, data.id)}>Delete</a></li>
                 <li role="separator" className="divider"></li>
                 <li><a href="#">Share</a></li>
             </ul>
@@ -29,4 +34,12 @@ class OnwPostAction extends Component {
     }
 }
 
-export default OnwPostAction;
+export default connect(state => {
+    return {
+        session: state.session
+    }
+}, dispatch => {
+    return {
+        request: (c) => dispatch(ask(c))
+    }
+})(OnwPostAction);

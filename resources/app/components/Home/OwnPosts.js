@@ -12,14 +12,18 @@ class OwnPosts extends Component {
     }
 
     componentWillMount(){
-        if (typeof this.props.response.data === 'undefined'){
+        if (typeof this.props.response.status === 'undefined'){
             this.request();
         }
     }
 
     componentWillReceiveProps(newProps){
-        if (newProps.response.status === 'success'){
-            this.state = { data: newProps.response.data.data }
+        if (this.props.response.status !== newProps.response.status){
+            if (newProps.response.status === 'success'){
+                this.state = { data: newProps.response.data.data }
+            } else if (typeof newProps.response.status === 'undefined'){
+                this.request();
+            }
         }
     }
 

@@ -38,12 +38,12 @@ function askDefault(state, action){
 }
 
 function askCases(state, action){
-    if (action.type === 'ASK_SUCCESS' && action.what === 'newPost'){
+    if (action.type === 'ASK_SUCCESS' && ['newPost', 'deletePost', 'updatePost'].indexOf(action.what) !== -1){
         state = Object.assign({}, state);
         state['ownPosts'] = {};
         return state;
     }
-
+    
     return state;
 }
 

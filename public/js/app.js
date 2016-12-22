@@ -23994,7 +23994,7 @@
 	}
 
 	function askCases(state, action) {
-	    if (action.type === 'ASK_SUCCESS' && action.what === 'newPost') {
+	    if (action.type === 'ASK_SUCCESS' && ['newPost', 'deletePost', 'updatePost'].indexOf(action.what) !== -1) {
 	        state = Object.assign({}, state);
 	        state['ownPosts'] = {};
 	        return state;
@@ -29229,7 +29229,7 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -29257,129 +29257,138 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var OwnPosts = function (_Component) {
-	  _inherits(OwnPosts, _Component);
+	    _inherits(OwnPosts, _Component);
 
-	  function OwnPosts(props) {
-	    _classCallCheck(this, OwnPosts);
+	    function OwnPosts(props) {
+	        _classCallCheck(this, OwnPosts);
 
-	    var _this = _possibleConstructorReturn(this, (OwnPosts.__proto__ || Object.getPrototypeOf(OwnPosts)).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (OwnPosts.__proto__ || Object.getPrototypeOf(OwnPosts)).call(this, props));
 
-	    _this.state = { data: _this.props.response.data ? _this.props.response.data.data : [] };
-	    return _this;
-	  }
-
-	  _createClass(OwnPosts, [{
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      if (typeof this.props.response.data === 'undefined') {
-	        this.props.request({ what: 'ownPosts', method: 'GET', url: '/agents/' + this.props.session.user.id + '/posts' });
-	      }
+	        _this.state = { data: _this.props.response.data ? _this.props.response.data.data : [] };
+	        return _this;
 	    }
-	  }, {
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(newProps) {
-	      if (newProps.response.status === 'success') {
-	        this.state = { data: newProps.response.data.data };
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
 
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'panel panel-default panel-table' },
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'panel-heading' },
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'row' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'col col-xs-6' },
-	              _react2.default.createElement(
-	                'h3',
-	                { className: 'panel-title' },
-	                'Your Posts'
-	              )
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'col col-xs-6 text-right' },
-	              _react2.default.createElement(
-	                _reactRouter.Link,
-	                { className: 'btn btn-primary btn-sml', to: '/posts/new' },
-	                'Post New'
-	              )
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'panel-body' },
-	          _react2.default.createElement(
-	            'table',
-	            { className: 'table table-striped table-bordered table-list' },
-	            _react2.default.createElement(
-	              'thead',
-	              null,
-	              _react2.default.createElement(
-	                'tr',
-	                null,
+	    _createClass(OwnPosts, [{
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {
+	            if (typeof this.props.response.status === 'undefined') {
+	                this.request();
+	            }
+	        }
+	    }, {
+	        key: 'componentWillReceiveProps',
+	        value: function componentWillReceiveProps(newProps) {
+	            if (this.props.response.status !== newProps.response.status) {
+	                if (newProps.response.status === 'success') {
+	                    this.state = { data: newProps.response.data.data };
+	                } else if (typeof newProps.response.status === 'undefined') {
+	                    this.request();
+	                }
+	            }
+	        }
+	    }, {
+	        key: 'request',
+	        value: function request() {
+	            this.props.request({ what: 'ownPosts', method: 'GET', url: '/agents/' + this.props.session.user.id + '/posts' });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'panel panel-default panel-table' },
 	                _react2.default.createElement(
-	                  'th',
-	                  { style: { minWidth: '90px' } },
-	                  'Quote #'
+	                    'div',
+	                    { className: 'panel-heading' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'row' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'col col-xs-6' },
+	                            _react2.default.createElement(
+	                                'h3',
+	                                { className: 'panel-title' },
+	                                'Your Posts'
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'col col-xs-6 text-right' },
+	                            _react2.default.createElement(
+	                                _reactRouter.Link,
+	                                { className: 'btn btn-primary btn-sml', to: '/posts/new' },
+	                                'Post New'
+	                            )
+	                        )
+	                    )
 	                ),
 	                _react2.default.createElement(
-	                  'th',
-	                  { style: { minWidth: '160px' } },
-	                  'Client Name'
-	                ),
-	                _react2.default.createElement(
-	                  'th',
-	                  null,
-	                  'Public Message'
-	                ),
-	                _react2.default.createElement(
-	                  'th',
-	                  { style: { minWidth: '130px' } },
-	                  'Status / Actions'
+	                    'div',
+	                    { className: 'panel-body' },
+	                    _react2.default.createElement(
+	                        'table',
+	                        { className: 'table table-striped table-bordered table-list' },
+	                        _react2.default.createElement(
+	                            'thead',
+	                            null,
+	                            _react2.default.createElement(
+	                                'tr',
+	                                null,
+	                                _react2.default.createElement(
+	                                    'th',
+	                                    { style: { minWidth: '90px' } },
+	                                    'Quote #'
+	                                ),
+	                                _react2.default.createElement(
+	                                    'th',
+	                                    { style: { minWidth: '160px' } },
+	                                    'Client Name'
+	                                ),
+	                                _react2.default.createElement(
+	                                    'th',
+	                                    null,
+	                                    'Public Message'
+	                                ),
+	                                _react2.default.createElement(
+	                                    'th',
+	                                    { style: { minWidth: '130px' } },
+	                                    'Status / Actions'
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'tbody',
+	                            null,
+	                            this.state.data.map(function (item) {
+	                                return _react2.default.createElement(_OwnPostItem2.default, { key: item.id, data: item });
+	                            })
+	                        )
+	                    )
 	                )
-	              )
-	            ),
-	            _react2.default.createElement(
-	              'tbody',
-	              null,
-	              this.state.data.map(function (item) {
-	                return _react2.default.createElement(_OwnPostItem2.default, { key: item.id, data: item });
-	              })
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
+	            );
+	        }
+	    }]);
 
-	  return OwnPosts;
+	    return OwnPosts;
 	}(_react.Component);
 
 	OwnPosts.defaultProps = {
-	  response: {}
+	    response: {}
 	};
 
 	exports.default = (0, _reactRedux.connect)(function (state) {
-	  return {
-	    response: state.ask.ownPosts,
-	    session: state.session
-	  };
+	    return {
+	        response: state.ask.ownPosts,
+	        session: state.session
+	    };
 	}, function (dispatch) {
-	  return {
-	    request: function request(c) {
-	      return dispatch((0, _ask.ask)(c));
-	    }
-	  };
+	    return {
+	        request: function request(c) {
+	            return dispatch((0, _ask.ask)(c));
+	        }
+	    };
 	})(OwnPosts);
 
 /***/ },
@@ -29599,6 +29608,10 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactRedux = __webpack_require__(199);
+
+	var _ask = __webpack_require__(281);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29618,10 +29631,16 @@
 
 	    _createClass(OnwPostAction, [{
 	        key: 'onDelete',
-	        value: function onDelete() {}
+	        value: function onDelete(e, id) {
+	            e.preventDefault();
+	            var session = this.props.session;
+	            this.props.request({ what: 'deletePost', method: 'DELETE', url: '/agents/' + session.user.id + '/posts/' + id });
+	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var _this2 = this;
+
 	            var data = this.props.data;
 
 	            var statuses = {
@@ -29658,7 +29677,9 @@
 	                        null,
 	                        _react2.default.createElement(
 	                            'a',
-	                            { href: '#' },
+	                            { href: '#', onClick: function onClick(e) {
+	                                    return _this2.onDelete(e, data.id);
+	                                } },
 	                            'Delete'
 	                        )
 	                    ),
@@ -29680,7 +29701,17 @@
 	    return OnwPostAction;
 	}(_react.Component);
 
-	exports.default = OnwPostAction;
+	exports.default = (0, _reactRedux.connect)(function (state) {
+	    return {
+	        session: state.session
+	    };
+	}, function (dispatch) {
+	    return {
+	        request: function request(c) {
+	            return dispatch((0, _ask.ask)(c));
+	        }
+	    };
+	})(OnwPostAction);
 
 /***/ },
 /* 285 */
