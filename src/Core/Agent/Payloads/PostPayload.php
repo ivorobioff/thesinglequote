@@ -43,7 +43,7 @@ class PostPayload implements ClearableAwareInterface
      */
     private $clientPhone;
     public function setClientPhone($phone) { $this->clientPhone = $phone; }
-    public function getClientPhone() { return $this->clientName; }
+    public function getClientPhone() { return $this->clientPhone; }
 
     /**
      * @var bool
