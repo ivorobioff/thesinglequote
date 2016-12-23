@@ -196,7 +196,7 @@
 
 	            el.find('#signIn').html(signIn.render());
 
-	            var signUp = new _Form2.default({ method: 'POST', url: '/agents' });
+	            var signUp = new _Form2.default({ method: 'POST', url: '/agents' }, { resetOnSuccess: true });
 
 	            signUp.addInput('fullName', { label: 'Full Name', placeholder: 'Full Name', required: true }).addEmail('email', { label: 'Email', placeholder: 'Email', required: true }).addPassword('password', { label: 'Password', placeholder: 'Password', required: true }).addInput('insuranceLicenseNumber', { label: 'Insurance License #', placeholder: 'A123456', required: true }).addCheckbox('agreeToTOS', { label: 'I agree to the TOS', required: true }).addSubmit('Register', { color: 'warning', isBlock: true });
 
@@ -269,11 +269,14 @@
 	    _inherits(Form, _View);
 
 	    function Form(request) {
+	        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	        _classCallCheck(this, Form);
 
 	        var _this = _possibleConstructorReturn(this, (Form.__proto__ || Object.getPrototypeOf(Form)).call(this));
 
 	        _this.request = request;
+	        _this.options = options;
 	        _this.controls = [];
 	        return _this;
 	    }
@@ -377,6 +380,10 @@
 	                    }
 	                }
 	            }).done(function (data) {
+	                if (_this2.options.resetOnSuccess) {
+	                    _this2.el[0].reset();
+	                }
+
 	                if (_this2.onSuccessCallback) {
 	                    _this2.onSuccessCallback(data);
 	                }
@@ -406,6 +413,7 @@
 	            var _this3 = this;
 
 	            var el = $('<form></form>');
+	            this.el = el;
 
 	            el.submit(function (e) {
 	                return _this3.onSubmit(e);

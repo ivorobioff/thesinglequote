@@ -56,7 +56,7 @@ class Login extends View {
 
         el.find('#signIn').html(signIn.render());
 
-        var signUp = new Form({ method: 'POST', url: '/agents'});
+        var signUp = new Form({ method: 'POST', url: '/agents'}, { resetOnSuccess: true});
 
         signUp
             .addInput('fullName', { label: 'Full Name', placeholder: 'Full Name', required: true})

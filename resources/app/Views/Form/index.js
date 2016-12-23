@@ -6,9 +6,10 @@ import Checkbox from './Checkbox';
 
 class Form extends View {
     
-     constructor(request){
+     constructor(request, options = {}){
          super();
          this.request = request;
+         this.options = options;
          this.controls = [];
      }
 
@@ -91,6 +92,10 @@ class Form extends View {
                 }
             })
             .done(data => {
+                if (this.options.resetOnSuccess){
+                    this.el[0].reset();
+                }
+
                 if (this.onSuccessCallback){
                     this.onSuccessCallback(data);
                 }
@@ -114,6 +119,7 @@ class Form extends View {
 
     render(){
         var el = $('<form></form>');
+        this.el = el;
 
         el.submit(e => this.onSubmit(e));
 
