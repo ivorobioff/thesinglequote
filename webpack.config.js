@@ -1,9 +1,18 @@
+var path = require('path');
+
 module.exports = {
     entry: './resources/app/main.js',
 
     output: {
         path: './public/js',
         filename: 'app.js'
+    },
+
+    resolve: {
+        root: path.resolve(__dirname),
+        alias: {
+            'sparrow-ui': 'resources/sparrow-ui'
+        }
     },
 
     module: {
@@ -14,7 +23,7 @@ module.exports = {
                 loader: 'babel',
 
                 query: {
-                    presets: ['es2015', 'react']
+                    presets: ['es2015']
                 }
             }
         ]
