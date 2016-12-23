@@ -161,19 +161,62 @@
 	    }
 
 	    _createClass(Login, [{
+	        key: 'showAlert',
+	        value: function showAlert(text, color) {
+
+	            this.removeAlert();
+
+	            this.alert = $('<div/>', {
+	                'class': 'alert alert-' + color
+	            });
+
+	            this.alert.text(text);
+
+	            this.el.find('#formsHolder').prepend(this.alert);
+	        }
+	    }, {
+	        key: 'removeAlert',
+	        value: function removeAlert() {
+	            if (this.alert) {
+	                this.alert.remove();
+	            }
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var el = $('<div id="login-overlay" class="modal-dialog">\n            <div class="modal-content">\n                <div class="modal-header">\n                    <h4 class="modal-title" id="myModalLabel">Login to <b>TheSingleQuote.com</b></h4> or go back to our <a href="www.thesinglequote.com">main site</a>.\n                </div>\n                <div class="modal-body">\n                    <div class="row">\n                        <div class="col-xs-6">\n                            <div class="well" id="signIn">\n                                \n                            </div>\n                        </div>\n                        <div class="col-xs-6">\n                            <div class="well" id="signUp">\n                                \n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>');
+	            var _this2 = this;
 
-	            var signIn = new _Form2.default({ method: 'POST', url: '/session' });
+	            var el = $('<div id="login-overlay" class="modal-dialog">\n            <div class="modal-content">\n                <div class="modal-header">\n                    <h4 class="modal-title" id="myModalLabel">Login to <b>TheSingleQuote.com</b></h4> or go back to our <a href="www.thesinglequote.com">main site</a>.\n                </div>\n                <div id="formsHolder" class="modal-body">\n                    <div class="row">\n                        <div class="col-xs-6">\n                            <div class="well" id="signIn">\n                                \n                            </div>\n                        </div>\n                        <div class="col-xs-6">\n                            <div class="well" id="signUp">\n                                \n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>');
 
-	            signIn.addEmail('username', { label: 'Email', placeholder: 'Email' }).addPassword('password', { label: 'Password', placeholder: 'Password' }).addSubmit('Login', { color: 'success', isBlock: true });
+	            this.el = el;
+
+	            var signIn = new _Form2.default({ method: 'POST', url: '/sessions' });
+
+	            signIn.addEmail('username', { label: 'Email', placeholder: 'Email', required: true, alias: 'credentials' }).addPassword('password', { label: 'Password', placeholder: 'Password', required: true }).addSubmit('Login', { color: 'success', isBlock: true });
 
 	            el.find('#signIn').html(signIn.render());
 
 	            var signUp = new _Form2.default({ method: 'POST', url: '/agents' });
 
-	            signUp.addInput('fullName', { label: 'Full Name', placeholder: 'Full Name' }).addEmail('email', { label: 'Email', placeholder: 'Email' }).addPassword('password', { label: 'Password', placeholder: 'Password' }).addInput('insuranceLicenseNumber', { label: 'Insurance License #', placeholder: 'A123456' }).addCheckbox('agreeToTOS', { label: 'I agree to the TOS' }).addSubmit('Register', { color: 'warning', isBlock: true });
+	            signUp.addInput('fullName', { label: 'Full Name', placeholder: 'Full Name', required: true }).addEmail('email', { label: 'Email', placeholder: 'Email', required: true }).addPassword('password', { label: 'Password', placeholder: 'Password', required: true }).addInput('insuranceLicenseNumber', { label: 'Insurance License #', placeholder: 'A123456', required: true }).addCheckbox('agreeToTOS', { label: 'I agree to the TOS', required: true }).addSubmit('Register', { color: 'warning', isBlock: true });
+
+	            signUp.setOnComplete(function () {
+	                return _this2.removeAlert();
+	            });
+	            signIn.setOnComplete(function () {
+	                return _this2.removeAlert();
+	            });
+
+	            signUp.setOnSuccess(function () {
+	                return _this2.showAlert('The agent has been successfully registered!', 'success');
+	            });
+
+	            signUp.setOnGlobalError(function (e) {
+	                return _this2.showAlert(e, 'danger');
+	            });
+	            signIn.setOnGlobalError(function (e) {
+	                return _this2.showAlert(e, 'danger');
+	            });
 
 	            el.find('#signUp').html(signUp.render());
 
@@ -199,6 +242,22 @@
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _sparrowUi = __webpack_require__(2);
+
+	var _Helpers = __webpack_require__(5);
+
+	var _Input = __webpack_require__(7);
+
+	var _Input2 = _interopRequireDefault(_Input);
+
+	var _Button = __webpack_require__(9);
+
+	var _Button2 = _interopRequireDefault(_Button);
+
+	var _Checkbox = __webpack_require__(10);
+
+	var _Checkbox2 = _interopRequireDefault(_Checkbox);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -236,26 +295,7 @@
 	    }, {
 	        key: 'addInput',
 	        value: function addInput(name, options) {
-	            var wrapper = $('<div class="form-group"></div>');
-
-	            if (options.label) {
-	                var label = $('<label></label>');
-	                label.text(options.label);
-	                label.attr('for', '_id-' + name);
-	                label.addClass('control-label');
-	                wrapper.append(label);
-	            }
-
-	            var control = $('<input />').addClass('form-control').attr('name', name).attr('type', options.type ? options.type : 'text').attr('id', '_id-' + name);
-
-	            if (options.placeholder) {
-	                control.attr('placeholder', options.placeholder);
-	            }
-
-	            wrapper.append(control);
-
-	            this.controls.push({ wrapper: wrapper, control: control });
-
+	            this.controls.push(new _Input2.default(name, options));
 	            return this;
 	        }
 	    }, {
@@ -268,9 +308,399 @@
 	    }, {
 	        key: 'addButton',
 	        value: function addButton(options) {
+	            this.controls.push(new _Button2.default(options));
+	            return this;
+	        }
+	    }, {
+	        key: 'addCheckbox',
+	        value: function addCheckbox(name) {
+	            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+	            this.controls.push(new _Checkbox2.default(name, options));
+
+	            return this;
+	        }
+	    }, {
+	        key: 'addTextarea',
+	        value: function addTextarea(name) {
+	            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	            return this;
+	        }
+	    }, {
+	        key: 'onSubmit',
+	        value: function onSubmit(e) {
+	            var _this2 = this;
+
+	            e.preventDefault();
+
+	            var data = {};
+
+	            this.controls.forEach(function (c) {
+	                if (c.getValue) {
+	                    data[c.name] = c.getValue();
+	                }
+	            });
+
+	            var config = this.request;
+	            config.data = data;
+
+	            this.controls.forEach(function (c) {
+	                return c.disable();
+	            });
+
+	            (0, _Helpers.backend)(config).always(function () {
+	                _this2.controls.forEach(function (c) {
+	                    c.enable();
+	                    c.removeError();
+	                });
+
+	                if (_this2.onCompleteCallback) {
+	                    _this2.onCompleteCallback();
+	                }
+	            }).fail(function (x) {
+	                var error = 'Unknown error';
+	                var data = $.parseJSON(x.responseText);
+
+	                if (x.status == 422) {
+	                    error = data.errors;
+	                    _this2.controls.forEach(function (c) {
+	                        if (c.notifyAboutErrors) {
+	                            c.notifyAboutErrors(error);
+	                        }
+	                    });
+	                } else {
+	                    error = data.message;
+	                    if (_this2.onGlobalErrorCallback) {
+	                        _this2.onGlobalErrorCallback(error);
+	                    }
+	                }
+	            }).done(function (data) {
+	                if (_this2.onSuccessCallback) {
+	                    _this2.onSuccessCallback(data);
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'setOnComplete',
+	        value: function setOnComplete(callback) {
+	            this.onCompleteCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'setOnSuccess',
+	        value: function setOnSuccess(callback) {
+	            this.onSuccessCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'setOnGlobalError',
+	        value: function setOnGlobalError(callback) {
+	            this.onGlobalErrorCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this3 = this;
+
+	            var el = $('<form></form>');
+
+	            el.submit(function (e) {
+	                return _this3.onSubmit(e);
+	            });
+
+	            this.controls.forEach(function (c) {
+	                return el.append(c.render());
+	            });
+
+	            return el;
+	        }
+	    }]);
+
+	    return Form;
+	}(_sparrowUi.View);
+
+	exports.default = Form;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.backend = backend;
+
+	var _Session = __webpack_require__(6);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function backend(options) {
+
+	    var config = {
+	        url: '/api' + options.url,
+	        type: options.method,
+	        contentType: 'application/json; charset=utf-8'
+	    };
+
+	    if (typeof options.data !== 'undefined') {
+	        if (options.method === 'GET' || options.method === 'DELETE') {
+	            config.url += '?' + decodeURIComponent($.param(options.data));
+	        } else {
+	            config.data = JSON.stringify(options.data);
+	        }
+	    }
+
+	    var auth = _Session2.default.get();
+
+	    if (auth) {
+	        config.headers = { token: auth.token };
+	    }
+
+	    return $.ajax(config);
+	}
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var Session = {
+	    get: function get() {
+	        var session = localStorage.getItem('session');
+
+	        if (session === null) {
+	            return null;
+	        }
+	        return $.parseJSON(session);
+	    },
+	    set: function set(data) {
+	        localStorage.setItem('session', JSON.stringify(data));
+	    },
+	    has: function has() {
+	        return localStorage.getItem('session') !== null;
+	    },
+	    destroy: function destroy() {
+	        localStorage.removeItem('session');
+	    }
+	};
+
+	exports.default = Session;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _Control2 = __webpack_require__(8);
+
+	var _Control3 = _interopRequireDefault(_Control2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Input = function (_Control) {
+	    _inherits(Input, _Control);
+
+	    function Input(name, options) {
+	        _classCallCheck(this, Input);
+
+	        var _this = _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).call(this));
+
+	        _this.name = name;
+	        _this.options = options;
+	        return _this;
+	    }
+
+	    _createClass(Input, [{
+	        key: 'getValue',
+	        value: function getValue() {
+	            return this.el.val();
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var wrapper = $('<div class="form-group"></div>');
+	            this.wrapper = wrapper;
+	            var name = this.name;
+	            var options = this.options;
+
+	            if (options.label) {
+	                var label = $('<label></label>');
+	                label.text(options.label);
+	                label.attr('for', '_id-' + name);
+	                label.addClass('control-label');
+	                wrapper.append(label);
+	            }
+
+	            var control = $('<input />').addClass('form-control').attr('name', name).attr('type', options.type ? options.type : 'text').attr('id', '_id-' + name);
+
+	            this.el = control;
+
+	            if (options.placeholder) {
+	                control.attr('placeholder', options.placeholder);
+	            }
+
+	            if (options.required) {
+	                control.attr('required', 'required');
+	            }
+
+	            wrapper.append(control);
+
+	            return wrapper;
+	        }
+	    }]);
+
+	    return Input;
+	}(_Control3.default);
+
+	exports.default = Input;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Control = function (_View) {
+	    _inherits(Control, _View);
+
+	    function Control() {
+	        _classCallCheck(this, Control);
+
+	        return _possibleConstructorReturn(this, (Control.__proto__ || Object.getPrototypeOf(Control)).apply(this, arguments));
+	    }
+
+	    _createClass(Control, [{
+	        key: 'disable',
+	        value: function disable() {
+	            this.el.attr('disabled', 'disabled');
+	        }
+	    }, {
+	        key: 'enable',
+	        value: function enable() {
+	            this.el.removeAttr('disabled');
+	        }
+	    }, {
+	        key: 'removeError',
+	        value: function removeError() {
+	            if (this.error) {
+	                this.error.remove();
+	                this.wrapper.removeClass('has-error');
+	            }
+	        }
+	    }, {
+	        key: 'notifyAboutErrors',
+	        value: function notifyAboutErrors(errors) {
+	            var error = errors[this.name];
+
+	            if (!error) {
+	                if (this.options.alias) {
+	                    error = errors[this.options.alias];
+	                }
+
+	                if (!error) {
+	                    return;
+	                }
+	            }
+
+	            this.error = $('<span class="help-block"></span>');
+	            this.wrapper.addClass('has-error').append(this.error.text(error.message));
+	        }
+	    }]);
+
+	    return Control;
+	}(_sparrowUi.View);
+
+	exports.default = Control;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _Control2 = __webpack_require__(8);
+
+	var _Control3 = _interopRequireDefault(_Control2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Button = function (_Control) {
+	    _inherits(Button, _Control);
+
+	    function Button(options) {
+	        _classCallCheck(this, Button);
+
+	        var _this = _possibleConstructorReturn(this, (Button.__proto__ || Object.getPrototypeOf(Button)).call(this));
+
+	        _this.options = options;
+	        return _this;
+	    }
+
+	    _createClass(Button, [{
+	        key: 'notifyAboutErrors',
+	        value: function notifyAboutErrors() {
+	            return;
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var options = this.options;
+
 	            var wrapper = $('<div class="form-group"><div></div></div>');
 
 	            var control = $('<button></button>');
+	            this.el = control;
+
 	            control.text(options.title).attr('type', options.type).addClass('btn');
 
 	            if (options.color) {
@@ -285,53 +715,89 @@
 
 	            wrapper.find('div:first-child').html(control);
 
-	            this.controls.push({ wrapper: wrapper, control: control });
-	            return this;
+	            return wrapper;
 	        }
-	    }, {
-	        key: 'addCheckbox',
-	        value: function addCheckbox(name) {
-	            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    }]);
 
-	            var wrapper = $('<div class="form-group"><div class="checkbox"></div></div>');
+	    return Button;
+	}(_Control3.default);
 
-	            var checkbox = $('<input />', { type: 'checkbox', name: name });
-	            var control = checkbox;
+	exports.default = Button;
 
-	            if (options.label) {
-	                checkbox = $('<label></label>').text(options.label).prepend(checkbox);
-	            }
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
 
-	            wrapper.find('div:first-child').html(checkbox);
+	'use strict';
 
-	            this.controls.push({ wrapper: wrapper, control: control });
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
 
-	            return this;
-	        }
-	    }, {
-	        key: 'addTextarea',
-	        value: function addTextarea(name) {
-	            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	            return this;
+	var _Control2 = __webpack_require__(8);
+
+	var _Control3 = _interopRequireDefault(_Control2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Checkbox = function (_Control) {
+	    _inherits(Checkbox, _Control);
+
+	    function Checkbox(name) {
+	        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	        _classCallCheck(this, Checkbox);
+
+	        var _this = _possibleConstructorReturn(this, (Checkbox.__proto__ || Object.getPrototypeOf(Checkbox)).call(this));
+
+	        _this.options = options;
+	        _this.name = name;
+	        return _this;
+	    }
+
+	    _createClass(Checkbox, [{
+	        key: 'getValue',
+	        value: function getValue() {
+	            return this.el.prop('checked') ? true : false;
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var el = $('<form></form>');
+	            var name = this.name;
+	            var options = this.options;
 
-	            this.controls.forEach(function (c) {
-	                return el.append(c.wrapper);
-	            });
+	            var wrapper = $('<div class="form-group"><div class="checkbox"></div></div>');
+	            this.wrapper = wrapper;
+	            var control = $('<input />', { type: 'checkbox', name: name });
 
-	            return el;
+	            if (options.required) {
+	                control.attr('required', 'required');
+	            }
+
+	            this.el = control;
+
+	            if (options.label) {
+	                control = $('<label></label>').text(options.label).prepend(control);
+	            }
+
+	            wrapper.find('div:first-child').html(control);
+
+	            return wrapper;
 	        }
 	    }]);
 
-	    return Form;
-	}(_sparrowUi.View);
+	    return Checkbox;
+	}(_Control3.default);
 
-	exports.default = Form;
+	exports.default = Checkbox;
 
 /***/ }
 /******/ ]);

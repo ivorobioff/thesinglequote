@@ -1,4 +1,8 @@
 import { View } from 'sparrow-ui';
+import { backend } from '../../Helpers';
+import Input from './Input';
+import Button from './Button';
+import Checkbox from './Checkbox';
 
 class Form extends View {
     
@@ -17,30 +21,7 @@ class Form extends View {
      }
 
      addInput(name, options){
-        var wrapper = $('<div class="form-group"></div>');
-
-        if (options.label){
-            var label = $('<label></label>');
-            label.text(options.label);
-            label.attr('for', '_id-' + name);
-            label.addClass('control-label');
-            wrapper.append(label);
-        }
-
-        var control = $('<input />')
-            .addClass('form-control')
-            .attr('name', name)
-            .attr('type', options.type ? options.type : 'text')
-            .attr('id', '_id-' + name);
-
-        if (options.placeholder){
-            control.attr('placeholder', options.placeholder);
-        }
-
-        wrapper.append(control);
-        
-        this.controls.push({wrapper, control});
-
+        this.controls.push(new Input(name, options));
         return this;
      }
 
@@ -49,40 +30,13 @@ class Form extends View {
      }
 
      addButton(options){
-        var wrapper = $('<div class="form-group"><div></div></div>');
-
-        var control = $('<button></button>');
-        control.text(options.title).attr('type', options.type).addClass('btn');
-
-        if (options.color){
-            control.addClass('btn-' + options.color);
-        } else {
-            control.addClass('btn-default');
-        }
-
-        if (options.isBlock){
-            control.addClass('btn-block');
-        }
-
-        wrapper.find('div:first-child').html(control);
-
-        this.controls.push({ wrapper, control });
+        this.controls.push(new Button(options));
         return this;
      }
 
      addCheckbox(name, options = {}){
-        var wrapper = $('<div class="form-group"><div class="checkbox"></div></div>');
 
-        var checkbox = $('<input />', { type: 'checkbox', name });
-        var control = checkbox;
-
-        if (options.label){
-            checkbox = $('<label></label>').text(options.label).prepend(checkbox);
-        }
-
-        wrapper.find('div:first-child').html(checkbox);
-
-        this.controls.push({wrapper, control});
+        this.controls.push(new Checkbox(name, options));
 
         return this;
      }
@@ -91,10 +45,79 @@ class Form extends View {
          return this;
      }
 
+     onSubmit(e){
+         e.preventDefault();
+
+         var data = {};
+
+         this.controls.forEach(c => {
+             if (c.getValue){
+                 data[c.name] = c.getValue();
+             }
+         });
+
+         var config = this.request;
+         config.data = data;
+
+         this.controls.forEach(c => c.disable());
+
+         backend(config)
+            .always(() => {
+                this.controls.forEach(c => { 
+                    c.enable();
+                    c.removeError();
+                });
+
+                if (this.onCompleteCallback){
+                    this.onCompleteCallback();
+                }
+            })
+            .fail(x => {
+                var error = 'Unknown error';
+                var data = $.parseJSON(x.responseText);
+
+                if (x.status == 422){
+                    error = data.errors;
+                    this.controls.forEach(c => {
+                        if (c.notifyAboutErrors){
+                            c.notifyAboutErrors(error)
+                        }
+                    });
+                } else {
+                    error = data.message;
+                    if (this.onGlobalErrorCallback){
+                        this.onGlobalErrorCallback(error);
+                    }
+                }
+            })
+            .done(data => {
+                if (this.onSuccessCallback){
+                    this.onSuccessCallback(data);
+                }
+            });
+     }
+
+     setOnComplete(callback){
+        this.onCompleteCallback = callback;
+        return this;
+     }
+
+     setOnSuccess(callback){
+         this.onSuccessCallback = callback;
+         return this;
+     }
+
+     setOnGlobalError(callback){
+         this.onGlobalErrorCallback = callback;
+         return this;
+     }
+
     render(){
         var el = $('<form></form>');
 
-        this.controls.forEach(c => el.append(c.wrapper));
+        el.submit(e => this.onSubmit(e));
+
+        this.controls.forEach(c => el.append(c.render()));
 
         return el;
     }
