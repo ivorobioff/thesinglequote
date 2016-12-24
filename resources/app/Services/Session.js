@@ -1,23 +1,33 @@
-var Session = {
-    
+const Session = {
     get (){
-        var session = localStorage.getItem('session');
+        if (typeof this.source === 'undefined'){
+            this.source = localStorage.getItem('session');
 
-        if (session === null){
-            return null;
+            if (this.source){
+                this.source = $.parseJSON(this.source);
+                var now = new Date();
+                var expiresAt = new Date(this.source.expiresAt);
+
+                if (expiresAt.getTime() < now.getTime()){
+                    this.destroy();
+                }
+            }
         }
-        return $.parseJSON(session);
+
+        return this.source;
     },
 
     set(data){
-        localStorage.setItem('session', JSON.stringify(data));
+        this.source = data;
+        localStorage.setItem('session', JSON.stringify(this.source));
     },
     
     has(){
-        return localStorage.getItem('session') !== null;
+        return this.get() !== null;
     },
 
     destroy (){
+        this.source = null;
         localStorage.removeItem('session');
     }
 }

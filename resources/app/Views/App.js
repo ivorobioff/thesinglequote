@@ -1,8 +1,12 @@
 import { View } from 'sparrow-ui';
 import Login from './Login';
+import Error404 from './Error404';
+import Home from './Home';
+import AgentNav from './Nav/AgentNav';
+import Session from '../Services/Session';
 
 class App extends View {
-    render(){
+    render(context){
         var el = $(`
             <div>
                 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -16,26 +20,13 @@ class App extends View {
                             </button>
                             <a class="navbar-brand" href="index.html">TheSingleQuote.com</a>
                         </div>
-                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                            <ul class="nav navbar-nav">
-                                <li>
-                                    <a href="dashboard.html">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a href="post.html">Post a Quote</a>
-                                </li>
-                                <li>
-                                    <a href="login.html">Log In</a>
-                                </li>
-                            </ul>
-                        </div>
+                        <div id="navContent" class="collapse navbar-collapse"></div>
                     </div>
                 </nav>
                 <div class="container">
-                        <hr>
-
+                        <hr/>
                         <div id="content"></div>
-                        <hr>
+                        <hr/>
 
                     <footer>
                         <div class="row">
@@ -47,12 +38,28 @@ class App extends View {
                 </div>
             </div>
         `);
+        
+        if (Session.has()){
+            el.find('#navContent').append(new AgentNav().render());
+        }
 
-        var login = new Login();
-
-        el.find('#content').html(login.render());
+        el.find('#content').html(this.getContent(context).render());
 
         return el;
+    }
+
+    getContent(context){
+        var location = context.pathname;
+
+        if (location === '/'){
+            return new Home();
+        }
+
+        if (location === '/login'){
+            return new Login();
+        }
+
+        return new Error404();
     }
 }
 

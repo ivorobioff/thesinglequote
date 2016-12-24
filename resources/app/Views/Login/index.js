@@ -1,5 +1,7 @@
 import { View } from 'sparrow-ui';
 import Form from '../Form';
+import Session from '../../Services/Session';
+import page from 'page';
 
 class Login extends View {
 
@@ -67,12 +69,16 @@ class Login extends View {
             .addSubmit('Register', {color: 'warning', isBlock: true});
 
         signUp.setOnComplete(() => this.removeAlert() );
-        signIn.setOnComplete(() => this.removeAlert() );
-
         signUp.setOnSuccess(() => this.showAlert('The agent has been successfully registered!', 'success'));
-
         signUp.setOnGlobalError(e => this.showAlert(e, 'danger'));
+
+        signIn.setOnComplete(() => this.removeAlert() );
         signIn.setOnGlobalError(e => this.showAlert(e, 'danger'));
+
+        signIn.setOnSuccess((data) => {
+            Session.set(data);
+            page('/');
+        });
 
 
         el.find('#signUp').html(signUp.render());

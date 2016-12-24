@@ -50,11 +50,58 @@
 
 	var _App2 = _interopRequireDefault(_App);
 
+	var _page = __webpack_require__(3);
+
+	var _page2 = _interopRequireDefault(_page);
+
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	var _Helpers = __webpack_require__(9);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	setInterval(function () {
+
+	    var session = _Session2.default.get();
+
+	    if (!session) {
+	        return;
+	    }
+
+	    var expiresAt = new Date(session.expiresAt);
+	    var now = new Date();
+
+	    // gives 10 minutes to refresh the session
+
+	    if (now.getTime() >= expiresAt.getTime() - 600000) {
+	        (0, _Helpers.backend)({
+	            method: 'POST',
+	            url: '/sessions/' + session.id + '/refresh'
+	        }).done(function (data) {
+	            return _Session2.default.set(data);
+	        });
+	    }
+	}, 10000);
 
 	var app = new _App2.default();
 
-	$('#app').html(app.render());
+	(0, _page2.default)(function (context) {
+	    var location = context.pathname;
+
+	    if (_Session2.default.has() && location === '/login') {
+	        return _page2.default.redirect('/');
+	    }
+
+	    if (!_Session2.default.has() && location !== '/login') {
+	        return _page2.default.redirect('/login');
+	    }
+
+	    $('#app').html(app.render(context));
+	});
+
+	(0, _page2.default)();
 
 /***/ },
 /* 1 */
@@ -70,9 +117,25 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _Login = __webpack_require__(3);
+	var _Login = __webpack_require__(7);
 
 	var _Login2 = _interopRequireDefault(_Login);
+
+	var _Error = __webpack_require__(15);
+
+	var _Error2 = _interopRequireDefault(_Error);
+
+	var _Home = __webpack_require__(16);
+
+	var _Home2 = _interopRequireDefault(_Home);
+
+	var _AgentNav = __webpack_require__(17);
+
+	var _AgentNav2 = _interopRequireDefault(_AgentNav);
+
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -93,14 +156,31 @@
 
 	    _createClass(App, [{
 	        key: 'render',
-	        value: function render() {
-	            var el = $('\n            <div>\n                <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">\n                    <div class="container">\n                        <div class="navbar-header">\n                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">\n                                <span class="sr-only">Toggle navigation</span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                            </button>\n                            <a class="navbar-brand" href="index.html">TheSingleQuote.com</a>\n                        </div>\n                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">\n                            <ul class="nav navbar-nav">\n                                <li>\n                                    <a href="dashboard.html">Dashboard</a>\n                                </li>\n                                <li>\n                                    <a href="post.html">Post a Quote</a>\n                                </li>\n                                <li>\n                                    <a href="login.html">Log In</a>\n                                </li>\n                            </ul>\n                        </div>\n                    </div>\n                </nav>\n                <div class="container">\n                        <hr>\n\n                        <div id="content"></div>\n                        <hr>\n\n                    <footer>\n                        <div class="row">\n                            <div class="col-lg-12">\n                                <p>Copyright &copy; Tapo Insurance Agency 2016</p>\n                            </div>\n                        </div>\n                    </footer>\n                </div>\n            </div>\n        ');
+	        value: function render(context) {
+	            var el = $('\n            <div>\n                <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">\n                    <div class="container">\n                        <div class="navbar-header">\n                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">\n                                <span class="sr-only">Toggle navigation</span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                            </button>\n                            <a class="navbar-brand" href="index.html">TheSingleQuote.com</a>\n                        </div>\n                        <div id="navContent" class="collapse navbar-collapse"></div>\n                    </div>\n                </nav>\n                <div class="container">\n                        <hr/>\n                        <div id="content"></div>\n                        <hr/>\n\n                    <footer>\n                        <div class="row">\n                            <div class="col-lg-12">\n                                <p>Copyright &copy; Tapo Insurance Agency 2016</p>\n                            </div>\n                        </div>\n                    </footer>\n                </div>\n            </div>\n        ');
 
-	            var login = new _Login2.default();
+	            if (_Session2.default.has()) {
+	                el.find('#navContent').append(new _AgentNav2.default().render());
+	            }
 
-	            el.find('#content').html(login.render());
+	            el.find('#content').html(this.getContent(context).render());
 
 	            return el;
+	        }
+	    }, {
+	        key: 'getContent',
+	        value: function getContent(context) {
+	            var location = context.pathname;
+
+	            if (location === '/') {
+	                return new _Home2.default();
+	            }
+
+	            if (location === '/login') {
+	                return new _Login2.default();
+	            }
+
+	            return new _Error2.default();
 	        }
 	    }]);
 
@@ -111,13 +191,26 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.Link = exports.View = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _page = __webpack_require__(3);
+
+	var _page2 = _interopRequireDefault(_page);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -125,8 +218,1254 @@
 	    _classCallCheck(this, View);
 	};
 
+	var Link = exports.Link = function (_View) {
+	    _inherits(Link, _View);
+
+	    function Link() {
+	        _classCallCheck(this, Link);
+
+	        return _possibleConstructorReturn(this, (Link.__proto__ || Object.getPrototypeOf(Link)).apply(this, arguments));
+	    }
+
+	    _createClass(Link, [{
+	        key: 'render',
+	        value: function render(options) {
+	            var el = $('<a/>').attr('href', options.href).text(title);
+
+	            el.click(function (e) {
+	                e.preventDefault();
+	                (0, _page2.default)(href);
+	            });
+
+	            return el;
+	        }
+	    }]);
+
+	    return Link;
+	}(View);
+
 /***/ },
 /* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {  /* globals require, module */
+
+	  'use strict';
+
+	  /**
+	   * Module dependencies.
+	   */
+
+	  var pathtoRegexp = __webpack_require__(5);
+
+	  /**
+	   * Module exports.
+	   */
+
+	  module.exports = page;
+
+	  /**
+	   * Detect click event
+	   */
+	  var clickEvent = ('undefined' !== typeof document) && document.ontouchstart ? 'touchstart' : 'click';
+
+	  /**
+	   * To work properly with the URL
+	   * history.location generated polyfill in https://github.com/devote/HTML5-History-API
+	   */
+
+	  var location = ('undefined' !== typeof window) && (window.history.location || window.location);
+
+	  /**
+	   * Perform initial dispatch.
+	   */
+
+	  var dispatch = true;
+
+
+	  /**
+	   * Decode URL components (query string, pathname, hash).
+	   * Accommodates both regular percent encoding and x-www-form-urlencoded format.
+	   */
+	  var decodeURLComponents = true;
+
+	  /**
+	   * Base path.
+	   */
+
+	  var base = '';
+
+	  /**
+	   * Running flag.
+	   */
+
+	  var running;
+
+	  /**
+	   * HashBang option
+	   */
+
+	  var hashbang = false;
+
+	  /**
+	   * Previous context, for capturing
+	   * page exit events.
+	   */
+
+	  var prevContext;
+
+	  /**
+	   * Register `path` with callback `fn()`,
+	   * or route `path`, or redirection,
+	   * or `page.start()`.
+	   *
+	   *   page(fn);
+	   *   page('*', fn);
+	   *   page('/user/:id', load, user);
+	   *   page('/user/' + user.id, { some: 'thing' });
+	   *   page('/user/' + user.id);
+	   *   page('/from', '/to')
+	   *   page();
+	   *
+	   * @param {string|!Function|!Object} path
+	   * @param {Function=} fn
+	   * @api public
+	   */
+
+	  function page(path, fn) {
+	    // <callback>
+	    if ('function' === typeof path) {
+	      return page('*', path);
+	    }
+
+	    // route <path> to <callback ...>
+	    if ('function' === typeof fn) {
+	      var route = new Route(/** @type {string} */ (path));
+	      for (var i = 1; i < arguments.length; ++i) {
+	        page.callbacks.push(route.middleware(arguments[i]));
+	      }
+	      // show <path> with [state]
+	    } else if ('string' === typeof path) {
+	      page['string' === typeof fn ? 'redirect' : 'show'](path, fn);
+	      // start [options]
+	    } else {
+	      page.start(path);
+	    }
+	  }
+
+	  /**
+	   * Callback functions.
+	   */
+
+	  page.callbacks = [];
+	  page.exits = [];
+
+	  /**
+	   * Current path being processed
+	   * @type {string}
+	   */
+	  page.current = '';
+
+	  /**
+	   * Number of pages navigated to.
+	   * @type {number}
+	   *
+	   *     page.len == 0;
+	   *     page('/login');
+	   *     page.len == 1;
+	   */
+
+	  page.len = 0;
+
+	  /**
+	   * Get or set basepath to `path`.
+	   *
+	   * @param {string} path
+	   * @api public
+	   */
+
+	  page.base = function(path) {
+	    if (0 === arguments.length) return base;
+	    base = path;
+	  };
+
+	  /**
+	   * Bind with the given `options`.
+	   *
+	   * Options:
+	   *
+	   *    - `click` bind to click events [true]
+	   *    - `popstate` bind to popstate [true]
+	   *    - `dispatch` perform initial dispatch [true]
+	   *
+	   * @param {Object} options
+	   * @api public
+	   */
+
+	  page.start = function(options) {
+	    options = options || {};
+	    if (running) return;
+	    running = true;
+	    if (false === options.dispatch) dispatch = false;
+	    if (false === options.decodeURLComponents) decodeURLComponents = false;
+	    if (false !== options.popstate) window.addEventListener('popstate', onpopstate, false);
+	    if (false !== options.click) {
+	      document.addEventListener(clickEvent, onclick, false);
+	    }
+	    if (true === options.hashbang) hashbang = true;
+	    if (!dispatch) return;
+	    var url = (hashbang && ~location.hash.indexOf('#!')) ? location.hash.substr(2) + location.search : location.pathname + location.search + location.hash;
+	    page.replace(url, null, true, dispatch);
+	  };
+
+	  /**
+	   * Unbind click and popstate event handlers.
+	   *
+	   * @api public
+	   */
+
+	  page.stop = function() {
+	    if (!running) return;
+	    page.current = '';
+	    page.len = 0;
+	    running = false;
+	    document.removeEventListener(clickEvent, onclick, false);
+	    window.removeEventListener('popstate', onpopstate, false);
+	  };
+
+	  /**
+	   * Show `path` with optional `state` object.
+	   *
+	   * @param {string} path
+	   * @param {Object=} state
+	   * @param {boolean=} dispatch
+	   * @param {boolean=} push
+	   * @return {!Context}
+	   * @api public
+	   */
+
+	  page.show = function(path, state, dispatch, push) {
+	    var ctx = new Context(path, state);
+	    page.current = ctx.path;
+	    if (false !== dispatch) page.dispatch(ctx);
+	    if (false !== ctx.handled && false !== push) ctx.pushState();
+	    return ctx;
+	  };
+
+	  /**
+	   * Goes back in the history
+	   * Back should always let the current route push state and then go back.
+	   *
+	   * @param {string} path - fallback path to go back if no more history exists, if undefined defaults to page.base
+	   * @param {Object=} state
+	   * @api public
+	   */
+
+	  page.back = function(path, state) {
+	    if (page.len > 0) {
+	      // this may need more testing to see if all browsers
+	      // wait for the next tick to go back in history
+	      history.back();
+	      page.len--;
+	    } else if (path) {
+	      setTimeout(function() {
+	        page.show(path, state);
+	      });
+	    }else{
+	      setTimeout(function() {
+	        page.show(base, state);
+	      });
+	    }
+	  };
+
+
+	  /**
+	   * Register route to redirect from one path to other
+	   * or just redirect to another route
+	   *
+	   * @param {string} from - if param 'to' is undefined redirects to 'from'
+	   * @param {string=} to
+	   * @api public
+	   */
+	  page.redirect = function(from, to) {
+	    // Define route from a path to another
+	    if ('string' === typeof from && 'string' === typeof to) {
+	      page(from, function(e) {
+	        setTimeout(function() {
+	          page.replace(/** @type {!string} */ (to));
+	        }, 0);
+	      });
+	    }
+
+	    // Wait for the push state and replace it with another
+	    if ('string' === typeof from && 'undefined' === typeof to) {
+	      setTimeout(function() {
+	        page.replace(from);
+	      }, 0);
+	    }
+	  };
+
+	  /**
+	   * Replace `path` with optional `state` object.
+	   *
+	   * @param {string} path
+	   * @param {Object=} state
+	   * @param {boolean=} init
+	   * @param {boolean=} dispatch
+	   * @return {!Context}
+	   * @api public
+	   */
+
+
+	  page.replace = function(path, state, init, dispatch) {
+	    var ctx = new Context(path, state);
+	    page.current = ctx.path;
+	    ctx.init = init;
+	    ctx.save(); // save before dispatching, which may redirect
+	    if (false !== dispatch) page.dispatch(ctx);
+	    return ctx;
+	  };
+
+	  /**
+	   * Dispatch the given `ctx`.
+	   *
+	   * @param {Context} ctx
+	   * @api private
+	   */
+	  page.dispatch = function(ctx) {
+	    var prev = prevContext,
+	      i = 0,
+	      j = 0;
+
+	    prevContext = ctx;
+
+	    function nextExit() {
+	      var fn = page.exits[j++];
+	      if (!fn) return nextEnter();
+	      fn(prev, nextExit);
+	    }
+
+	    function nextEnter() {
+	      var fn = page.callbacks[i++];
+
+	      if (ctx.path !== page.current) {
+	        ctx.handled = false;
+	        return;
+	      }
+	      if (!fn) return unhandled(ctx);
+	      fn(ctx, nextEnter);
+	    }
+
+	    if (prev) {
+	      nextExit();
+	    } else {
+	      nextEnter();
+	    }
+	  };
+
+	  /**
+	   * Unhandled `ctx`. When it's not the initial
+	   * popstate then redirect. If you wish to handle
+	   * 404s on your own use `page('*', callback)`.
+	   *
+	   * @param {Context} ctx
+	   * @api private
+	   */
+	  function unhandled(ctx) {
+	    if (ctx.handled) return;
+	    var current;
+
+	    if (hashbang) {
+	      current = base + location.hash.replace('#!', '');
+	    } else {
+	      current = location.pathname + location.search;
+	    }
+
+	    if (current === ctx.canonicalPath) return;
+	    page.stop();
+	    ctx.handled = false;
+	    location.href = ctx.canonicalPath;
+	  }
+
+	  /**
+	   * Register an exit route on `path` with
+	   * callback `fn()`, which will be called
+	   * on the previous context when a new
+	   * page is visited.
+	   */
+	  page.exit = function(path, fn) {
+	    if (typeof path === 'function') {
+	      return page.exit('*', path);
+	    }
+
+	    var route = new Route(path);
+	    for (var i = 1; i < arguments.length; ++i) {
+	      page.exits.push(route.middleware(arguments[i]));
+	    }
+	  };
+
+	  /**
+	   * Remove URL encoding from the given `str`.
+	   * Accommodates whitespace in both x-www-form-urlencoded
+	   * and regular percent-encoded form.
+	   *
+	   * @param {string} val - URL component to decode
+	   */
+	  function decodeURLEncodedURIComponent(val) {
+	    if (typeof val !== 'string') { return val; }
+	    return decodeURLComponents ? decodeURIComponent(val.replace(/\+/g, ' ')) : val;
+	  }
+
+	  /**
+	   * Initialize a new "request" `Context`
+	   * with the given `path` and optional initial `state`.
+	   *
+	   * @constructor
+	   * @param {string} path
+	   * @param {Object=} state
+	   * @api public
+	   */
+
+	  function Context(path, state) {
+	    if ('/' === path[0] && 0 !== path.indexOf(base)) path = base + (hashbang ? '#!' : '') + path;
+	    var i = path.indexOf('?');
+
+	    this.canonicalPath = path;
+	    this.path = path.replace(base, '') || '/';
+	    if (hashbang) this.path = this.path.replace('#!', '') || '/';
+
+	    this.title = document.title;
+	    this.state = state || {};
+	    this.state.path = path;
+	    this.querystring = ~i ? decodeURLEncodedURIComponent(path.slice(i + 1)) : '';
+	    this.pathname = decodeURLEncodedURIComponent(~i ? path.slice(0, i) : path);
+	    this.params = {};
+
+	    // fragment
+	    this.hash = '';
+	    if (!hashbang) {
+	      if (!~this.path.indexOf('#')) return;
+	      var parts = this.path.split('#');
+	      this.path = parts[0];
+	      this.hash = decodeURLEncodedURIComponent(parts[1]) || '';
+	      this.querystring = this.querystring.split('#')[0];
+	    }
+	  }
+
+	  /**
+	   * Expose `Context`.
+	   */
+
+	  page.Context = Context;
+
+	  /**
+	   * Push state.
+	   *
+	   * @api private
+	   */
+
+	  Context.prototype.pushState = function() {
+	    page.len++;
+	    history.pushState(this.state, this.title, hashbang && this.path !== '/' ? '#!' + this.path : this.canonicalPath);
+	  };
+
+	  /**
+	   * Save the context state.
+	   *
+	   * @api public
+	   */
+
+	  Context.prototype.save = function() {
+	    history.replaceState(this.state, this.title, hashbang && this.path !== '/' ? '#!' + this.path : this.canonicalPath);
+	  };
+
+	  /**
+	   * Initialize `Route` with the given HTTP `path`,
+	   * and an array of `callbacks` and `options`.
+	   *
+	   * Options:
+	   *
+	   *   - `sensitive`    enable case-sensitive routes
+	   *   - `strict`       enable strict matching for trailing slashes
+	   *
+	   * @constructor
+	   * @param {string} path
+	   * @param {Object=} options
+	   * @api private
+	   */
+
+	  function Route(path, options) {
+	    options = options || {};
+	    this.path = (path === '*') ? '(.*)' : path;
+	    this.method = 'GET';
+	    this.regexp = pathtoRegexp(this.path,
+	      this.keys = [],
+	      options);
+	  }
+
+	  /**
+	   * Expose `Route`.
+	   */
+
+	  page.Route = Route;
+
+	  /**
+	   * Return route middleware with
+	   * the given callback `fn()`.
+	   *
+	   * @param {Function} fn
+	   * @return {Function}
+	   * @api public
+	   */
+
+	  Route.prototype.middleware = function(fn) {
+	    var self = this;
+	    return function(ctx, next) {
+	      if (self.match(ctx.path, ctx.params)) return fn(ctx, next);
+	      next();
+	    };
+	  };
+
+	  /**
+	   * Check if this route matches `path`, if so
+	   * populate `params`.
+	   *
+	   * @param {string} path
+	   * @param {Object} params
+	   * @return {boolean}
+	   * @api private
+	   */
+
+	  Route.prototype.match = function(path, params) {
+	    var keys = this.keys,
+	      qsIndex = path.indexOf('?'),
+	      pathname = ~qsIndex ? path.slice(0, qsIndex) : path,
+	      m = this.regexp.exec(decodeURIComponent(pathname));
+
+	    if (!m) return false;
+
+	    for (var i = 1, len = m.length; i < len; ++i) {
+	      var key = keys[i - 1];
+	      var val = decodeURLEncodedURIComponent(m[i]);
+	      if (val !== undefined || !(hasOwnProperty.call(params, key.name))) {
+	        params[key.name] = val;
+	      }
+	    }
+
+	    return true;
+	  };
+
+
+	  /**
+	   * Handle "populate" events.
+	   */
+
+	  var onpopstate = (function () {
+	    var loaded = false;
+	    if ('undefined' === typeof window) {
+	      return;
+	    }
+	    if (document.readyState === 'complete') {
+	      loaded = true;
+	    } else {
+	      window.addEventListener('load', function() {
+	        setTimeout(function() {
+	          loaded = true;
+	        }, 0);
+	      });
+	    }
+	    return function onpopstate(e) {
+	      if (!loaded) return;
+	      if (e.state) {
+	        var path = e.state.path;
+	        page.replace(path, e.state);
+	      } else {
+	        page.show(location.pathname + location.hash, undefined, undefined, false);
+	      }
+	    };
+	  })();
+	  /**
+	   * Handle "click" events.
+	   */
+
+	  function onclick(e) {
+
+	    if (1 !== which(e)) return;
+
+	    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+	    if (e.defaultPrevented) return;
+
+
+
+	    // ensure link
+	    // use shadow dom when available
+	    var el = e.path ? e.path[0] : e.target;
+	    while (el && 'A' !== el.nodeName) el = el.parentNode;
+	    if (!el || 'A' !== el.nodeName) return;
+
+
+
+	    // Ignore if tag has
+	    // 1. "download" attribute
+	    // 2. rel="external" attribute
+	    if (el.hasAttribute('download') || el.getAttribute('rel') === 'external') return;
+
+	    // ensure non-hash for the same path
+	    var link = el.getAttribute('href');
+	    if (!hashbang && el.pathname === location.pathname && (el.hash || '#' === link)) return;
+
+
+
+	    // Check for mailto: in the href
+	    if (link && link.indexOf('mailto:') > -1) return;
+
+	    // check target
+	    if (el.target) return;
+
+	    // x-origin
+	    if (!sameOrigin(el.href)) return;
+
+
+
+	    // rebuild path
+	    var path = el.pathname + el.search + (el.hash || '');
+
+	    // strip leading "/[drive letter]:" on NW.js on Windows
+	    if (typeof process !== 'undefined' && path.match(/^\/[a-zA-Z]:\//)) {
+	      path = path.replace(/^\/[a-zA-Z]:\//, '/');
+	    }
+
+	    // same page
+	    var orig = path;
+
+	    if (path.indexOf(base) === 0) {
+	      path = path.substr(base.length);
+	    }
+
+	    if (hashbang) path = path.replace('#!', '');
+
+	    if (base && orig === path) return;
+
+	    e.preventDefault();
+	    page.show(orig);
+	  }
+
+	  /**
+	   * Event button.
+	   */
+
+	  function which(e) {
+	    e = e || window.event;
+	    return null === e.which ? e.button : e.which;
+	  }
+
+	  /**
+	   * Check if `href` is the same origin.
+	   */
+
+	  function sameOrigin(href) {
+	    var origin = location.protocol + '//' + location.hostname;
+	    if (location.port) origin += ':' + location.port;
+	    return (href && (0 === href.indexOf(origin)));
+	  }
+
+	  page.sameOrigin = sameOrigin;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	// shim for using process in browser
+	var process = module.exports = {};
+
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
+	(function () {
+	    try {
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
+	    }
+	    try {
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
+	    }
+	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+
+
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+
+
+
+	}
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+
+	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = runTimeout(cleanUpNextTick);
+	    draining = true;
+
+	    var len = queue.length;
+	    while(len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    runClearTimeout(timeout);
+	}
+
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        runTimeout(drainQueue);
+	    }
+	};
+
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+
+	function noop() {}
+
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function() { return 0; };
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isarray = __webpack_require__(6)
+
+	/**
+	 * Expose `pathToRegexp`.
+	 */
+	module.exports = pathToRegexp
+	module.exports.parse = parse
+	module.exports.compile = compile
+	module.exports.tokensToFunction = tokensToFunction
+	module.exports.tokensToRegExp = tokensToRegExp
+
+	/**
+	 * The main path matching regexp utility.
+	 *
+	 * @type {RegExp}
+	 */
+	var PATH_REGEXP = new RegExp([
+	  // Match escaped characters that would otherwise appear in future matches.
+	  // This allows the user to escape special characters that won't transform.
+	  '(\\\\.)',
+	  // Match Express-style parameters and un-named parameters with a prefix
+	  // and optional suffixes. Matches appear as:
+	  //
+	  // "/:test(\\d+)?" => ["/", "test", "\d+", undefined, "?", undefined]
+	  // "/route(\\d+)"  => [undefined, undefined, undefined, "\d+", undefined, undefined]
+	  // "/*"            => ["/", undefined, undefined, undefined, undefined, "*"]
+	  '([\\/.])?(?:(?:\\:(\\w+)(?:\\(((?:\\\\.|[^()])+)\\))?|\\(((?:\\\\.|[^()])+)\\))([+*?])?|(\\*))'
+	].join('|'), 'g')
+
+	/**
+	 * Parse a string for the raw tokens.
+	 *
+	 * @param  {String} str
+	 * @return {Array}
+	 */
+	function parse (str) {
+	  var tokens = []
+	  var key = 0
+	  var index = 0
+	  var path = ''
+	  var res
+
+	  while ((res = PATH_REGEXP.exec(str)) != null) {
+	    var m = res[0]
+	    var escaped = res[1]
+	    var offset = res.index
+	    path += str.slice(index, offset)
+	    index = offset + m.length
+
+	    // Ignore already escaped sequences.
+	    if (escaped) {
+	      path += escaped[1]
+	      continue
+	    }
+
+	    // Push the current path onto the tokens.
+	    if (path) {
+	      tokens.push(path)
+	      path = ''
+	    }
+
+	    var prefix = res[2]
+	    var name = res[3]
+	    var capture = res[4]
+	    var group = res[5]
+	    var suffix = res[6]
+	    var asterisk = res[7]
+
+	    var repeat = suffix === '+' || suffix === '*'
+	    var optional = suffix === '?' || suffix === '*'
+	    var delimiter = prefix || '/'
+	    var pattern = capture || group || (asterisk ? '.*' : '[^' + delimiter + ']+?')
+
+	    tokens.push({
+	      name: name || key++,
+	      prefix: prefix || '',
+	      delimiter: delimiter,
+	      optional: optional,
+	      repeat: repeat,
+	      pattern: escapeGroup(pattern)
+	    })
+	  }
+
+	  // Match any characters still remaining.
+	  if (index < str.length) {
+	    path += str.substr(index)
+	  }
+
+	  // If the path exists, push it onto the end.
+	  if (path) {
+	    tokens.push(path)
+	  }
+
+	  return tokens
+	}
+
+	/**
+	 * Compile a string to a template function for the path.
+	 *
+	 * @param  {String}   str
+	 * @return {Function}
+	 */
+	function compile (str) {
+	  return tokensToFunction(parse(str))
+	}
+
+	/**
+	 * Expose a method for transforming tokens into the path function.
+	 */
+	function tokensToFunction (tokens) {
+	  // Compile all the tokens into regexps.
+	  var matches = new Array(tokens.length)
+
+	  // Compile all the patterns before compilation.
+	  for (var i = 0; i < tokens.length; i++) {
+	    if (typeof tokens[i] === 'object') {
+	      matches[i] = new RegExp('^' + tokens[i].pattern + '$')
+	    }
+	  }
+
+	  return function (obj) {
+	    var path = ''
+	    var data = obj || {}
+
+	    for (var i = 0; i < tokens.length; i++) {
+	      var token = tokens[i]
+
+	      if (typeof token === 'string') {
+	        path += token
+
+	        continue
+	      }
+
+	      var value = data[token.name]
+	      var segment
+
+	      if (value == null) {
+	        if (token.optional) {
+	          continue
+	        } else {
+	          throw new TypeError('Expected "' + token.name + '" to be defined')
+	        }
+	      }
+
+	      if (isarray(value)) {
+	        if (!token.repeat) {
+	          throw new TypeError('Expected "' + token.name + '" to not repeat, but received "' + value + '"')
+	        }
+
+	        if (value.length === 0) {
+	          if (token.optional) {
+	            continue
+	          } else {
+	            throw new TypeError('Expected "' + token.name + '" to not be empty')
+	          }
+	        }
+
+	        for (var j = 0; j < value.length; j++) {
+	          segment = encodeURIComponent(value[j])
+
+	          if (!matches[i].test(segment)) {
+	            throw new TypeError('Expected all "' + token.name + '" to match "' + token.pattern + '", but received "' + segment + '"')
+	          }
+
+	          path += (j === 0 ? token.prefix : token.delimiter) + segment
+	        }
+
+	        continue
+	      }
+
+	      segment = encodeURIComponent(value)
+
+	      if (!matches[i].test(segment)) {
+	        throw new TypeError('Expected "' + token.name + '" to match "' + token.pattern + '", but received "' + segment + '"')
+	      }
+
+	      path += token.prefix + segment
+	    }
+
+	    return path
+	  }
+	}
+
+	/**
+	 * Escape a regular expression string.
+	 *
+	 * @param  {String} str
+	 * @return {String}
+	 */
+	function escapeString (str) {
+	  return str.replace(/([.+*?=^!:${}()[\]|\/])/g, '\\$1')
+	}
+
+	/**
+	 * Escape the capturing group by escaping special characters and meaning.
+	 *
+	 * @param  {String} group
+	 * @return {String}
+	 */
+	function escapeGroup (group) {
+	  return group.replace(/([=!:$\/()])/g, '\\$1')
+	}
+
+	/**
+	 * Attach the keys as a property of the regexp.
+	 *
+	 * @param  {RegExp} re
+	 * @param  {Array}  keys
+	 * @return {RegExp}
+	 */
+	function attachKeys (re, keys) {
+	  re.keys = keys
+	  return re
+	}
+
+	/**
+	 * Get the flags for a regexp from the options.
+	 *
+	 * @param  {Object} options
+	 * @return {String}
+	 */
+	function flags (options) {
+	  return options.sensitive ? '' : 'i'
+	}
+
+	/**
+	 * Pull out keys from a regexp.
+	 *
+	 * @param  {RegExp} path
+	 * @param  {Array}  keys
+	 * @return {RegExp}
+	 */
+	function regexpToRegexp (path, keys) {
+	  // Use a negative lookahead to match only capturing groups.
+	  var groups = path.source.match(/\((?!\?)/g)
+
+	  if (groups) {
+	    for (var i = 0; i < groups.length; i++) {
+	      keys.push({
+	        name: i,
+	        prefix: null,
+	        delimiter: null,
+	        optional: false,
+	        repeat: false,
+	        pattern: null
+	      })
+	    }
+	  }
+
+	  return attachKeys(path, keys)
+	}
+
+	/**
+	 * Transform an array into a regexp.
+	 *
+	 * @param  {Array}  path
+	 * @param  {Array}  keys
+	 * @param  {Object} options
+	 * @return {RegExp}
+	 */
+	function arrayToRegexp (path, keys, options) {
+	  var parts = []
+
+	  for (var i = 0; i < path.length; i++) {
+	    parts.push(pathToRegexp(path[i], keys, options).source)
+	  }
+
+	  var regexp = new RegExp('(?:' + parts.join('|') + ')', flags(options))
+
+	  return attachKeys(regexp, keys)
+	}
+
+	/**
+	 * Create a path regexp from string input.
+	 *
+	 * @param  {String} path
+	 * @param  {Array}  keys
+	 * @param  {Object} options
+	 * @return {RegExp}
+	 */
+	function stringToRegexp (path, keys, options) {
+	  var tokens = parse(path)
+	  var re = tokensToRegExp(tokens, options)
+
+	  // Attach keys back to the regexp.
+	  for (var i = 0; i < tokens.length; i++) {
+	    if (typeof tokens[i] !== 'string') {
+	      keys.push(tokens[i])
+	    }
+	  }
+
+	  return attachKeys(re, keys)
+	}
+
+	/**
+	 * Expose a function for taking tokens and returning a RegExp.
+	 *
+	 * @param  {Array}  tokens
+	 * @param  {Array}  keys
+	 * @param  {Object} options
+	 * @return {RegExp}
+	 */
+	function tokensToRegExp (tokens, options) {
+	  options = options || {}
+
+	  var strict = options.strict
+	  var end = options.end !== false
+	  var route = ''
+	  var lastToken = tokens[tokens.length - 1]
+	  var endsWithSlash = typeof lastToken === 'string' && /\/$/.test(lastToken)
+
+	  // Iterate over the tokens and create our regexp string.
+	  for (var i = 0; i < tokens.length; i++) {
+	    var token = tokens[i]
+
+	    if (typeof token === 'string') {
+	      route += escapeString(token)
+	    } else {
+	      var prefix = escapeString(token.prefix)
+	      var capture = token.pattern
+
+	      if (token.repeat) {
+	        capture += '(?:' + prefix + capture + ')*'
+	      }
+
+	      if (token.optional) {
+	        if (prefix) {
+	          capture = '(?:' + prefix + '(' + capture + '))?'
+	        } else {
+	          capture = '(' + capture + ')?'
+	        }
+	      } else {
+	        capture = prefix + '(' + capture + ')'
+	      }
+
+	      route += capture
+	    }
+	  }
+
+	  // In non-strict mode we allow a slash at the end of match. If the path to
+	  // match already ends with a slash, we remove it for consistency. The slash
+	  // is valid at the end of a path match, not in the middle. This is important
+	  // in non-ending mode, where "/test/" shouldn't match "/test//route".
+	  if (!strict) {
+	    route = (endsWithSlash ? route.slice(0, -2) : route) + '(?:\\/(?=$))?'
+	  }
+
+	  if (end) {
+	    route += '$'
+	  } else {
+	    // In non-ending mode, we need the capturing groups to match as much as
+	    // possible by using a positive lookahead to the end or next path segment.
+	    route += strict && endsWithSlash ? '' : '(?=\\/|$)'
+	  }
+
+	  return new RegExp('^' + route, flags(options))
+	}
+
+	/**
+	 * Normalize the given path string, returning a regular expression.
+	 *
+	 * An empty array can be passed in for the keys, which will hold the
+	 * placeholder key descriptions. For example, using `/user/:id`, `keys` will
+	 * contain `[{ name: 'id', delimiter: '/', optional: false, repeat: false }]`.
+	 *
+	 * @param  {(String|RegExp|Array)} path
+	 * @param  {Array}                 [keys]
+	 * @param  {Object}                [options]
+	 * @return {RegExp}
+	 */
+	function pathToRegexp (path, keys, options) {
+	  keys = keys || []
+
+	  if (!isarray(keys)) {
+	    options = keys
+	    keys = []
+	  } else if (!options) {
+	    options = {}
+	  }
+
+	  if (path instanceof RegExp) {
+	    return regexpToRegexp(path, keys, options)
+	  }
+
+	  if (isarray(path)) {
+	    return arrayToRegexp(path, keys, options)
+	  }
+
+	  return stringToRegexp(path, keys, options)
+	}
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	module.exports = Array.isArray || function (arr) {
+	  return Object.prototype.toString.call(arr) == '[object Array]';
+	};
+
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -139,9 +1478,17 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _Form = __webpack_require__(4);
+	var _Form = __webpack_require__(8);
 
 	var _Form2 = _interopRequireDefault(_Form);
+
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	var _page = __webpack_require__(3);
+
+	var _page2 = _interopRequireDefault(_page);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -203,19 +1550,23 @@
 	            signUp.setOnComplete(function () {
 	                return _this2.removeAlert();
 	            });
-	            signIn.setOnComplete(function () {
-	                return _this2.removeAlert();
-	            });
-
 	            signUp.setOnSuccess(function () {
 	                return _this2.showAlert('The agent has been successfully registered!', 'success');
 	            });
-
 	            signUp.setOnGlobalError(function (e) {
 	                return _this2.showAlert(e, 'danger');
 	            });
+
+	            signIn.setOnComplete(function () {
+	                return _this2.removeAlert();
+	            });
 	            signIn.setOnGlobalError(function (e) {
 	                return _this2.showAlert(e, 'danger');
+	            });
+
+	            signIn.setOnSuccess(function (data) {
+	                _Session2.default.set(data);
+	                (0, _page2.default)('/');
 	            });
 
 	            el.find('#signUp').html(signUp.render());
@@ -230,7 +1581,7 @@
 	exports.default = Login;
 
 /***/ },
-/* 4 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -243,17 +1594,17 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _Helpers = __webpack_require__(5);
+	var _Helpers = __webpack_require__(9);
 
-	var _Input = __webpack_require__(7);
+	var _Input = __webpack_require__(11);
 
 	var _Input2 = _interopRequireDefault(_Input);
 
-	var _Button = __webpack_require__(9);
+	var _Button = __webpack_require__(13);
 
 	var _Button2 = _interopRequireDefault(_Button);
 
-	var _Checkbox = __webpack_require__(10);
+	var _Checkbox = __webpack_require__(14);
 
 	var _Checkbox2 = _interopRequireDefault(_Checkbox);
 
@@ -433,7 +1784,7 @@
 	exports.default = Form;
 
 /***/ },
-/* 5 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -443,7 +1794,7 @@
 	});
 	exports.backend = backend;
 
-	var _Session = __webpack_require__(6);
+	var _Session = __webpack_require__(10);
 
 	var _Session2 = _interopRequireDefault(_Session);
 
@@ -475,7 +1826,7 @@
 	}
 
 /***/ },
-/* 6 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -485,20 +1836,31 @@
 	});
 	var Session = {
 	    get: function get() {
-	        var session = localStorage.getItem('session');
+	        if (typeof this.source === 'undefined') {
+	            this.source = localStorage.getItem('session');
 
-	        if (session === null) {
-	            return null;
+	            if (this.source) {
+	                this.source = $.parseJSON(this.source);
+	                var now = new Date();
+	                var expiresAt = new Date(this.source.expiresAt);
+
+	                if (expiresAt.getTime() < now.getTime()) {
+	                    this.destroy();
+	                }
+	            }
 	        }
-	        return $.parseJSON(session);
+
+	        return this.source;
 	    },
 	    set: function set(data) {
-	        localStorage.setItem('session', JSON.stringify(data));
+	        this.source = data;
+	        localStorage.setItem('session', JSON.stringify(this.source));
 	    },
 	    has: function has() {
-	        return localStorage.getItem('session') !== null;
+	        return this.get() !== null;
 	    },
 	    destroy: function destroy() {
+	        this.source = null;
 	        localStorage.removeItem('session');
 	    }
 	};
@@ -506,7 +1868,7 @@
 	exports.default = Session;
 
 /***/ },
-/* 7 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -517,7 +1879,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Control2 = __webpack_require__(8);
+	var _Control2 = __webpack_require__(12);
 
 	var _Control3 = _interopRequireDefault(_Control2);
 
@@ -587,7 +1949,7 @@
 	exports.default = Input;
 
 /***/ },
-/* 8 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -659,7 +2021,7 @@
 	exports.default = Control;
 
 /***/ },
-/* 9 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -670,7 +2032,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Control2 = __webpack_require__(8);
+	var _Control2 = __webpack_require__(12);
 
 	var _Control3 = _interopRequireDefault(_Control2);
 
@@ -733,7 +2095,7 @@
 	exports.default = Button;
 
 /***/ },
-/* 10 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -744,7 +2106,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Control2 = __webpack_require__(8);
+	var _Control2 = __webpack_require__(12);
 
 	var _Control3 = _interopRequireDefault(_Control2);
 
@@ -806,6 +2168,148 @@
 	}(_Control3.default);
 
 	exports.default = Checkbox;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Error404 = function (_View) {
+	    _inherits(Error404, _View);
+
+	    function Error404() {
+	        _classCallCheck(this, Error404);
+
+	        return _possibleConstructorReturn(this, (Error404.__proto__ || Object.getPrototypeOf(Error404)).apply(this, arguments));
+	    }
+
+	    _createClass(Error404, [{
+	        key: 'render',
+	        value: function render() {
+	            return $('<div><h2>Not Found</h2></div>');
+	        }
+	    }]);
+
+	    return Error404;
+	}(_sparrowUi.View);
+
+	exports.default = Error404;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Home = function (_View) {
+	    _inherits(Home, _View);
+
+	    function Home() {
+	        _classCallCheck(this, Home);
+
+	        return _possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).apply(this, arguments));
+	    }
+
+	    _createClass(Home, [{
+	        key: 'render',
+	        value: function render() {
+	            var el = $('<h3>Home</h3>');
+	            return el;
+	        }
+	    }]);
+
+	    return Home;
+	}(_sparrowUi.View);
+
+	exports.default = Home;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	var _page = __webpack_require__(3);
+
+	var _page2 = _interopRequireDefault(_page);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var AgentNav = function (_View) {
+	    _inherits(AgentNav, _View);
+
+	    function AgentNav() {
+	        _classCallCheck(this, AgentNav);
+
+	        return _possibleConstructorReturn(this, (AgentNav.__proto__ || Object.getPrototypeOf(AgentNav)).apply(this, arguments));
+	    }
+
+	    _createClass(AgentNav, [{
+	        key: 'render',
+	        value: function render() {
+	            var el = $('<a href="#" class="btn btn btn-success btn-sm navbar-btn navbar-right">Sign Out</a>');
+
+	            el.click(function (e) {
+	                e.preventDefault();
+	                _Session2.default.destroy();
+	                (0, _page2.default)('/login');
+	            });
+
+	            return el;
+	        }
+	    }]);
+
+	    return AgentNav;
+	}(_sparrowUi.View);
+
+	exports.default = AgentNav;
 
 /***/ }
 /******/ ]);
