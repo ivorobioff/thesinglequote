@@ -1,6 +1,6 @@
 import App from './Views/App';
 import page from 'page';
-import Session from './Services/Session';
+import Session from './Providers/Session';
 import { backend } from './Helpers'
 
 setInterval(() => {
@@ -25,8 +25,6 @@ setInterval(() => {
     }
 }, 10000);
 
-var app = new App();
-
 page((context) => {
     var location = context.pathname;
 
@@ -37,8 +35,8 @@ page((context) => {
     if (!Session.has() && location !== '/login'){
         return page.redirect('/login');
     }
-
-    $('#app').html(app.render(context));
+    
+    $('#app').html(new App(context).render());
 });
 
 page();

@@ -1,6 +1,6 @@
 import { View } from 'sparrow-ui';
 import Form from '../Form';
-import Session from '../../Services/Session';
+import Session from '../../Providers/Session';
 import page from 'page';
 
 class Login extends View {
@@ -25,27 +25,32 @@ class Login extends View {
     }
 
     render(){
-        var el = $(`<div id="login-overlay" class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">Login to <b>TheSingleQuote.com</b></h4> or go back to our <a href="www.thesinglequote.com">main site</a>.
-                </div>
-                <div id="formsHolder" class="modal-body">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <div class="well" id="signIn">
-                                
-                            </div>
+        var el = $(`
+            <div class="container">
+                    <hr />
+                    <div id="login-overlay" class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">Login to <b>TheSingleQuote.com</b></h4> or go back to our <a href="www.thesinglequote.com">main site</a>.
                         </div>
-                        <div class="col-xs-6">
-                            <div class="well" id="signUp">
-                                
+                        <div id="formsHolder" class="modal-body">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="well" id="signIn">
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="well" id="signUp">
+                                        
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>`);
+        `);
 
         this.el = el;
         

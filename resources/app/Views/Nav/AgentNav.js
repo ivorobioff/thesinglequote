@@ -1,5 +1,5 @@
 import  { View } from 'sparrow-ui';
-import Session from '../../Services/Session';
+import Session from '../../Providers/Session';
 import page from 'page';
 
 class AgentNav extends View {

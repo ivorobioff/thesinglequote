@@ -1,4 +1,4 @@
-import Session from '../Services/Session';
+import Session from '../Providers/Session';
 
 export function backend (options) {
     

@@ -85,8 +85,6 @@
 	    }
 	}, 10000);
 
-	var app = new _App2.default();
-
 	(0, _page2.default)(function (context) {
 	    var location = context.pathname;
 
@@ -98,7 +96,7 @@
 	        return _page2.default.redirect('/login');
 	    }
 
-	    $('#app').html(app.render(context));
+	    $('#app').html(new _App2.default(context).render());
 	});
 
 	(0, _page2.default)();
@@ -129,7 +127,7 @@
 
 	var _Home2 = _interopRequireDefault(_Home);
 
-	var _AgentNav = __webpack_require__(17);
+	var _AgentNav = __webpack_require__(22);
 
 	var _AgentNav2 = _interopRequireDefault(_AgentNav);
 
@@ -148,29 +146,37 @@
 	var App = function (_View) {
 	    _inherits(App, _View);
 
-	    function App() {
+	    function App(context) {
 	        _classCallCheck(this, App);
 
-	        return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+	        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
+
+	        _this.context = context;
+	        return _this;
 	    }
 
 	    _createClass(App, [{
 	        key: 'render',
-	        value: function render(context) {
-	            var el = $('\n            <div>\n                <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">\n                    <div class="container">\n                        <div class="navbar-header">\n                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">\n                                <span class="sr-only">Toggle navigation</span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                            </button>\n                            <a class="navbar-brand" href="index.html">TheSingleQuote.com</a>\n                        </div>\n                        <div id="navContent" class="collapse navbar-collapse"></div>\n                    </div>\n                </nav>\n                <div class="container">\n                        <hr/>\n                        <div id="content"></div>\n                        <hr/>\n\n                    <footer>\n                        <div class="row">\n                            <div class="col-lg-12">\n                                <p>Copyright &copy; Tapo Insurance Agency 2016</p>\n                            </div>\n                        </div>\n                    </footer>\n                </div>\n            </div>\n        ');
+	        value: function render() {
+	            var el = $('\n            <div>\n                <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">\n                    <div class="container">\n                        <div class="navbar-header">\n                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">\n                                <span class="sr-only">Toggle navigation</span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                            </button>\n                            <a class="navbar-brand" href="index.html">TheSingleQuote.com</a>\n                        </div>\n                        <div id="navContent" class="collapse navbar-collapse"></div>\n                    </div>\n                </nav>\n            </div>\n        ');
 
 	            if (_Session2.default.has()) {
 	                el.find('#navContent').append(new _AgentNav2.default().render());
 	            }
 
-	            el.find('#content').html(this.getContent(context).render());
+	            var container = this.getContent().render();
+	            container.append('<hr />');
+
+	            container.append('<footer>\n            <div class="row">\n                <div class="col-lg-12">\n                    <p>Copyright &copy; Tapo Insurance Agency 2016</p>\n                </div>\n            </div>\n        </footer>');
+
+	            el.append(container);
 
 	            return el;
 	        }
 	    }, {
 	        key: 'getContent',
-	        value: function getContent(context) {
-	            var location = context.pathname;
+	        value: function getContent() {
+	            var location = this.context.pathname;
 
 	            if (location === '/') {
 	                return new _Home2.default();
@@ -221,16 +227,23 @@
 	var Link = exports.Link = function (_View) {
 	    _inherits(Link, _View);
 
-	    function Link() {
+	    function Link(options) {
 	        _classCallCheck(this, Link);
 
-	        return _possibleConstructorReturn(this, (Link.__proto__ || Object.getPrototypeOf(Link)).apply(this, arguments));
+	        var _this = _possibleConstructorReturn(this, (Link.__proto__ || Object.getPrototypeOf(Link)).call(this));
+
+	        _this.options = options;
+	        return _this;
 	    }
 
 	    _createClass(Link, [{
 	        key: 'render',
-	        value: function render(options) {
-	            var el = $('<a/>').attr('href', options.href).text(title);
+	        value: function render() {
+	            var el = $('<a/>').attr('href', this.options.href).text(title);
+
+	            if (this.options['class']) {
+	                el.addClass(this.options['class']);
+	            }
 
 	            el.click(function (e) {
 	                e.preventDefault();
@@ -1533,7 +1546,7 @@
 	        value: function render() {
 	            var _this2 = this;
 
-	            var el = $('<div id="login-overlay" class="modal-dialog">\n            <div class="modal-content">\n                <div class="modal-header">\n                    <h4 class="modal-title" id="myModalLabel">Login to <b>TheSingleQuote.com</b></h4> or go back to our <a href="www.thesinglequote.com">main site</a>.\n                </div>\n                <div id="formsHolder" class="modal-body">\n                    <div class="row">\n                        <div class="col-xs-6">\n                            <div class="well" id="signIn">\n                                \n                            </div>\n                        </div>\n                        <div class="col-xs-6">\n                            <div class="well" id="signUp">\n                                \n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>');
+	            var el = $('\n            <div class="container">\n                    <hr />\n                    <div id="login-overlay" class="modal-dialog">\n                    <div class="modal-content">\n                        <div class="modal-header">\n                            <h4 class="modal-title" id="myModalLabel">Login to <b>TheSingleQuote.com</b></h4> or go back to our <a href="www.thesinglequote.com">main site</a>.\n                        </div>\n                        <div id="formsHolder" class="modal-body">\n                            <div class="row">\n                                <div class="col-xs-6">\n                                    <div class="well" id="signIn">\n                                        \n                                    </div>\n                                </div>\n                                <div class="col-xs-6">\n                                    <div class="well" id="signUp">\n                                        \n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        ');
 
 	            this.el = el;
 
@@ -2201,7 +2214,7 @@
 	    _createClass(Error404, [{
 	        key: 'render',
 	        value: function render() {
-	            return $('<div><h2>Not Found</h2></div>');
+	            return $('<div id="container"><h2>Not Found</h2></div>');
 	        }
 	    }]);
 
@@ -2224,6 +2237,20 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	var _OwnPostsList = __webpack_require__(17);
+
+	var _OwnPostsList2 = _interopRequireDefault(_OwnPostsList);
+
+	var _Modal = __webpack_require__(21);
+
+	var _Modal2 = _interopRequireDefault(_Modal);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -2240,9 +2267,26 @@
 	    }
 
 	    _createClass(Home, [{
+	        key: 'onNewPostClick',
+	        value: function onNewPostClick(e) {
+	            e.preventDefault();
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var el = $('<h3>Home</h3>');
+	            var _this2 = this;
+
+	            var el = $('<div class="container">\n            <header class="jumbotron hero-spacer">\n                <h1 id="greeting"></h1>\n                <p>This page will show quotes. It will also allow them to edit their information.</p>\n                <p><a class="btn btn-primary btn-large">Call to action!</a>\n                </p>\n            </header>\n            <hr/>\n            <div class="panel panel-default panel-table">\n              <div class="panel-heading">\n                <div class="row">\n                  <div class="col col-xs-6">\n                    <h3 class="panel-title">Your Posts</h3>\n                  </div>\n                  <div class="col col-xs-6 text-right">\n                    <a id="newPostClick" class="btn btn-primary btn-sml" href="#">Post New</a>\n                  </div>\n                </div>\n              </div>\n              <div id="ownPostsList" class="panel-body">\n              </div>\n            </div>\n        </div>');
+
+	            var user = _Session2.default.get().user;
+
+	            el.find('#greeting').text('Welcome back ' + user.fullName);
+	            el.find('#newPostClick').click(function (e) {
+	                return _this2.onNewPostClick(e);
+	            });
+
+	            el.find('#ownPostsList').html(new _OwnPostsList2.default().render());
+
 	            return el;
 	        }
 	    }]);
@@ -2254,6 +2298,345 @@
 
 /***/ },
 /* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	var _OwnPosts = __webpack_require__(18);
+
+	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
+
+	var _OwnPostItem = __webpack_require__(19);
+
+	var _OwnPostItem2 = _interopRequireDefault(_OwnPostItem);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var OwnPostsList = function (_View) {
+	    _inherits(OwnPostsList, _View);
+
+	    function OwnPostsList() {
+	        _classCallCheck(this, OwnPostsList);
+
+	        return _possibleConstructorReturn(this, (OwnPostsList.__proto__ || Object.getPrototypeOf(OwnPostsList)).apply(this, arguments));
+	    }
+
+	    _createClass(OwnPostsList, [{
+	        key: 'onItemDelete',
+	        value: function onItemDelete() {
+	            this.load(true);
+	        }
+	    }, {
+	        key: 'load',
+	        value: function load() {
+	            var _this2 = this;
+
+	            var reload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+	            this.container.empty();
+
+	            _OwnPosts2.default.load(reload).done(function (data) {
+	                data.data.forEach(function (post) {
+
+	                    var item = new _OwnPostItem2.default(post);
+	                    item.setOnDelete(function () {
+	                        return _this2.onItemDelete();
+	                    });
+
+	                    _this2.container.append(item.render());
+	                });
+	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var el = $('\n            <table class="table table-striped table-bordered table-list">\n                  <thead>\n                    <tr>\n                        <th style="min-width: 90px;">Quote #</th>\n                        <th style="min-width: 169px;">Client Name</th>\n                        <th>Public Message</th>\n                        <th style="min-width: 130px;">Status / Actions</th>\n                    </tr> \n                  </thead>\n                  <tbody></tbody>\n                </table>\n        ');
+
+	            this.container = el.find('tbody');
+
+	            this.load();
+
+	            return el;
+	        }
+	    }]);
+
+	    return OwnPostsList;
+	}(_sparrowUi.View);
+
+	exports.default = OwnPostsList;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _Helpers = __webpack_require__(9);
+
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var OwnPosts = {
+	    load: function load() {
+	        var reload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+	        if (typeof this.data === 'undefined' || reload) {
+	            var session = _Session2.default.get();
+	            return (0, _Helpers.backend)({
+	                method: 'GET', url: '/agents/' + session.user.id + '/posts'
+	            });
+	        }
+
+	        return $.Deferred().resolve(this.data);
+	    },
+	    destroy: function destroy(id) {
+	        var session = _Session2.default.get();
+
+	        return (0, _Helpers.backend)({
+	            method: 'DELETE', url: '/agents/' + session.user.id + '/posts/' + id
+	        });
+	    }
+	};
+
+	exports.default = OwnPosts;
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	var _OwnPostAction = __webpack_require__(20);
+
+	var _OwnPostAction2 = _interopRequireDefault(_OwnPostAction);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var OwnPostItem = function (_View) {
+	    _inherits(OwnPostItem, _View);
+
+	    function OwnPostItem(data) {
+	        _classCallCheck(this, OwnPostItem);
+
+	        var _this = _possibleConstructorReturn(this, (OwnPostItem.__proto__ || Object.getPrototypeOf(OwnPostItem)).call(this));
+
+	        _this.data = data;
+	        return _this;
+	    }
+
+	    _createClass(OwnPostItem, [{
+	        key: 'setOnDelete',
+	        value: function setOnDelete(callback) {
+	            this.onDeleteCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var data = this.data;
+	            var el = $('<tr/>');
+	            el.append($('<td/>').text(data.id));
+	            el.append($('<td/>').text(data.clientName));
+	            el.append($('<td/>').text(data.publicMessage));
+
+	            var ownPostAction = new _OwnPostAction2.default(data);
+
+	            ownPostAction.setOnDelete(this.onDeleteCallback);
+
+	            el.append($('<td/>').html(ownPostAction.render()));
+
+	            return el;
+	        }
+	    }]);
+
+	    return OwnPostItem;
+	}(_sparrowUi.View);
+
+	exports.default = OwnPostItem;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	var _OwnPosts = __webpack_require__(18);
+
+	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var OwnPostAction = function (_View) {
+	    _inherits(OwnPostAction, _View);
+
+	    function OwnPostAction(data) {
+	        _classCallCheck(this, OwnPostAction);
+
+	        var _this = _possibleConstructorReturn(this, (OwnPostAction.__proto__ || Object.getPrototypeOf(OwnPostAction)).call(this));
+
+	        _this.data = data;
+	        return _this;
+	    }
+
+	    _createClass(OwnPostAction, [{
+	        key: 'onEditClick',
+	        value: function onEditClick(e) {
+	            e.preventDefault();
+	        }
+	    }, {
+	        key: 'onDeleteClick',
+	        value: function onDeleteClick(e) {
+	            var _this2 = this;
+
+	            e.preventDefault();
+	            _OwnPosts2.default.destroy(this.data.id).done(function () {
+	                if (_this2.onDeleteCallback) {
+	                    _this2.onDeleteCallback();
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'setOnDelete',
+	        value: function setOnDelete(callback) {
+	            this.onDeleteCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'onShareClick',
+	        value: function onShareClick(e) {
+	            e.preventDefault();
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this3 = this;
+
+	            var data = this.data;
+	            var el = $('\n            <div class="btn-group">\n            <button id="statusButton" type="button" class="btn"></button>\n            <button id="statusCaret"  type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n                <span class="caret"></span>\n                <span class="sr-only">Toggle Dropdown</span>\n            </button>\n            <ul class="dropdown-menu">\n                <li><a href="#" id="editAction">Edit</a></li>\n                <li><a href="#" id="deleteAction">Delete</a></li>\n                <li role="separator" class="divider"></li>\n                <li><a href="#" id="shareAction">Share</a></li>\n            </ul>\n            </div>\n        ');
+
+	            var status = {
+	                done: {
+	                    text: 'Done!',
+	                    color: 'success'
+	                },
+	                open: {
+	                    text: 'Waiting',
+	                    color: 'default'
+	                }
+	            }[data.status];
+
+	            el.find('#statusButton').addClass('btn-' + status.color).text(status.text);
+	            el.find('#statusCaret').addClass('btn-' + status.color);
+
+	            el.find('#editAction').click(function (e) {
+	                return _this3.onEditClick(e);
+	            });
+	            el.find('#deleteAction').click(function (e) {
+	                return _this3.onDeleteClick(e);
+	            });
+	            el.find('#shareAction').click(function (e) {
+	                return _this3.onShareClick(e);
+	            });
+
+	            return el;
+	        }
+	    }]);
+
+	    return OwnPostAction;
+	}(_sparrowUi.View);
+
+	exports.default = OwnPostAction;
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Modal = function (_View) {
+	    _inherits(Modal, _View);
+
+	    function Modal() {
+	        _classCallCheck(this, Modal);
+
+	        return _possibleConstructorReturn(this, (Modal.__proto__ || Object.getPrototypeOf(Modal)).apply(this, arguments));
+	    }
+
+	    _createClass(Modal, [{
+	        key: 'render',
+	        value: function render() {}
+	    }]);
+
+	    return Modal;
+	}(_sparrowUi.View);
+
+	exports.default = Modal;
+
+/***/ },
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

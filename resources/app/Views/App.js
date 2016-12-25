@@ -3,10 +3,16 @@ import Login from './Login';
 import Error404 from './Error404';
 import Home from './Home';
 import AgentNav from './Nav/AgentNav';
-import Session from '../Services/Session';
+import Session from '../Providers/Session';
 
 class App extends View {
-    render(context){
+
+    constructor(context){
+        super();
+        this.context = context;
+    }
+
+    render(){
         var el = $(`
             <div>
                 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -23,19 +29,6 @@ class App extends View {
                         <div id="navContent" class="collapse navbar-collapse"></div>
                     </div>
                 </nav>
-                <div class="container">
-                        <hr/>
-                        <div id="content"></div>
-                        <hr/>
-
-                    <footer>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <p>Copyright &copy; Tapo Insurance Agency 2016</p>
-                            </div>
-                        </div>
-                    </footer>
-                </div>
             </div>
         `);
         
@@ -43,13 +36,24 @@ class App extends View {
             el.find('#navContent').append(new AgentNav().render());
         }
 
-        el.find('#content').html(this.getContent(context).render());
+        var container = this.getContent().render();
+        container.append('<hr />')
+
+        container.append(`<footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; Tapo Insurance Agency 2016</p>
+                </div>
+            </div>
+        </footer>`);
+
+        el.append(container);
 
         return el;
     }
 
-    getContent(context){
-        var location = context.pathname;
+    getContent(){
+        var location = this.context.pathname;
 
         if (location === '/'){
             return new Home();
