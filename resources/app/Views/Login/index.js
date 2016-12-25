@@ -1,6 +1,7 @@
 import { View } from 'sparrow-ui';
 import Form from '../Form';
 import Session from '../../Providers/Session';
+import Agents from '../../Providers/Agents';
 import page from 'page';
 
 class Login extends View {
@@ -54,7 +55,7 @@ class Login extends View {
 
         this.el = el;
         
-        var signIn = new Form({method: 'POST', url: '/sessions'});
+        var signIn = new Form(data => Session.store(data));
         
         signIn
             .addEmail('username', { label: 'Email', placeholder: 'Email' , required: true, alias: 'credentials'})
@@ -63,7 +64,7 @@ class Login extends View {
 
         el.find('#signIn').html(signIn.render());
 
-        var signUp = new Form({ method: 'POST', url: '/agents'}, { resetOnSuccess: true});
+        var signUp = new Form(data => Agents.store(data), { resetOnSuccess: true});
 
         signUp
             .addInput('fullName', { label: 'Full Name', placeholder: 'Full Name', required: true})
@@ -80,10 +81,7 @@ class Login extends View {
         signIn.setOnComplete(() => this.removeAlert() );
         signIn.setOnGlobalError(e => this.showAlert(e, 'danger'));
 
-        signIn.setOnSuccess((data) => {
-            Session.set(data);
-            page('/');
-        });
+        signIn.setOnSuccess(() => page('/'));
 
 
         el.find('#signUp').html(signUp.render());

@@ -17,11 +17,7 @@ setInterval(() => {
     // gives 10 minutes to refresh the session
     
     if (now.getTime() >= (expiresAt.getTime() - 600000)){
-        backend({ 
-            method: 'POST', 
-            url: '/sessions/' + session.id + '/refresh'
-        })
-        .done(data => Session.set(data));
+        Session.refresh();
     }
 }, 10000);
 

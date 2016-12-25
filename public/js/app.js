@@ -76,12 +76,7 @@
 	    // gives 10 minutes to refresh the session
 
 	    if (now.getTime() >= expiresAt.getTime() - 600000) {
-	        (0, _Helpers.backend)({
-	            method: 'POST',
-	            url: '/sessions/' + session.id + '/refresh'
-	        }).done(function (data) {
-	            return _Session2.default.set(data);
-	        });
+	        _Session2.default.refresh();
 	    }
 	}, 10000);
 
@@ -119,11 +114,11 @@
 
 	var _Login2 = _interopRequireDefault(_Login);
 
-	var _Error = __webpack_require__(15);
+	var _Error = __webpack_require__(16);
 
 	var _Error2 = _interopRequireDefault(_Error);
 
-	var _Home = __webpack_require__(16);
+	var _Home = __webpack_require__(17);
 
 	var _Home2 = _interopRequireDefault(_Home);
 
@@ -1499,6 +1494,10 @@
 
 	var _Session2 = _interopRequireDefault(_Session);
 
+	var _Agents = __webpack_require__(15);
+
+	var _Agents2 = _interopRequireDefault(_Agents);
+
 	var _page = __webpack_require__(3);
 
 	var _page2 = _interopRequireDefault(_page);
@@ -1550,13 +1549,17 @@
 
 	            this.el = el;
 
-	            var signIn = new _Form2.default({ method: 'POST', url: '/sessions' });
+	            var signIn = new _Form2.default(function (data) {
+	                return _Session2.default.store(data);
+	            });
 
 	            signIn.addEmail('username', { label: 'Email', placeholder: 'Email', required: true, alias: 'credentials' }).addPassword('password', { label: 'Password', placeholder: 'Password', required: true }).addSubmit('Login', { color: 'success', isBlock: true });
 
 	            el.find('#signIn').html(signIn.render());
 
-	            var signUp = new _Form2.default({ method: 'POST', url: '/agents' }, { resetOnSuccess: true });
+	            var signUp = new _Form2.default(function (data) {
+	                return _Agents2.default.store(data);
+	            }, { resetOnSuccess: true });
 
 	            signUp.addInput('fullName', { label: 'Full Name', placeholder: 'Full Name', required: true }).addEmail('email', { label: 'Email', placeholder: 'Email', required: true }).addPassword('password', { label: 'Password', placeholder: 'Password', required: true }).addInput('insuranceLicenseNumber', { label: 'Insurance License #', placeholder: 'A123456', required: true }).addCheckbox('agreeToTOS', { label: 'I agree to the TOS', required: true }).addSubmit('Register', { color: 'warning', isBlock: true });
 
@@ -1577,9 +1580,8 @@
 	                return _this2.showAlert(e, 'danger');
 	            });
 
-	            signIn.setOnSuccess(function (data) {
-	                _Session2.default.set(data);
-	                (0, _page2.default)('/');
+	            signIn.setOnSuccess(function () {
+	                return (0, _page2.default)('/');
 	            });
 
 	            el.find('#signUp').html(signUp.render());
@@ -1710,14 +1712,19 @@
 	                }
 	            });
 
-	            var config = this.request;
-	            config.data = data;
+	            if (typeof this.request === 'function') {
+	                var promise = this.request(data);
+	            } else {
+	                var config = this.request;
+	                config.data = data;
+	                var promise = (0, _Helpers.backend)(config);
+	            }
 
 	            this.controls.forEach(function (c) {
 	                return c.disable();
 	            });
 
-	            (0, _Helpers.backend)(config).always(function () {
+	            promise.always(function () {
 	                _this2.controls.forEach(function (c) {
 	                    c.enable();
 	                    c.removeError();
@@ -1840,13 +1847,16 @@
 
 /***/ },
 /* 10 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+
+	var _Helpers = __webpack_require__(9);
+
 	var Session = {
 	    get: function get() {
 	        if (typeof this.source === 'undefined') {
@@ -1868,6 +1878,23 @@
 	    set: function set(data) {
 	        this.source = data;
 	        localStorage.setItem('session', JSON.stringify(this.source));
+	    },
+	    store: function store(data) {
+	        var _this = this;
+
+	        return (0, _Helpers.backend)({ method: 'POST', url: '/sessions', data: data }).done(function (data) {
+	            return _this.set(data);
+	        });
+	    },
+	    refresh: function refresh() {
+	        var _this2 = this;
+
+	        return (0, _Helpers.backend)({
+	            method: 'POST',
+	            url: '/sessions/' + this.get().id + '/refresh'
+	        }).done(function (data) {
+	            return _this2.set(data);
+	        });
 	    },
 	    has: function has() {
 	        return this.get() !== null;
@@ -2192,6 +2219,26 @@
 	    value: true
 	});
 
+	var _Helpers = __webpack_require__(9);
+
+	var Agents = {
+	    store: function store(data) {
+	        return (0, _Helpers.backend)({ method: 'POST', url: '/agents', data: data });
+	    }
+	};
+
+	exports.default = Agents;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _sparrowUi = __webpack_require__(2);
@@ -2224,7 +2271,7 @@
 	exports.default = Error404;
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2241,13 +2288,9 @@
 
 	var _Session2 = _interopRequireDefault(_Session);
 
-	var _OwnPostsList = __webpack_require__(17);
+	var _OwnPostsList = __webpack_require__(18);
 
 	var _OwnPostsList2 = _interopRequireDefault(_OwnPostsList);
-
-	var _Modal = __webpack_require__(21);
-
-	var _Modal2 = _interopRequireDefault(_Modal);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2297,7 +2340,7 @@
 	exports.default = Home;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2310,11 +2353,11 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _OwnPosts = __webpack_require__(18);
+	var _OwnPosts = __webpack_require__(19);
 
 	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
 
-	var _OwnPostItem = __webpack_require__(19);
+	var _OwnPostItem = __webpack_require__(20);
 
 	var _OwnPostItem2 = _interopRequireDefault(_OwnPostItem);
 
@@ -2380,7 +2423,7 @@
 	exports.default = OwnPostsList;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2416,13 +2459,20 @@
 	        return (0, _Helpers.backend)({
 	            method: 'DELETE', url: '/agents/' + session.user.id + '/posts/' + id
 	        });
+	    },
+	    store: function store(data) {
+	        return (0, _Helpers.backend)({
+	            method: 'POST',
+	            url: '/agents/' + session.user.id + '/posts',
+	            data: data
+	        });
 	    }
 	};
 
 	exports.default = OwnPosts;
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2435,7 +2485,7 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _OwnPostAction = __webpack_require__(20);
+	var _OwnPostAction = __webpack_require__(21);
 
 	var _OwnPostAction2 = _interopRequireDefault(_OwnPostAction);
 
@@ -2490,7 +2540,7 @@
 	exports.default = OwnPostItem;
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2503,7 +2553,7 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _OwnPosts = __webpack_require__(18);
+	var _OwnPosts = __webpack_require__(19);
 
 	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
 
@@ -2595,45 +2645,6 @@
 	}(_sparrowUi.View);
 
 	exports.default = OwnPostAction;
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _sparrowUi = __webpack_require__(2);
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Modal = function (_View) {
-	    _inherits(Modal, _View);
-
-	    function Modal() {
-	        _classCallCheck(this, Modal);
-
-	        return _possibleConstructorReturn(this, (Modal.__proto__ || Object.getPrototypeOf(Modal)).apply(this, arguments));
-	    }
-
-	    _createClass(Modal, [{
-	        key: 'render',
-	        value: function render() {}
-	    }]);
-
-	    return Modal;
-	}(_sparrowUi.View);
-
-	exports.default = Modal;
 
 /***/ },
 /* 22 */

@@ -1,7 +1,6 @@
 import { View } from 'sparrow-ui';
 import Session from '../../Providers/Session';
 import OwnPostsList from '../Post/OwnPostsList';
-import Modal from '../Modal';
 
 class Home extends View {
 

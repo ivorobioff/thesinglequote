@@ -1,3 +1,5 @@
+import { backend } from '../Helpers';
+
 const Session = {
     get (){
         if (typeof this.source === 'undefined'){
@@ -20,6 +22,19 @@ const Session = {
     set(data){
         this.source = data;
         localStorage.setItem('session', JSON.stringify(this.source));
+    },
+    
+    store(data){
+        return backend({ method: 'POST', url: '/sessions', data})
+            .done(data => this.set(data));
+    },
+
+    refresh(){
+        return backend({ 
+            method: 'POST', 
+            url: '/sessions/' + this.get().id + '/refresh'
+        })
+        .done(data => this.set(data));
     },
     
     has(){

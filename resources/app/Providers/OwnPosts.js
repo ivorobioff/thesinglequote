@@ -20,6 +20,14 @@ const OwnPosts = {
         return backend({ 
             method: 'DELETE', url: '/agents/' + session.user.id + '/posts/' + id
         });
+    },
+
+    store(data){
+        return backend({ 
+            method: 'POST', 
+            url: '/agents/' + session.user.id + '/posts',
+            data
+        });
     }
 }
 

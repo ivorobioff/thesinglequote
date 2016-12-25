@@ -47,59 +47,63 @@ class Form extends View {
      }
 
      onSubmit(e){
-         e.preventDefault();
+        e.preventDefault();
 
-         var data = {};
+        var data = {};
 
-         this.controls.forEach(c => {
-             if (c.getValue){
-                 data[c.name] = c.getValue();
-             }
-         });
+        this.controls.forEach(c => {
+            if (c.getValue){
+                data[c.name] = c.getValue();
+            }
+        });
 
-         var config = this.request;
-         config.data = data;
+        if (typeof this.request === 'function'){
+            var promise = this.request(data);
+        } else {
+            var config = this.request;
+            config.data = data;
+            var promise = backend(config);
+        }
 
-         this.controls.forEach(c => c.disable());
+        this.controls.forEach(c => c.disable());
 
-         backend(config)
-            .always(() => {
-                this.controls.forEach(c => { 
-                    c.enable();
-                    c.removeError();
-                });
-
-                if (this.onCompleteCallback){
-                    this.onCompleteCallback();
-                }
-            })
-            .fail(x => {
-                var error = 'Unknown error';
-                var data = $.parseJSON(x.responseText);
-
-                if (x.status == 422){
-                    error = data.errors;
-                    this.controls.forEach(c => {
-                        if (c.notifyAboutErrors){
-                            c.notifyAboutErrors(error)
-                        }
-                    });
-                } else {
-                    error = data.message;
-                    if (this.onGlobalErrorCallback){
-                        this.onGlobalErrorCallback(error);
-                    }
-                }
-            })
-            .done(data => {
-                if (this.options.resetOnSuccess){
-                    this.el[0].reset();
-                }
-
-                if (this.onSuccessCallback){
-                    this.onSuccessCallback(data);
-                }
+        promise.always(() => {
+            this.controls.forEach(c => { 
+                c.enable();
+                c.removeError();
             });
+
+            if (this.onCompleteCallback){
+                this.onCompleteCallback();
+            }
+        })
+        .fail(x => {
+            var error = 'Unknown error';
+            var data = $.parseJSON(x.responseText);
+
+            if (x.status == 422){
+                error = data.errors;
+                this.controls.forEach(c => {
+                    if (c.notifyAboutErrors){
+                        c.notifyAboutErrors(error)
+                    }
+                });
+            } else {
+                error = data.message;
+                if (this.onGlobalErrorCallback){
+                    this.onGlobalErrorCallback(error);
+                }
+            }
+        })
+        .done(data => {
+            if (this.options.resetOnSuccess){
+                this.el[0].reset();
+            }
+
+            if (this.onSuccessCallback){
+                this.onSuccessCallback(data);
+            }
+        });
      }
 
      setOnComplete(callback){
