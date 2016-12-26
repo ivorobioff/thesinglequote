@@ -13,7 +13,7 @@ class QuoteRequestAction extends View {
             <div class="btn-group">
                 <button id="statusButton" type="button"  data-toggle="dropdown" class="btn dropdown-toggle"></button>
                 <ul class="dropdown-menu">
-                    <li><a href="#" id="uploadAction">Upload a Quote</a></li>
+                    <li><a href="#" id="uploadAction">Propose a Quote</a></li>
                 </ul>
             </div>
         `);

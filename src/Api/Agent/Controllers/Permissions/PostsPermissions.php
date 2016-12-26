@@ -16,7 +16,7 @@ class PostsPermissions extends AbstractActionsPermissions
             'store' => 'owner',
             'update' => 'owner',
             'index' => 'owner',
-            'all' => 'auth',
+            'requests' => 'auth',
             'destroy' => 'owner'
         ];
     }

@@ -70,30 +70,9 @@
                 ... Agent Post Payload
             }
             
-##### Gets all agent posts
-
-##### `GET /agents/posts`
-
-+ Parameters
-    + page: int
-    + perPage: int
-
-+ Response
-            
-            {
-                "data": [
-                    {
-                        ... Agent Post Object
-                    }
-                ],
-                "meta": {
-                    "pagination": {
-                        ... Pagination Object
-                    }
-                }
-            }
 
 ##### Gets all posts of a specific agent
+
 ##### `GET /agents/{agentId}/posts`
             
 + Parameters
@@ -117,7 +96,32 @@
 
 
 ##### Deletes an agent post
+
 ##### `DELETE /agents/{agentId}/posts/{postId}`
+
+
+##### Gets all quote requests
+
+##### `GET /agents/requests`
+
++ Parameters
+    + page: int
+    + perPage: int
+
++ Response
+            
+            {
+                "data": [
+                    {
+                        ... Agent Post Object
+                    }
+                ],
+                "meta": {
+                    "pagination": {
+                        ... Pagination Object
+                    }
+                }
+            }
 
 
 ## Session

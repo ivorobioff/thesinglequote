@@ -14,16 +14,23 @@ class PostSerializer extends Serializer
      */
     public function __invoke(Post $post)
     {
-        return [
+        $data = [
             'id' => $post->getId(),
             'title' => $post->getTitle(),
             'publicMessage' => $post->getPublicMessage(),
-            'privateMessage' => $post->getPrivateMessage(),
-            'clientName' => $post->getClientName(),
-            'clientPhone' => $post->getClientPhone(),
-            'noPersonalInfoInPublic' => $post->getNoPersonalInfoInPublic(),
             'createdAt' => $this->datetime($post->getCreatedAt()),
             'status' => $this->enum($post->getStatus())
         ];
+
+        if ($this->session->getUser()->getId() == $post->getOwner()->getId()){
+            $data = array_merge($data, [
+                'privateMessage' => $post->getPrivateMessage(),
+                'clientName' => $post->getClientName(),
+                'clientPhone' => $post->getClientPhone(),
+                'noPersonalInfoInPublic' => $post->getNoPersonalInfoInPublic()
+            ]);
+        }
+
+        return $data;
     }
 }

@@ -63,8 +63,8 @@ class PostMetadata extends AbstractMetadataProvider
             ->build();
 
         $builder
-            ->createManyToOne('agent', Agent::class)
-            ->addJoinColumn('agent_id', 'id', true, false, 'CASCADE')
+            ->createManyToOne('owner', Agent::class)
+            ->addJoinColumn('owner_id', 'id', true, false, 'CASCADE')
             ->build();
     }
 }

@@ -16,7 +16,7 @@ class PostRoutes
         $router->post('/agents/{agentId:\d+}/posts', PostsController::class.'@store');
         $router->patch('/agents/{agentId:\d+}/posts/{postId:\d+}', PostsController::class.'@update');
         $router->get('/agents/{agentId:\d+}/posts', PostsController::class.'@index');
-        $router->get('/agents/posts', PostsController::class.'@all');
+        $router->get('/agents/requests', PostsController::class.'@requests');
         $router->delete('/agents/{agentId:\d+}/posts/{postId:\d+}', PostsController::class.'@destroy');
     }
 }

@@ -2,6 +2,7 @@
 namespace ImmediateSolutions\Api\Support;
 
 use DateTime;
+use ImmediateSolutions\Core\Session\Entities\Session;
 use ImmediateSolutions\Support\Framework\ContainerInterface;
 use ImmediateSolutions\Support\Other\Enum;
 
@@ -16,11 +17,17 @@ abstract class Serializer
     protected $container;
 
     /**
+     * @var Session
+     */
+    protected $session;
+
+    /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->session = $container->get(Session::class);
     }
 
     /**

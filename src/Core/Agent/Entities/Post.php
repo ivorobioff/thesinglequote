@@ -15,9 +15,9 @@ class Post
     /**
      * @var Agent
      */
-    private $agent;
-    public function setAgent(Agent $agent) { $this->agent = $agent; }
-    public function getAgent() { return $this->agent; }
+    private $owner;
+    public function setOwner(Agent $owner) { $this->owner = $owner; }
+    public function getOwner() { return $this->owner; }
 
     /**
      * @var Status

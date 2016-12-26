@@ -4,6 +4,7 @@ use Doctrine\ORM\QueryBuilder;
 use ImmediateSolutions\Core\Agent\Criteria\PostSorterResolver;
 use ImmediateSolutions\Core\Agent\Entities\Agent;
 use ImmediateSolutions\Core\Agent\Entities\Post;
+use ImmediateSolutions\Core\Agent\Enums\Status;
 use ImmediateSolutions\Core\Agent\Options\FetchPostsOptions;
 use ImmediateSolutions\Core\Agent\Payloads\PostPayload;
 use ImmediateSolutions\Core\Agent\Validation\PostValidator;
@@ -35,7 +36,7 @@ class PostService extends Service
          */
         $agent = $this->entityManager->getReference(Agent::class, $agentId);
 
-        $post->setAgent($agent);
+        $post->setOwner($agent);
 
         $this->entityManager->persist($post);
         $this->entityManager->flush();
@@ -80,7 +81,7 @@ class PostService extends Service
     /**
      * @param int $agentId
      * @param FetchPostsOptions|null $options
-     * @return array
+     * @return Post[]
      */
     public function getAll($agentId, FetchPostsOptions $options = null)
     {
@@ -88,7 +89,7 @@ class PostService extends Service
             $options = new FetchPostsOptions();
         }
 
-        $builder = $this->startQuery($agentId, $options);
+        $builder = $this->startQuery($agentId);
 
         (new Sorter())->apply($builder, $options->getSortables(), new PostSorterResolver());
 
@@ -97,27 +98,51 @@ class PostService extends Service
 
     /**
      * @param $agentId
-     * @param FetchPostsOptions $options
      * @return int
      */
-    public function getTotal($agentId, FetchPostsOptions $options = null)
+    public function getTotal($agentId)
+    {
+        $builder = $this->startQuery($agentId, true);
+
+        return (int) $builder->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param $forAgentId
+     * @param FetchPostsOptions $options
+     * @return Post[]
+     */
+    public function getAllRequests($forAgentId, FetchPostsOptions $options = null)
     {
         if ($options === null){
             $options = new FetchPostsOptions();
         }
 
-        $builder = $this->startQuery($agentId, $options, true);
+        $builder = $this->startQuery($forAgentId, false, true);
+
+        (new Sorter())->apply($builder, $options->getSortables(), new PostSorterResolver());
+
+        return (new Paginator())->apply($builder, $options->getPagination());
+    }
+
+    /**
+     * @param int $forAgentId
+     * @return int
+     */
+    public function getTotalRequests($forAgentId)
+    {
+        $builder = $this->startQuery($forAgentId, true, true);
 
         return (int) $builder->getQuery()->getSingleScalarResult();
     }
 
     /**
      * @param int $agentId
-     * @param FetchPostsOptions $options
      * @param bool $isCount
+     * @param bool $asRequests
      * @return QueryBuilder
      */
-    private function startQuery($agentId, FetchPostsOptions $options, $isCount = false)
+    private function startQuery($agentId, $isCount = false, $asRequests = false)
     {
         $builder = $this->entityManager->createQueryBuilder();
 
@@ -125,13 +150,15 @@ class PostService extends Service
             ->select($isCount ? $builder->expr()->countDistinct('p') : 'p')
             ->from(Post::class, 'p');
 
-        if ($options->isInverted()){
-            $builder->andWhere($builder->expr()->neq('p.agent', ':agent'));
+        if ($asRequests){
+            $builder->andWhere($builder->expr()->neq('p.owner', ':owner'));
+            $builder->andWhere($builder->expr()->neq('p.status', ':unwantedStatus'))
+                ->setParameter('unwantedStatus', Status::DONE);
         } else {
-            $builder->andWhere($builder->expr()->eq('p.agent', ':agent'));
+            $builder->andWhere($builder->expr()->eq('p.owner', ':owner'));
         }
 
-        $builder->setParameter('agent', $agentId);
+        $builder->setParameter('owner', $agentId);
 
         return $builder;
     }

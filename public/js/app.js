@@ -3507,7 +3507,7 @@
 	    load: function load() {
 	        var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 
-	        return (0, _Helpers.backend)({ method: 'GET', url: '/agents/posts', data: {
+	        return (0, _Helpers.backend)({ method: 'GET', url: '/agents/requests', data: {
 	                orderBy: 'id:desc', page: page
 	            } });
 	    }
@@ -3611,7 +3611,7 @@
 	        key: 'render',
 	        value: function render() {
 	            var data = this.data;
-	            var el = $('\n            <div class="btn-group">\n                <button id="statusButton" type="button"  data-toggle="dropdown" class="btn dropdown-toggle"></button>\n                <ul class="dropdown-menu">\n                    <li><a href="#" id="uploadAction">Upload a Quote</a></li>\n                </ul>\n            </div>\n        ');
+	            var el = $('\n            <div class="btn-group">\n                <button id="statusButton" type="button"  data-toggle="dropdown" class="btn dropdown-toggle"></button>\n                <ul class="dropdown-menu">\n                    <li><a href="#" id="uploadAction">Propose a Quote</a></li>\n                </ul>\n            </div>\n        ');
 
 	            el.find('#statusButton').addClass('btn-default').text('Open' + ' ').append('<span class="caret"></span>');
 

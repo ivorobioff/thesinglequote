@@ -10,8 +10,4 @@ class FetchPostsOptions
 {
     use PaginationAwareTrait;
     use SortablesAwareTrait;
-
-    private $isInverted = false;
-    public function setInverted($flag) { $this->isInverted = $flag; }
-    public function isInverted() { return $this->isInverted; }
 }

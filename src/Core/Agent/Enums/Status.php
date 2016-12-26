@@ -8,5 +8,6 @@ use ImmediateSolutions\Support\Other\Enum;
 class Status extends Enum
 {
     const OPEN = 'open';
+    const ACTIVE = 'active';
     const DONE = 'done';
 }

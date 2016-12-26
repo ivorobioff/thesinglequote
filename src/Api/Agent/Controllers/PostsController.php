@@ -63,12 +63,11 @@ class PostsController extends Controller
      */
     public function index($agentId, PostsSearchableProcessor $processor)
     {
-        $options = new FetchPostsOptions();
-        $options->setSortables($processor->createSortables());
-
         $adapter = new DefaultPaginatorAdapter([
-            'getAll' => function($page, $perPage) use ($agentId, $options){
+            'getAll' => function($page, $perPage) use ($agentId, $processor){
 
+                $options = new FetchPostsOptions();
+                $options->setSortables($processor->createSortables());
                 $options->setPagination(new PaginationOptions($page, $perPage));
 
                 return $this->postService->getAll($agentId, $options);
@@ -86,12 +85,8 @@ class PostsController extends Controller
      * @param  PostsSearchableProcessor $processor
      * @return ResponseInterface
      */
-    public function all(PostsSearchableProcessor $processor)
+    public function requests(PostsSearchableProcessor $processor)
     {
-        $options = new FetchPostsOptions();
-        $options->setInverted(true);
-        $options->setSortables($processor->createSortables());
-
         /**
          * @var Session $session
          */
@@ -100,14 +95,17 @@ class PostsController extends Controller
         $agentId = $session->getUser()->getId();
 
         $adapter = new DefaultPaginatorAdapter([
-            'getAll' => function($page, $perPage) use ($agentId, $options){
+            'getAll' => function($page, $perPage) use ($agentId, $processor){
+
+                $options = new FetchPostsOptions();
+                $options->setSortables($processor->createSortables());
 
                 $options->setPagination(new PaginationOptions($page, $perPage));
 
-                return $this->postService->getAll($agentId, $options);
+                return $this->postService->getAllRequests($agentId, $options);
             },
-            'getTotal' => function() use ($agentId, $options){
-                return $this->postService->getTotal($agentId, $options);
+            'getTotal' => function() use ($agentId){
+                return $this->postService->getTotalRequests($agentId);
             }
         ]);
 
