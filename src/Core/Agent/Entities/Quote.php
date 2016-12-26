@@ -67,7 +67,7 @@ class Quote
     /**
      * @param Document $document
      */
-    public function setDocument(Document $document)
+    public function setDocument(Document $document = null)
     {
         $this->handleUsageOfOneDocument($this->getDocument(), $document);
 

@@ -7,6 +7,7 @@ use ImmediateSolutions\Support\Framework\Exceptions\AbstractHttpException;
 use ImmediateSolutions\Support\Framework\MiddlewareInterface;
 use ImmediateSolutions\Support\Validation\Error;
 use ImmediateSolutions\Support\Validation\ErrorsThrowableCollection;
+use ImmediateSolutions\Support\Validation\PresentableException;
 use Psr\Http\Message\ServerRequestInterface;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
@@ -57,8 +58,8 @@ class ExceptionMiddleware implements MiddlewareInterface
     {
         try {
             $response = $next($request);
-        } catch (AbstractHttpException $ex) {
-            $response = $this->writeHttpException($ex);
+        } catch (AbstractHttpException $exception) {
+            $response = $this->writeHttpException($exception);
         } catch (ErrorsThrowableCollection $errors){
 
             $data = [];
@@ -72,7 +73,9 @@ class ExceptionMiddleware implements MiddlewareInterface
 
             $response = $this->responseFactory->create(['errors' => $data], 422);
 
-        } catch(Exception $exception) {
+        } catch (PresentableException $exception) {
+            $response = $this->writeException(400, $exception->getMessage());
+        }  catch(Exception $exception) {
 
             if ($this->logger){
                 $this->logger->critical($exception);

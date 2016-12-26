@@ -55,10 +55,12 @@ class QuoteMetadata extends AbstractMetadataProvider
 
         $builder
             ->createManyToOne('owner', Agent::class)
+            ->addJoinColumn('owner_id', 'id', true, false, 'CASCADE')
             ->build();
 
         $builder
             ->createManyToOne('request', Post::class)
+            ->addJoinColumn('request_id', 'id', true, false, 'CASCADE')
             ->build();
 
         $builder

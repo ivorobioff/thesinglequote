@@ -7,6 +7,7 @@ use ImmediateSolutions\Core\Document\Interfaces\StorageInterface;
 use ImmediateSolutions\Core\Support\Service;
 use ImmediateSolutions\Support\Core\Interfaces\TokenGeneratorInterface;
 use ImmediateSolutions\Support\Other\Tracker;
+use ImmediateSolutions\Support\Validation\PresentableException;
 use Psr\Http\Message\UploadedFileInterface;
 use Traversable;
 use DateTime;
@@ -28,7 +29,7 @@ class DocumentService extends Service
 		$storage = $this->container->get(StorageInterface::class);
 
         if ($file->getError() !== UPLOAD_ERR_OK){
-
+            throw new PresentableException('Unable to upload the document');
         }
 
         $document = new Document();

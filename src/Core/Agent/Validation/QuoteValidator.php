@@ -68,7 +68,7 @@ class QuoteValidator extends AbstractThrowableValidator
             ->bind('note', function(Property $property){
                 $property
                     ->addRule(new Blank())
-                    ->addRule(new Length(1024));
+                    ->addRule(new Length(0, 1024));
             });
 
         $documentInflator = new DocumentInflator($this->container);

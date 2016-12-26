@@ -25,6 +25,8 @@ class ConfigProvider extends AbstractConfigProvider
                 'Document'
             ],
 
+            'base_url' => 'https://thesinglequote.com',
+
             'doctrine' => [
                 'db' => 'default',
 

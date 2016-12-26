@@ -8,6 +8,19 @@ use ImmediateSolutions\Core\Document\Interfaces\DocumentPreferenceInterface;
 class DocumentPreference implements DocumentPreferenceInterface
 {
     /**
+     * @var ConfigInterface
+     */
+    private $config;
+
+    /**
+     * @param ConfigInterface $config
+     */
+    public function __construct(ConfigInterface $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * @return int
      */
     public function getLifeTime()
@@ -20,6 +33,6 @@ class DocumentPreference implements DocumentPreferenceInterface
      */
     public function getBaseUrl()
     {
-        return 'http://igorvorobiov.com';
+        return $this->config->get('base_url');
     }
 }

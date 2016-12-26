@@ -15,7 +15,7 @@ class DocumentSerializer extends Serializer
             'token' => $document->getToken(),
             'format' => $document->getFormat(),
             'name' => $document->getName(),
-            'url' => 'https://what.org'.$document->getUri(),
+            'url' => $this->url($document->getUri()),
             'uploadedAt' => $this->datetime($document->getUploadedAt())
         ];
     }

@@ -16,7 +16,7 @@ class PostMetadata extends AbstractMetadataProvider
      */
     public function define(ClassMetadataBuilder $builder)
     {
-        $builder->setTable('agent_posts');
+        $builder->setTable('posts');
 
         $builder
             ->createField('id', 'integer')

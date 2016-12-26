@@ -87,7 +87,7 @@ class QuoteController extends Controller
      * @param int $requestId
      * @return bool
      */
-    public function verifyAction(AgentService $agentService, $agentId, $requestId)
+    public function verify(AgentService $agentService, $agentId, $requestId)
     {
         return $agentService->hasRequest($agentId, $requestId);
     }

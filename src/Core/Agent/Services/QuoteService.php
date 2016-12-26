@@ -116,7 +116,17 @@ class QuoteService extends Service
      */
     public function deleteByRequestAndOwnerId($requestId, $ownerId)
     {
-        $this->entityManager->getRepository(Quote::class)
-            ->delete(['request' => $requestId, 'owner' => $ownerId]);
+        /**
+         * @var Quote $quote
+         */
+        $quote = $this->entityManager->getRepository(Quote::class)->findOneBy([
+            'request' => $requestId,
+            'owner' => $ownerId
+        ]);
+
+        $quote->setDocument(null);
+
+        $this->entityManager->remove($quote);
+        $this->entityManager->flush();
     }
 }

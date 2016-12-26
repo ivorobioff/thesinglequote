@@ -27,7 +27,6 @@ class DocumentMetadata extends AbstractMetadataProvider
             ->unique()
             ->build();
 
-
         $builder
             ->createField('usage', 'integer')
             ->columnName('`usage`')
@@ -38,6 +37,9 @@ class DocumentMetadata extends AbstractMetadataProvider
             ->nullable(true)
             ->build();
 
+        $builder
+            ->createField('name', 'string')
+            ->build();
 
         $builder
             ->createField('format', 'string')

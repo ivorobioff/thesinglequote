@@ -2,6 +2,7 @@
 namespace ImmediateSolutions\Api\Support;
 
 use DateTime;
+use ImmediateSolutions\Core\Document\Interfaces\DocumentPreferenceInterface;
 use ImmediateSolutions\Core\Session\Entities\Session;
 use ImmediateSolutions\Support\Framework\ContainerInterface;
 use ImmediateSolutions\Support\Other\Enum;
@@ -44,6 +45,16 @@ abstract class Serializer
         }
 
         return $serializer($object);
+    }
+
+    protected function url($uri)
+    {
+        /**
+         * @var DocumentPreferenceInterface $preference
+         */
+        $preference = $this->container->get(DocumentPreferenceInterface::class);
+
+        return $preference->getBaseUrl().$uri;
     }
 
     /**

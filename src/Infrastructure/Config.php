@@ -5,7 +5,7 @@ use ImmediateSolutions\ConfigProvider;
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
  */
-class Config
+class Config implements ConfigInterface
 {
     /**
      * @var array

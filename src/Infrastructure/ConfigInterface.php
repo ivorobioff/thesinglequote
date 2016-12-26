@@ -11,5 +11,5 @@ interface ConfigInterface
      * @param mixed $default
      * @return mixed
      */
-    public function get($path, $default);
+    public function get($path, $default = null);
 }
