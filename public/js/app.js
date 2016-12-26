@@ -3507,7 +3507,10 @@
 	    load: function load() {
 	        var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 
-	        return (0, _Helpers.backend)({ method: 'GET', url: '/agents/requests', data: {
+
+	        var session = _Session2.default.get();
+
+	        return (0, _Helpers.backend)({ method: 'GET', url: '/agents/' + session.user.id + '/requests', data: {
 	                orderBy: 'id:desc', page: page
 	            } });
 	    }

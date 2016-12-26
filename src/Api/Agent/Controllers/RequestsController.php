@@ -1,6 +1,5 @@
 <?php
 namespace ImmediateSolutions\Api\Agent\Controllers;
-use ImmediateSolutions\Api\Agent\Processors\PostsProcessor;
 use ImmediateSolutions\Api\Agent\Processors\PostsSearchableProcessor;
 use ImmediateSolutions\Api\Agent\Serializers\PostSerializer;
 use ImmediateSolutions\Api\Support\Controller;
@@ -14,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
  */
-class PostsController extends Controller
+class RequestsController extends Controller
 {
     /**
      * @var PostService
@@ -29,50 +28,26 @@ class PostsController extends Controller
         $this->postService = $postService;
     }
 
-    /**
-     * @param int $agentId
-     * @param PostsProcessor $processor
-     * @return ResponseInterface
-     */
-    public function store($agentId, PostsProcessor $processor)
-    {
-        return $this->reply->single(
-            $this->postService->create($agentId, $processor->createPayload()),
-            $this->serializer(PostSerializer::class)
-        );
-    }
 
     /**
+     * @param  PostsSearchableProcessor $processor
      * @param int $agentId
-     * @param int $postId
-     * @param PostsProcessor $processor
      * @return ResponseInterface
      */
-    public function update($agentId, $postId, PostsProcessor $processor)
-    {
-        $this->postService->update($postId, $processor->createPayload());
-
-        return $this->reply->blank();
-    }
-
-    /**
-     * @param int $agentId
-     * @param PostsSearchableProcessor $processor
-     * @return ResponseInterface
-     */
-    public function index($agentId, PostsSearchableProcessor $processor)
+    public function index(PostsSearchableProcessor $processor, $agentId)
     {
         $adapter = new DefaultPaginatorAdapter([
             'getAll' => function($page, $perPage) use ($agentId, $processor){
 
                 $options = new FetchPostsOptions();
                 $options->setSortables($processor->createSortables());
+
                 $options->setPagination(new PaginationOptions($page, $perPage));
 
-                return $this->postService->getAll($agentId, $options);
+                return $this->postService->getAllRequests($agentId, $options);
             },
             'getTotal' => function() use ($agentId){
-                return $this->postService->getTotal($agentId);
+                return $this->postService->getTotalRequests($agentId);
             }
         ]);
 
@@ -80,30 +55,12 @@ class PostsController extends Controller
     }
 
     /**
-     * @param int $agentId
-     * @param int $postId
-     * @return ResponseInterface
-     */
-    public function destroy($agentId, $postId)
-    {
-        $this->postService->delete($postId);
-
-        return $this->reply->blank();
-    }
-
-
-    /**
      * @param AgentService $agentService
      * @param int $agentId
-     * @param int $postId
      * @return bool
      */
-    public function verify(AgentService $agentService, $agentId, $postId = null)
+    public function verify(AgentService $agentService, $agentId)
     {
-        if ($postId === null){
-            return $agentService->exists($agentId);
-        }
-
-        return $agentService->hasPost($agentId, $postId);
+        return $agentService->exists($agentId);
     }
 }

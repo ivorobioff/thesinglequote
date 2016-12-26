@@ -2,6 +2,7 @@
 namespace ImmediateSolutions\Core\Agent\Services;
 use ImmediateSolutions\Core\Agent\Entities\Agent;
 use ImmediateSolutions\Core\Agent\Entities\Post;
+use ImmediateSolutions\Core\Agent\Enums\Status;
 use ImmediateSolutions\Core\Agent\Payloads\AgentPayload;
 use ImmediateSolutions\Core\Agent\Validation\AgentValidator;
 use ImmediateSolutions\Core\Support\Service;
@@ -117,6 +118,22 @@ class AgentService extends Service
     {
         return $this->entityManager
             ->getRepository(Post::class)
-            ->exists(['id' => $postId, 'agent' => $agentId]);
+            ->exists(['id' => $postId, 'owner' => $agentId]);
+    }
+
+    /**
+     * @param int $agentId
+     * @param int $postId
+     * @return bool`
+     */
+    public function hasRequest($agentId, $postId)
+    {
+        return $this->entityManager
+            ->getRepository(Post::class)
+            ->exists([
+                'id' => $postId,
+                'owner' => ['!=', $agentId],
+                'status' => ['!=', Status::DONE]
+            ]);
     }
 }

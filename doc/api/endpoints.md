@@ -102,7 +102,7 @@
 
 ##### Gets all quote requests
 
-##### `GET /agents/requests`
+##### `GET /agents/{agentId}/requests`
 
 + Parameters
     + page: int
@@ -122,6 +122,47 @@
                     }
                 }
             }
+
+
+##### Creates a quote
+
+##### `POST /agents/{agentId}/requests/{requestId}/quote`
+
++ Request
+
+            {
+                ... Agent Quote Payload
+            }
+
++ Response
+
+            {
+                ... Agent Quote Object
+            }
+
+##### Updates a quote
+
+##### `PATCH /agents/{agentId}/requests/{requestId}/quote`
+
++ Request
+
+            {
+                ... Agent Quote Payload
+            }
+
+##### Gets a quote
+
+##### `GET /agents/{agentId}/requests/{requestId}/quote`
+
++ Response
+
+            {
+                ... Agent Quote Object
+            }
+            
+##### Deletes a quote
+
+##### `DELETE /agents/{agentId}/requests/{requestId}/quote`
 
 
 ## Session

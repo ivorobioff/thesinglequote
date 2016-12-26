@@ -3,7 +3,10 @@ import Session from './Session';
 
 const QuoteRequests = {
     load(page = 1){
-        return backend({ method: 'GET', url: '/agents/requests', data: {
+
+        var session = Session.get();
+
+        return backend({ method: 'GET', url: '/agents/' + session.user.id + '/requests', data: {
             orderBy: 'id:desc', page
         }});
     }

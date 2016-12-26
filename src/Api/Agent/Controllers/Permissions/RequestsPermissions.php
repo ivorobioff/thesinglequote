@@ -5,7 +5,7 @@ use ImmediateSolutions\Support\Permissions\AbstractActionsPermissions;
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
  */
-class PostsPermissions extends AbstractActionsPermissions
+class RequestsPermissions extends AbstractActionsPermissions
 {
     /**
      * @return array
@@ -13,10 +13,7 @@ class PostsPermissions extends AbstractActionsPermissions
     protected function permissions()
     {
         return [
-            'store' => 'owner',
-            'update' => 'owner',
-            'index' => 'owner',
-            'destroy' => 'owner'
+            'index' => 'auth'
         ];
     }
 }

@@ -19,11 +19,11 @@ use ImmediateSolutions\Support\Core\Criteria\Sorting\Sorter;
 class PostService extends Service
 {
     /**
-     * @param $agentId
+     * @param $ownerId
      * @param PostPayload $payload
      * @return Post
      */
-    public function create($agentId, PostPayload $payload)
+    public function create($ownerId, PostPayload $payload)
     {
         $post = new Post();
 
@@ -34,7 +34,7 @@ class PostService extends Service
         /**
          * @var Agent $agent
          */
-        $agent = $this->entityManager->getReference(Agent::class, $agentId);
+        $agent = $this->entityManager->getReference(Agent::class, $ownerId);
 
         $post->setOwner($agent);
 
