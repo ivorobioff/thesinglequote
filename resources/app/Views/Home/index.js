@@ -13,7 +13,7 @@ class Home extends View {
         var form = buildPostForm(new Form(data => OwnPosts.store(data), { 
             resetOnSuccess: true
         }))
-        .addOnSuccess(() => this.ownPostsList.refresh())
+        .addOnSuccess(() => this.ownPostsList.refresh(true))
         .addAlert({ onSuccess: 'The post has been successfully added!' });
 
         var modal = new FormModal({ form, title: 'New Post' });

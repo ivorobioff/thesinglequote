@@ -41,8 +41,8 @@ class OwnPostsList extends View {
 
     }
 
-    refresh(){
-        this.pager.load();
+    refresh(hard = false){
+        this.pager.load(hard ? 1 : undefined);
     }
 
     render(){

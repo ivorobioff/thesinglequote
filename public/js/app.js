@@ -2793,7 +2793,7 @@
 
 	            modal.setOnSubmit(function () {
 	                _OwnPosts2.default.destroy(item.id).done(function () {
-	                    return _this2.refresh();
+	                    return _this2.pager.load();
 	                });
 	                modal.hide();
 	            });
@@ -2808,7 +2808,7 @@
 	            var form = (0, _.buildPostForm)(new _Form2.default(function (data) {
 	                return _OwnPosts2.default.patch(item.id, data);
 	            }), item).addOnSuccess(function () {
-	                return _this3.refresh();
+	                return _this3.pager.load();
 	            }).addAlert({ onSuccess: 'The post has been successfully updated!' });
 
 	            var modal = new _FormModal2.default({ form: form, title: 'Update Post' });
@@ -2821,7 +2821,7 @@
 	    }, {
 	        key: 'refresh',
 	        value: function refresh() {
-	            this.pager.load();
+	            this.pager.load(1);
 	        }
 	    }, {
 	        key: 'render',
@@ -3295,6 +3295,13 @@
 	        key: 'load',
 	        value: function load() {
 	            var _this2 = this;
+
+	            var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
+
+
+	            if (page) {
+	                this.page = page;
+	            }
 
 	            this.isLoading = true;
 	            this.next.addClass('disabled');

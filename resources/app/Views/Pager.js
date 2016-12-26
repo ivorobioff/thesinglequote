@@ -16,7 +16,12 @@ class Pager extends View {
         return this;
     }
 
-    load(){
+    load(page = undefined){
+
+        if (page){
+            this.page = page;
+        }
+
         this.isLoading = true;
         this.next.addClass('disabled');
         this.prev.addClass('disabled');
