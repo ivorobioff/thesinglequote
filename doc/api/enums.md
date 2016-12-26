@@ -4,4 +4,8 @@
 
 ##### Agent Post Status Enum
 
-`open | done`
+`open | active | done`
+
+##### Quote Plan Enum
+
+`per-6-months | annual`

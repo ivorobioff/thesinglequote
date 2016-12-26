@@ -54,6 +54,35 @@
             }
 
 
+##### Agent Quote Payload
+
+            {
+                "price": float,
+                "plan": Quote Plan Enum,
+                "note": string,
+                "commission": int,
+                "document": {
+                    ... Document Identifier Payload
+                }
+            }
+            
+##### Agent Quote Object
+
+            {
+                "id": int
+                "price": float,
+                "plan": Quote Plan Enum,
+                "note": string,
+                "commission": int,
+                "document": {
+                    ... Document Identifier Payload
+                },
+                "proposer": {
+                    ... Agent Object
+                }
+            }
+
+
 ##### Session Object
 
             {
