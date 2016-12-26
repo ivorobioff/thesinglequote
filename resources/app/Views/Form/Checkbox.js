@@ -20,6 +20,11 @@ class Checkbox extends Control {
         this.wrapper = wrapper;
         var control = $('<input />', { type: 'checkbox', name });
 
+        if (this.options.value){
+            control.prop('checked', 'checked');
+        }
+
+
         if (options.required){
             control.attr('required', 'required');
         }

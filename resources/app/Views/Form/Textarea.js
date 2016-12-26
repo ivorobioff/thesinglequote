@@ -34,6 +34,10 @@ class Textarea extends Control {
             rows: options.rows ? options.rows : 10
         });
 
+        if (this.options.value){
+            control.val(this.options.value);
+        }
+
         this.el = control;
 
         if (options.placeholder){

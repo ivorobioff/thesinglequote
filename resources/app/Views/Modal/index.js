@@ -1,5 +1,3 @@
-import { View } from 'sparrow-ui';
-
 class Modal {
 
     constructor(options){
@@ -50,7 +48,7 @@ class Modal {
     render(){
         var el = $(`
             <div class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog">
+                <div id="dialog" class="modal-dialog">
                     <div class="modal-content">
                     <div class="modal-header">
                         <button id="close" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -68,10 +66,14 @@ class Modal {
 
         this.el = el;
 
-        el.find('#body').html(this.options.content);
+        this.body = el.find('#body').html(this.options.content);
         
         if (this.options.title){
             el.find('#title').text(this.options.title);
+        }
+
+        if (this.options.isLarge){
+            el.find('#dialog').addClass('modal-lg');
         }
 
         var close = el.find('#close');
@@ -80,9 +82,17 @@ class Modal {
 
         var cancel = el.find('#cancel');
         
+        if (this.options.cancelButtonTitle){
+            cancel.text(this.options.cancelButtonTitle);
+        }
+
         cancel.click(() => this.onCancelClick());
         
         var submit = el.find('#submit');
+
+        if (this.options.submitButtonTitle){
+            submit.text(this.options.submitButtonTitle);
+        }
 
         submit.click(() => this.onSubmitClick());
 

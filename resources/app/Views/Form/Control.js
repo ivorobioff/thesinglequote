@@ -1,6 +1,7 @@
 import { View } from 'sparrow-ui';
 
 class Control extends View {
+    
     disable(){
         this.el.attr('disabled', 'disabled');
     }

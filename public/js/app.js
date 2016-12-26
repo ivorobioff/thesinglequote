@@ -114,15 +114,15 @@
 
 	var _Login2 = _interopRequireDefault(_Login);
 
-	var _Error = __webpack_require__(16);
+	var _Error = __webpack_require__(19);
 
 	var _Error2 = _interopRequireDefault(_Error);
 
-	var _Home = __webpack_require__(17);
+	var _Home = __webpack_require__(20);
 
 	var _Home2 = _interopRequireDefault(_Home);
 
-	var _AgentNav = __webpack_require__(22);
+	var _AgentNav = __webpack_require__(28);
 
 	var _AgentNav2 = _interopRequireDefault(_AgentNav);
 
@@ -1494,7 +1494,7 @@
 
 	var _Session2 = _interopRequireDefault(_Session);
 
-	var _Agents = __webpack_require__(15);
+	var _Agents = __webpack_require__(18);
 
 	var _Agents2 = _interopRequireDefault(_Agents);
 
@@ -1563,24 +1563,23 @@
 
 	            signUp.addInput('fullName', { label: 'Full Name', placeholder: 'Full Name', required: true }).addEmail('email', { label: 'Email', placeholder: 'Email', required: true }).addPassword('password', { label: 'Password', placeholder: 'Password', required: true }).addInput('insuranceLicenseNumber', { label: 'Insurance License #', placeholder: 'A123456', required: true }).addCheckbox('agreeToTOS', { label: 'I agree to the TOS', required: true }).addSubmit('Register', { color: 'warning', isBlock: true });
 
-	            signUp.setOnComplete(function () {
+	            signUp.addOnComplete(function () {
 	                return _this2.removeAlert();
 	            });
-	            signUp.setOnSuccess(function () {
+	            signUp.addOnSuccess(function () {
 	                return _this2.showAlert('The agent has been successfully registered!', 'success');
 	            });
-	            signUp.setOnGlobalError(function (e) {
+	            signUp.addOnGlobalError(function (e) {
 	                return _this2.showAlert(e, 'danger');
 	            });
 
-	            signIn.setOnComplete(function () {
+	            signIn.addOnComplete(function () {
 	                return _this2.removeAlert();
 	            });
-	            signIn.setOnGlobalError(function (e) {
+	            signIn.addOnGlobalError(function (e) {
 	                return _this2.showAlert(e, 'danger');
 	            });
-
-	            signIn.setOnSuccess(function () {
+	            signIn.addOnSuccess(function () {
 	                return (0, _page2.default)('/');
 	            });
 
@@ -1623,6 +1622,22 @@
 
 	var _Checkbox2 = _interopRequireDefault(_Checkbox);
 
+	var _Textarea = __webpack_require__(15);
+
+	var _Textarea2 = _interopRequireDefault(_Textarea);
+
+	var _Control = __webpack_require__(12);
+
+	var _Control2 = _interopRequireDefault(_Control);
+
+	var _Content = __webpack_require__(16);
+
+	var _Content2 = _interopRequireDefault(_Content);
+
+	var _Alert = __webpack_require__(17);
+
+	var _Alert2 = _interopRequireDefault(_Alert);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1644,6 +1659,9 @@
 	        _this.request = request;
 	        _this.options = options;
 	        _this.controls = [];
+	        _this.onSuccessCallbacks = [];
+	        _this.onGlobalErrorCallbacks = [];
+	        _this.onCompleteCallbacks = [];
 	        return _this;
 	    }
 
@@ -1691,10 +1709,23 @@
 	            return this;
 	        }
 	    }, {
+	        key: 'addContent',
+	        value: function addContent(content) {
+	            this.controls.push(new _Content2.default(content));
+	            return this;
+	        }
+	    }, {
 	        key: 'addTextarea',
 	        value: function addTextarea(name) {
 	            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+	            this.controls.push(new _Textarea2.default(name, options));
+	            return this;
+	        }
+	    }, {
+	        key: 'addAlert',
+	        value: function addAlert(options) {
+	            this.controls.push(new _Alert2.default(this, options));
 	            return this;
 	        }
 	    }, {
@@ -1721,18 +1752,22 @@
 	            }
 
 	            this.controls.forEach(function (c) {
-	                return c.disable();
+	                if (c instanceof _Control2.default) {
+	                    c.disable();
+	                }
 	            });
 
 	            promise.always(function () {
 	                _this2.controls.forEach(function (c) {
-	                    c.enable();
-	                    c.removeError();
+	                    if (c instanceof _Control2.default) {
+	                        c.enable();
+	                        c.removeError();
+	                    }
 	                });
 
-	                if (_this2.onCompleteCallback) {
-	                    _this2.onCompleteCallback();
-	                }
+	                _this2.onCompleteCallbacks.forEach(function (callback) {
+	                    return callback();
+	                });
 	            }).fail(function (x) {
 	                var error = 'Unknown error';
 	                var data = $.parseJSON(x.responseText);
@@ -1740,43 +1775,57 @@
 	                if (x.status == 422) {
 	                    error = data.errors;
 	                    _this2.controls.forEach(function (c) {
-	                        if (c.notifyAboutErrors) {
+	                        if (c instanceof _Control2.default) {
 	                            c.notifyAboutErrors(error);
 	                        }
 	                    });
 	                } else {
 	                    error = data.message;
-	                    if (_this2.onGlobalErrorCallback) {
-	                        _this2.onGlobalErrorCallback(error);
-	                    }
+	                    _this2.onGlobalErrorCallbacks.forEach(function (callback) {
+	                        return callback(error);
+	                    });
 	                }
 	            }).done(function (data) {
 	                if (_this2.options.resetOnSuccess) {
 	                    _this2.el[0].reset();
 	                }
 
-	                if (_this2.onSuccessCallback) {
-	                    _this2.onSuccessCallback(data);
-	                }
+	                if (_this2.options.messageOnSuccess) {}
+
+	                _this2.onSuccessCallbacks.forEach(function (callback) {
+	                    return callback(data);
+	                });
 	            });
 	        }
 	    }, {
-	        key: 'setOnComplete',
-	        value: function setOnComplete(callback) {
-	            this.onCompleteCallback = callback;
+	        key: 'addOnComplete',
+	        value: function addOnComplete(callback) {
+	            this.onCompleteCallbacks.push(callback);
 	            return this;
 	        }
 	    }, {
-	        key: 'setOnSuccess',
-	        value: function setOnSuccess(callback) {
-	            this.onSuccessCallback = callback;
+	        key: 'addOnSuccess',
+	        value: function addOnSuccess(callback) {
+	            this.onSuccessCallbacks.push(callback);
 	            return this;
 	        }
 	    }, {
-	        key: 'setOnGlobalError',
-	        value: function setOnGlobalError(callback) {
-	            this.onGlobalErrorCallback = callback;
+	        key: 'addOnGlobalError',
+	        value: function addOnGlobalError(callback) {
+	            this.onGlobalErrorCallbacks.push(callback);
 	            return this;
+	        }
+	    }, {
+	        key: 'submit',
+	        value: function submit() {
+	            var submit = this.el.find('[type="submit"]');
+
+	            if (submit.length == 0) {
+	                submit = $('<input type="submit" style="display: none" />');
+	                this.el.append(submit);
+	            }
+
+	            submit.click();
 	        }
 	    }, {
 	        key: 'render',
@@ -1966,6 +2015,10 @@
 	            }
 
 	            var control = $('<input />').addClass('form-control').attr('name', name).attr('type', options.type ? options.type : 'text').attr('id', '_id-' + name);
+
+	            if (this.options.value) {
+	                control.val(this.options.value);
+	            }
 
 	            this.el = control;
 
@@ -2188,6 +2241,10 @@
 	            this.wrapper = wrapper;
 	            var control = $('<input />', { type: 'checkbox', name: name });
 
+	            if (this.options.value) {
+	                control.prop('checked', 'checked');
+	            }
+
 	            if (options.required) {
 	                control.attr('required', 'required');
 	            }
@@ -2219,6 +2276,209 @@
 	    value: true
 	});
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _Control2 = __webpack_require__(12);
+
+	var _Control3 = _interopRequireDefault(_Control2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Textarea = function (_Control) {
+	    _inherits(Textarea, _Control);
+
+	    function Textarea(name, options) {
+	        _classCallCheck(this, Textarea);
+
+	        var _this = _possibleConstructorReturn(this, (Textarea.__proto__ || Object.getPrototypeOf(Textarea)).call(this));
+
+	        _this.name = name;
+	        _this.options = options;
+	        return _this;
+	    }
+
+	    _createClass(Textarea, [{
+	        key: 'getValue',
+	        value: function getValue() {
+	            return this.el.val();
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var wrapper = $('<div class="form-group"></div>');
+	            this.wrapper = wrapper;
+	            var name = this.name;
+	            var options = this.options;
+
+	            if (options.label) {
+	                var label = $('<label></label>');
+	                label.text(options.label);
+	                label.attr('for', '_id-' + name);
+	                label.addClass('control-label');
+	                wrapper.append(label);
+	            }
+
+	            var control = $('<textarea />', {
+	                'class': 'form-control',
+	                name: name,
+	                type: options.type ? options.type : 'text',
+	                id: '_id-' + name,
+	                cols: options.cols ? options.cols : 40,
+	                rows: options.rows ? options.rows : 10
+	            });
+
+	            if (this.options.value) {
+	                control.val(this.options.value);
+	            }
+
+	            this.el = control;
+
+	            if (options.placeholder) {
+	                control.attr('placeholder', options.placeholder);
+	            }
+
+	            if (options.required) {
+	                control.attr('required', 'required');
+	            }
+
+	            wrapper.append(control);
+
+	            return wrapper;
+	        }
+	    }]);
+
+	    return Textarea;
+	}(_Control3.default);
+
+	exports.default = Textarea;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Content = function (_View) {
+	    _inherits(Content, _View);
+
+	    function Content(content) {
+	        _classCallCheck(this, Content);
+
+	        var _this = _possibleConstructorReturn(this, (Content.__proto__ || Object.getPrototypeOf(Content)).call(this));
+
+	        _this.content = content;
+	        return _this;
+	    }
+
+	    _createClass(Content, [{
+	        key: 'render',
+	        value: function render() {
+	            if (typeof this.content === 'string') {
+	                this.content = $(this.content);
+	            }
+
+	            return this.content;
+	        }
+	    }]);
+
+	    return Content;
+	}(_sparrowUi.View);
+
+	exports.default = Content;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Alert = function (_View) {
+	    _inherits(Alert, _View);
+
+	    function Alert(form, options) {
+	        _classCallCheck(this, Alert);
+
+	        var _this = _possibleConstructorReturn(this, (Alert.__proto__ || Object.getPrototypeOf(Alert)).call(this));
+
+	        _this.form = form;
+	        form.addOnSuccess(function () {
+	            return _this.onSuccess();
+	        });
+	        form.addOnGlobalError(function (error) {
+	            return _this.onError(error);
+	        });
+
+	        _this.options = options;
+	        return _this;
+	    }
+
+	    _createClass(Alert, [{
+	        key: 'onSuccess',
+	        value: function onSuccess() {
+	            this.el.removeAttr('class').text(this.options.onSuccess).addClass('alert alert-success');
+	        }
+	    }, {
+	        key: 'onError',
+	        value: function onError(error) {
+	            this.el.removeAttr('class').text(error).addClass('alert alert-danger');
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            this.el = $('<div class="alert" />');
+	            return this.el;
+	        }
+	    }]);
+
+	    return Alert;
+	}(_sparrowUi.View);
+
+	exports.default = Alert;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
 	var _Helpers = __webpack_require__(9);
 
 	var Agents = {
@@ -2230,7 +2490,7 @@
 	exports.default = Agents;
 
 /***/ },
-/* 16 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2271,7 +2531,7 @@
 	exports.default = Error404;
 
 /***/ },
-/* 17 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2282,15 +2542,29 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	exports.buildPostForm = buildPostForm;
+
 	var _sparrowUi = __webpack_require__(2);
 
 	var _Session = __webpack_require__(10);
 
 	var _Session2 = _interopRequireDefault(_Session);
 
-	var _OwnPostsList = __webpack_require__(18);
+	var _OwnPosts = __webpack_require__(21);
+
+	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
+
+	var _OwnPostsList = __webpack_require__(22);
 
 	var _OwnPostsList2 = _interopRequireDefault(_OwnPostsList);
+
+	var _FormModal = __webpack_require__(25);
+
+	var _FormModal2 = _interopRequireDefault(_FormModal);
+
+	var _Form = __webpack_require__(8);
+
+	var _Form2 = _interopRequireDefault(_Form);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2312,12 +2586,26 @@
 	    _createClass(Home, [{
 	        key: 'onNewPostClick',
 	        value: function onNewPostClick(e) {
+	            var _this2 = this;
+
 	            e.preventDefault();
+
+	            var form = buildPostForm(new _Form2.default(function (data) {
+	                return _OwnPosts2.default.store(data);
+	            }, {
+	                resetOnSuccess: true
+	            })).addOnSuccess(function () {
+	                return _this2.ownPostsList.refresh();
+	            }).addAlert({ onSuccess: 'The post has been successfully added!' });
+
+	            var modal = new _FormModal2.default({ form: form, title: 'New Post' });
+
+	            modal.show();
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this2 = this;
+	            var _this3 = this;
 
 	            var el = $('<div class="container">\n            <header class="jumbotron hero-spacer">\n                <h1 id="greeting"></h1>\n                <p>This page will show quotes. It will also allow them to edit their information.</p>\n                <p><a class="btn btn-primary btn-large">Call to action!</a>\n                </p>\n            </header>\n            <hr/>\n            <div class="panel panel-default panel-table">\n              <div class="panel-heading">\n                <div class="row">\n                  <div class="col col-xs-6">\n                    <h3 class="panel-title">Your Posts</h3>\n                  </div>\n                  <div class="col col-xs-6 text-right">\n                    <a id="newPostClick" class="btn btn-primary btn-sml" href="#">Post New</a>\n                  </div>\n                </div>\n              </div>\n              <div id="ownPostsList" class="panel-body">\n              </div>\n            </div>\n        </div>');
 
@@ -2325,10 +2613,12 @@
 
 	            el.find('#greeting').text('Welcome back ' + user.fullName);
 	            el.find('#newPostClick').click(function (e) {
-	                return _this2.onNewPostClick(e);
+	                return _this3.onNewPostClick(e);
 	            });
 
-	            el.find('#ownPostsList').html(new _OwnPostsList2.default().render());
+	            this.ownPostsList = new _OwnPostsList2.default();
+
+	            el.find('#ownPostsList').html(this.ownPostsList.render());
 
 	            return el;
 	        }
@@ -2338,9 +2628,102 @@
 	}(_sparrowUi.View);
 
 	exports.default = Home;
+	function buildPostForm(form) {
+	    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	    form.addContent('<div>\n            <h1>Public Information\n            </h1>\n            <span class="help-block" id="hint_Title">\n            Will be shared with all agents\n            </span>\n        </div>').addInput('title', {
+	        value: data.title ? data.title : undefined,
+	        label: 'Title - Explain your post',
+	        placeholder: 'Car Insurance quote',
+	        required: true
+	    }).addTextarea('publicMessage', {
+	        value: data.publicMessage ? data.publicMessage : undefined,
+	        label: 'Public Message',
+	        required: true,
+	        placeholder: 'I need a quote for 3 cars and 2 drivers that live in zip code of 90210. A 2005 toyota Camry, 2011 Ford Fiesta, and 2013 Ford Mustang. 100/300 liability and 15/30 Uninsured Motorist and comp/coll deductibles of 500/500 for all cars. Female married driver born on 11/08/1973 and Male married driver born 05/12/1971. No tickets or accidents.' }).addContent('<div>\n            <h1>Private Information\n            </h1>\n            <span class="help-block" id="hint_Title">\n            Will be shared only with the agent you select\n            </span>\n            <hr/>\n        </div>').addInput('clientName', {
+	        value: data.clientName ? data.clientName : undefined,
+	        label: 'Client Name',
+	        placeholder: 'Mary Allen',
+	        required: true
+	    }).addInput('clientPhone', {
+	        value: data.clientPhone ? data.clientPhone : undefined,
+	        label: 'Client Phone',
+	        placeholder: '1-234-567-8910',
+	        required: true
+	    }).addTextarea('privateMessage', {
+	        value: data.privateMessage ? data.privateMessage : undefined,
+	        label: 'Private Message',
+	        required: true,
+	        placeholder: 'First driver is Mary Allen and second driver is David Allen. They live on 123 Sunshine Rd. Beverly Hills, CA 90210.' }).addCheckbox('noPersonalInfoInPublic', {
+	        value: data.noPersonalInfoInPublic ? data.noPersonalInfoInPublic : undefined,
+	        label: 'I have not posted any personal information in the public information sections'
+	    });
+
+	    return form;
+	}
 
 /***/ },
-/* 18 */
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _Helpers = __webpack_require__(9);
+
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var OwnPosts = {
+	    load: function load() {
+	        var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+
+	        var session = _Session2.default.get();
+
+	        return (0, _Helpers.backend)({
+	            method: 'GET', url: '/agents/' + session.user.id + '/posts',
+	            data: { orderBy: 'id:desc', page: page }
+	        });
+
+	        return $.Deferred().resolve(this.data);
+	    },
+	    destroy: function destroy(id) {
+	        var session = _Session2.default.get();
+
+	        return (0, _Helpers.backend)({
+	            method: 'DELETE', url: '/agents/' + session.user.id + '/posts/' + id
+	        });
+	    },
+	    patch: function patch(id, data) {
+	        var session = _Session2.default.get();
+
+	        return (0, _Helpers.backend)({
+	            method: 'PATCH',
+	            url: '/agents/' + session.user.id + '/posts/' + id,
+	            data: data
+	        });
+	    },
+	    store: function store(data) {
+	        var session = _Session2.default.get();
+
+	        return (0, _Helpers.backend)({
+	            method: 'POST',
+	            url: '/agents/' + session.user.id + '/posts',
+	            data: data
+	        });
+	    }
+	};
+
+	exports.default = OwnPosts;
+
+/***/ },
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2353,13 +2736,31 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _OwnPosts = __webpack_require__(19);
+	var _OwnPosts = __webpack_require__(21);
 
 	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
 
-	var _OwnPostItem = __webpack_require__(20);
+	var _OwnPostItem = __webpack_require__(23);
 
 	var _OwnPostItem2 = _interopRequireDefault(_OwnPostItem);
+
+	var _ = __webpack_require__(20);
+
+	var _FormModal = __webpack_require__(25);
+
+	var _FormModal2 = _interopRequireDefault(_FormModal);
+
+	var _Form = __webpack_require__(8);
+
+	var _Form2 = _interopRequireDefault(_Form);
+
+	var _Modal = __webpack_require__(26);
+
+	var _Modal2 = _interopRequireDefault(_Modal);
+
+	var _Pager = __webpack_require__(27);
+
+	var _Pager2 = _interopRequireDefault(_Pager);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2380,38 +2781,84 @@
 
 	    _createClass(OwnPostsList, [{
 	        key: 'onItemDelete',
-	        value: function onItemDelete() {
-	            this.load(true);
-	        }
-	    }, {
-	        key: 'load',
-	        value: function load() {
+	        value: function onItemDelete(item) {
 	            var _this2 = this;
 
-	            var reload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-	            this.container.empty();
-
-	            _OwnPosts2.default.load(reload).done(function (data) {
-	                data.data.forEach(function (post) {
-
-	                    var item = new _OwnPostItem2.default(post);
-	                    item.setOnDelete(function () {
-	                        return _this2.onItemDelete();
-	                    });
-
-	                    _this2.container.append(item.render());
-	                });
+	            var modal = new _Modal2.default({
+	                content: '<p>Do you want to delete this post?</p>',
+	                title: 'Action',
+	                submitButtonTitle: 'Yes',
+	                cancelButtonTitle: 'No'
 	            });
+
+	            modal.setOnSubmit(function () {
+	                _OwnPosts2.default.destroy(item.id).done(function () {
+	                    return _this2.refresh();
+	                });
+	                modal.hide();
+	            });
+
+	            modal.show();
+	        }
+	    }, {
+	        key: 'onItemEdit',
+	        value: function onItemEdit(item) {
+	            var _this3 = this;
+
+	            var form = (0, _.buildPostForm)(new _Form2.default(function (data) {
+	                return _OwnPosts2.default.patch(item.id, data);
+	            }), item).addOnSuccess(function () {
+	                return _this3.refresh();
+	            }).addAlert({ onSuccess: 'The post has been successfully updated!' });
+
+	            var modal = new _FormModal2.default({ form: form, title: 'Update Post' });
+
+	            modal.show();
+	        }
+	    }, {
+	        key: 'onItemShare',
+	        value: function onItemShare(item) {}
+	    }, {
+	        key: 'refresh',
+	        value: function refresh() {
+	            this.pager.load();
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var el = $('\n            <table class="table table-striped table-bordered table-list">\n                  <thead>\n                    <tr>\n                        <th style="min-width: 90px;">Quote #</th>\n                        <th style="min-width: 169px;">Client Name</th>\n                        <th>Public Message</th>\n                        <th style="min-width: 130px;">Status / Actions</th>\n                    </tr> \n                  </thead>\n                  <tbody></tbody>\n                </table>\n        ');
+	            var _this4 = this;
+
+	            var el = $('\n            <div>\n                <table class="table table-striped table-bordered table-list">\n                  <thead>\n                    <tr>\n                        <th style="min-width: 90px;">Quote #</th>\n                        <th style="min-width: 169px;">Client Name</th>\n                        <th>Public Message</th>\n                        <th style="min-width: 130px;">Status / Actions</th>\n                    </tr> \n                  </thead>\n                  <tbody></tbody>\n                </table>\n            </div>\n        ');
 
 	            this.container = el.find('tbody');
 
-	            this.load();
+	            this.pager = new _Pager2.default(function (page) {
+	                return _OwnPosts2.default.load(page);
+	            });
+
+	            this.pager.addOnLoad(function (data) {
+
+	                _this4.container.empty();
+
+	                data.forEach(function (post) {
+
+	                    var item = new _OwnPostItem2.default(post);
+
+	                    item.setOnDelete(function () {
+	                        return _this4.onItemDelete(post);
+	                    }).setOnEdit(function () {
+	                        return _this4.onItemEdit(post);
+	                    }).setOnShare(function () {
+	                        return _this4.onItemShare(post);
+	                    });
+
+	                    _this4.container.append(item.render());
+	                });
+	            });
+
+	            el.append(this.pager.render());
+
+	            this.pager.load();
 
 	            return el;
 	        }
@@ -2423,56 +2870,7 @@
 	exports.default = OwnPostsList;
 
 /***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _Helpers = __webpack_require__(9);
-
-	var _Session = __webpack_require__(10);
-
-	var _Session2 = _interopRequireDefault(_Session);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var OwnPosts = {
-	    load: function load() {
-	        var reload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-	        if (typeof this.data === 'undefined' || reload) {
-	            var session = _Session2.default.get();
-	            return (0, _Helpers.backend)({
-	                method: 'GET', url: '/agents/' + session.user.id + '/posts'
-	            });
-	        }
-
-	        return $.Deferred().resolve(this.data);
-	    },
-	    destroy: function destroy(id) {
-	        var session = _Session2.default.get();
-
-	        return (0, _Helpers.backend)({
-	            method: 'DELETE', url: '/agents/' + session.user.id + '/posts/' + id
-	        });
-	    },
-	    store: function store(data) {
-	        return (0, _Helpers.backend)({
-	            method: 'POST',
-	            url: '/agents/' + session.user.id + '/posts',
-	            data: data
-	        });
-	    }
-	};
-
-	exports.default = OwnPosts;
-
-/***/ },
-/* 20 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2485,7 +2883,7 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _OwnPostAction = __webpack_require__(21);
+	var _OwnPostAction = __webpack_require__(24);
 
 	var _OwnPostAction2 = _interopRequireDefault(_OwnPostAction);
 
@@ -2516,8 +2914,22 @@
 	            return this;
 	        }
 	    }, {
+	        key: 'setOnEdit',
+	        value: function setOnEdit(callback) {
+	            this.onEditCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'setOnShare',
+	        value: function setOnShare(callback) {
+	            this.onShareCallback = callback;
+	            return this;
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var _this2 = this;
+
 	            var data = this.data;
 	            var el = $('<tr/>');
 	            el.append($('<td/>').text(data.id));
@@ -2526,7 +2938,13 @@
 
 	            var ownPostAction = new _OwnPostAction2.default(data);
 
-	            ownPostAction.setOnDelete(this.onDeleteCallback);
+	            ownPostAction.setOnDelete(function () {
+	                return _this2.onDeleteCallback();
+	            }).setOnEdit(function () {
+	                return _this2.onEditCallback();
+	            }).setOnShare(function () {
+	                return _this2.onShareCallback();
+	            });
 
 	            el.append($('<td/>').html(ownPostAction.render()));
 
@@ -2540,7 +2958,7 @@
 	exports.default = OwnPostItem;
 
 /***/ },
-/* 21 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2553,7 +2971,7 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _OwnPosts = __webpack_require__(19);
+	var _OwnPosts = __webpack_require__(21);
 
 	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
 
@@ -2581,18 +2999,28 @@
 	        key: 'onEditClick',
 	        value: function onEditClick(e) {
 	            e.preventDefault();
+
+	            if (this.onEditCallback) {
+	                this.onEditCallback();
+	            }
 	        }
 	    }, {
 	        key: 'onDeleteClick',
 	        value: function onDeleteClick(e) {
-	            var _this2 = this;
-
 	            e.preventDefault();
-	            _OwnPosts2.default.destroy(this.data.id).done(function () {
-	                if (_this2.onDeleteCallback) {
-	                    _this2.onDeleteCallback();
-	                }
-	            });
+
+	            if (this.onDeleteCallback) {
+	                this.onDeleteCallback();
+	            }
+	        }
+	    }, {
+	        key: 'onShareClick',
+	        value: function onShareClick(e) {
+	            e.preventDefault();
+
+	            if (this.onShareCallback) {
+	                this.onShareCallback();
+	            }
 	        }
 	    }, {
 	        key: 'setOnDelete',
@@ -2601,17 +3029,24 @@
 	            return this;
 	        }
 	    }, {
-	        key: 'onShareClick',
-	        value: function onShareClick(e) {
-	            e.preventDefault();
+	        key: 'setOnEdit',
+	        value: function setOnEdit(callback) {
+	            this.onEditCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'setOnShare',
+	        value: function setOnShare(callback) {
+	            this.onShareCallback = callback;
+	            return this;
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this3 = this;
+	            var _this2 = this;
 
 	            var data = this.data;
-	            var el = $('\n            <div class="btn-group">\n            <button id="statusButton" type="button" class="btn"></button>\n            <button id="statusCaret"  type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n                <span class="caret"></span>\n                <span class="sr-only">Toggle Dropdown</span>\n            </button>\n            <ul class="dropdown-menu">\n                <li><a href="#" id="editAction">Edit</a></li>\n                <li><a href="#" id="deleteAction">Delete</a></li>\n                <li role="separator" class="divider"></li>\n                <li><a href="#" id="shareAction">Share</a></li>\n            </ul>\n            </div>\n        ');
+	            var el = $('\n            <div class="btn-group">\n                <button id="statusButton" type="button"  data-toggle="dropdown" class="btn dropdown-toggle"></button>\n                <ul class="dropdown-menu">\n                    <li><a href="#" id="editAction">Edit</a></li>\n                    <li><a href="#" id="deleteAction">Delete</a></li>\n                    <li role="separator" class="divider"></li>\n                    <li><a href="#" id="shareAction">Share</a></li>\n                </ul>\n            </div>\n        ');
 
 	            var status = {
 	                done: {
@@ -2624,17 +3059,16 @@
 	                }
 	            }[data.status];
 
-	            el.find('#statusButton').addClass('btn-' + status.color).text(status.text);
-	            el.find('#statusCaret').addClass('btn-' + status.color);
+	            el.find('#statusButton').addClass('btn-' + status.color).text(status.text + ' ').append('<span class="caret"></span>');
 
 	            el.find('#editAction').click(function (e) {
-	                return _this3.onEditClick(e);
+	                return _this2.onEditClick(e);
 	            });
 	            el.find('#deleteAction').click(function (e) {
-	                return _this3.onDeleteClick(e);
+	                return _this2.onDeleteClick(e);
 	            });
 	            el.find('#shareAction').click(function (e) {
-	                return _this3.onShareClick(e);
+	                return _this2.onShareClick(e);
 	            });
 
 	            return el;
@@ -2647,7 +3081,316 @@
 	exports.default = OwnPostAction;
 
 /***/ },
-/* 22 */
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _ = __webpack_require__(26);
+
+	var _2 = _interopRequireDefault(_);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var FormModal = function () {
+	    function FormModal(options) {
+	        _classCallCheck(this, FormModal);
+
+	        var form = options.form;
+	        options.content = form.render();
+	        this.modal = new _2.default(options);
+	        this.modal.setOnSubmit(function () {
+	            return form.submit();
+	        });
+	    }
+
+	    _createClass(FormModal, [{
+	        key: 'show',
+	        value: function show() {
+	            this.modal.show();
+	        }
+	    }]);
+
+	    return FormModal;
+	}();
+
+	exports.default = FormModal;
+
+/***/ },
+/* 26 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Modal = function () {
+	    function Modal(options) {
+	        _classCallCheck(this, Modal);
+
+	        this.options = options;
+	    }
+
+	    _createClass(Modal, [{
+	        key: 'show',
+	        value: function show() {
+	            var el = this.render();
+
+	            $('body').append(el);
+
+	            el.on('hidden.bs.modal', function () {
+	                return el.remove();
+	            });
+
+	            el.modal('show');
+	        }
+	    }, {
+	        key: 'hide',
+	        value: function hide() {
+	            this.el.modal('hide');
+	        }
+	    }, {
+	        key: 'onCloseClick',
+	        value: function onCloseClick() {
+	            this.hide();
+	        }
+	    }, {
+	        key: 'onCancelClick',
+	        value: function onCancelClick() {
+	            this.hide();
+	            if (this.onCancelCallback) {
+	                this.onCancelCallback();
+	            }
+	        }
+	    }, {
+	        key: 'onSubmitClick',
+	        value: function onSubmitClick() {
+	            if (this.onSubmitCallback) {
+	                this.onSubmitCallback();
+	            }
+	        }
+	    }, {
+	        key: 'setOnCancel',
+	        value: function setOnCancel(callback) {
+	            this.onCancelCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'setOnSubmit',
+	        value: function setOnSubmit(callback) {
+	            this.onSubmitCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this = this;
+
+	            var el = $('\n            <div class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">\n                <div id="dialog" class="modal-dialog">\n                    <div class="modal-content">\n                    <div class="modal-header">\n                        <button id="close" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n                        <h4 id="title" class="modal-title"></h4>\n                    </div>\n                    <div id="body" class="modal-body"></div>\n                    <div class="modal-footer">\n                        <button id="cancel" type="button" class="btn btn-default">Cancel</button>\n                        <button id="submit" type="button" class="btn btn-primary">Submit</button>\n                    </div>\n                    </div>\n                </div>\n            </div>\n        ');
+
+	            this.el = el;
+
+	            this.body = el.find('#body').html(this.options.content);
+
+	            if (this.options.title) {
+	                el.find('#title').text(this.options.title);
+	            }
+
+	            if (this.options.isLarge) {
+	                el.find('#dialog').addClass('modal-lg');
+	            }
+
+	            var close = el.find('#close');
+
+	            close.click(function () {
+	                return _this.onCloseClick();
+	            });
+
+	            var cancel = el.find('#cancel');
+
+	            if (this.options.cancelButtonTitle) {
+	                cancel.text(this.options.cancelButtonTitle);
+	            }
+
+	            cancel.click(function () {
+	                return _this.onCancelClick();
+	            });
+
+	            var submit = el.find('#submit');
+
+	            if (this.options.submitButtonTitle) {
+	                submit.text(this.options.submitButtonTitle);
+	            }
+
+	            submit.click(function () {
+	                return _this.onSubmitClick();
+	            });
+
+	            return el;
+	        }
+	    }]);
+
+	    return Modal;
+	}();
+
+	exports.default = Modal;
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Pager = function (_View) {
+	    _inherits(Pager, _View);
+
+	    function Pager(loader) {
+	        _classCallCheck(this, Pager);
+
+	        var _this = _possibleConstructorReturn(this, (Pager.__proto__ || Object.getPrototypeOf(Pager)).call(this));
+
+	        _this.loader = loader;
+	        _this.page = 1;
+	        _this.onLoadCallbacks = [];
+	        _this.meta = { totalPages: 1 };
+	        _this.isLoading = false;
+	        return _this;
+	    }
+
+	    _createClass(Pager, [{
+	        key: 'addOnLoad',
+	        value: function addOnLoad(callback) {
+	            this.onLoadCallbacks.push(callback);
+	            return this;
+	        }
+	    }, {
+	        key: 'load',
+	        value: function load() {
+	            var _this2 = this;
+
+	            this.isLoading = true;
+	            this.next.addClass('disabled');
+	            this.prev.addClass('disabled');
+
+	            return this.loader(this.page).always(function () {
+	                _this2.isLoading = false;
+	                _this2.handlePrevDisplay();
+	                _this2.handleNextDisplay();
+	            }).done(function (data) {
+	                _this2.meta = data.meta.pagination;
+
+	                if (_this2.page > _this2.meta.totalPages) {
+	                    _this2.page = _this2.meta.totalPages;
+	                    _this2.load();
+	                }
+
+	                _this2.handleNextDisplay();
+
+	                _this2.onLoadCallbacks.forEach(function (callback) {
+	                    return callback(data.data);
+	                });
+	            });
+	        }
+	    }, {
+	        key: 'handlePrevDisplay',
+	        value: function handlePrevDisplay() {
+	            if (this.page == 1) {
+	                this.prev.addClass('disabled');
+	            } else {
+	                this.prev.removeClass('disabled');
+	            }
+	        }
+	    }, {
+	        key: 'onPrevClick',
+	        value: function onPrevClick(e) {
+	            e.preventDefault();
+
+	            if (this.page == 1 || this.isLoading) {
+	                return;
+	            }
+
+	            this.page--;
+
+	            this.load();
+	        }
+	    }, {
+	        key: 'onNextClick',
+	        value: function onNextClick(e) {
+	            e.preventDefault();
+
+	            if (this.page == this.meta.totalPages || this.isLoading) {
+	                return;
+	            }
+
+	            this.page++;
+
+	            this.load();
+	        }
+	    }, {
+	        key: 'handleNextDisplay',
+	        value: function handleNextDisplay() {
+	            if (this.page == this.meta.totalPages) {
+	                this.next.addClass('disabled');
+	            } else {
+	                this.next.removeClass('disabled');
+	            }
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this3 = this;
+
+	            var el = $('<nav aria-label="...">\n            <ul class="pager">\n                <li id="prev" class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>\n                <li id="next" class="next disabled"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>\n            </ul>\n        </nav>');
+
+	            this.prev = el.find('#prev');
+	            this.next = el.find('#next');
+
+	            this.prev.click(function (e) {
+	                return _this3.onPrevClick(e);
+	            });
+	            this.next.click(function (e) {
+	                return _this3.onNextClick(e);
+	            });
+
+	            return el;
+	        }
+	    }]);
+
+	    return Pager;
+	}(_sparrowUi.View);
+
+	exports.default = Pager;
+
+/***/ },
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

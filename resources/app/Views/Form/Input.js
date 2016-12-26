@@ -31,6 +31,11 @@ class Input extends Control {
             .attr('type', options.type ? options.type : 'text')
             .attr('id', '_id-' + name);
 
+
+        if (this.options.value){
+            control.val(this.options.value);
+        }
+
         this.el = control;
 
         if (options.placeholder){

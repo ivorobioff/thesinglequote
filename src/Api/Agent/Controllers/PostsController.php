@@ -1,6 +1,7 @@
 <?php
 namespace ImmediateSolutions\Api\Agent\Controllers;
 use ImmediateSolutions\Api\Agent\Processors\PostsProcessor;
+use ImmediateSolutions\Api\Agent\Processors\PostsSearchableProcessor;
 use ImmediateSolutions\Api\Agent\Serializers\PostSerializer;
 use ImmediateSolutions\Api\Support\Controller;
 use ImmediateSolutions\Core\Agent\Options\FetchPostsOptions;
@@ -57,11 +58,13 @@ class PostsController extends Controller
 
     /**
      * @param int $agentId
+     * @param PostsSearchableProcessor $processor
      * @return ResponseInterface
      */
-    public function index($agentId)
+    public function index($agentId, PostsSearchableProcessor $processor)
     {
         $options = new FetchPostsOptions();
+        $options->setSortables($processor->createSortables());
 
         $adapter = new DefaultPaginatorAdapter([
             'getAll' => function($page, $perPage) use ($agentId, $options){
@@ -80,12 +83,14 @@ class PostsController extends Controller
 
 
     /**
+     * @param  PostsSearchableProcessor $processor
      * @return ResponseInterface
      */
-    public function all()
+    public function all(PostsSearchableProcessor $processor)
     {
         $options = new FetchPostsOptions();
         $options->setInverted(true);
+        $options->setSortables($processor->createSortables());
 
         /**
          * @var Session $session

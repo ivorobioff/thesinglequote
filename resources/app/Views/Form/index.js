@@ -3,6 +3,10 @@ import { backend } from '../../Helpers';
 import Input from './Input';
 import Button from './Button';
 import Checkbox from './Checkbox';
+import Textarea from './Textarea';
+import Control from './Control';
+import Content from './Content';
+import Alert from './Alert';
 
 class Form extends View {
     
@@ -11,6 +15,9 @@ class Form extends View {
          this.request = request;
          this.options = options;
          this.controls = [];
+         this.onSuccessCallbacks = [];
+         this.onGlobalErrorCallbacks = [];
+         this.onCompleteCallbacks = [];
      }
 
      addPassword(name, options = {}){
@@ -42,7 +49,18 @@ class Form extends View {
         return this;
      }
 
+     addContent(content){
+         this.controls.push(new Content(content));
+         return this;
+     }
+
      addTextarea(name, options = {}){
+         this.controls.push(new Textarea(name, options));
+         return this;
+     }
+
+     addAlert(options){
+         this.controls.push(new Alert(this, options));
          return this;
      }
 
@@ -65,17 +83,21 @@ class Form extends View {
             var promise = backend(config);
         }
 
-        this.controls.forEach(c => c.disable());
+        this.controls.forEach(c =>  {
+            if (c instanceof Control){
+                c.disable()
+            }
+        });
 
         promise.always(() => {
             this.controls.forEach(c => { 
-                c.enable();
-                c.removeError();
+                if (c instanceof Control){
+                    c.enable();
+                    c.removeError();
+                }
             });
 
-            if (this.onCompleteCallback){
-                this.onCompleteCallback();
-            }
+            this.onCompleteCallbacks.forEach(callback => callback());
         })
         .fail(x => {
             var error = 'Unknown error';
@@ -84,15 +106,13 @@ class Form extends View {
             if (x.status == 422){
                 error = data.errors;
                 this.controls.forEach(c => {
-                    if (c.notifyAboutErrors){
+                    if (c instanceof Control){
                         c.notifyAboutErrors(error)
                     }
                 });
             } else {
                 error = data.message;
-                if (this.onGlobalErrorCallback){
-                    this.onGlobalErrorCallback(error);
-                }
+                this.onGlobalErrorCallbacks.forEach(callback => callback(error));
             }
         })
         .done(data => {
@@ -100,27 +120,40 @@ class Form extends View {
                 this.el[0].reset();
             }
 
-            if (this.onSuccessCallback){
-                this.onSuccessCallback(data);
+            if (this.options.messageOnSuccess){
+
             }
+
+            this.onSuccessCallbacks.forEach(callback => callback(data));
         });
      }
 
-     setOnComplete(callback){
-        this.onCompleteCallback = callback;
+     addOnComplete(callback){
+        this.onCompleteCallbacks.push(callback);
         return this;
      }
 
-     setOnSuccess(callback){
-         this.onSuccessCallback = callback;
+     addOnSuccess(callback){
+         this.onSuccessCallbacks.push(callback);
          return this;
      }
 
-     setOnGlobalError(callback){
-         this.onGlobalErrorCallback = callback;
+     addOnGlobalError(callback){
+         this.onGlobalErrorCallbacks.push(callback);
          return this;
      }
 
+     submit(){
+         var submit = this.el.find('[type="submit"]');
+         
+         if (submit.length == 0){
+             submit = $('<input type="submit" style="display: none" />');
+             this.el.append(submit);
+         }
+         
+         submit.click();
+     }
+     
     render(){
         var el = $('<form></form>');
         this.el = el;

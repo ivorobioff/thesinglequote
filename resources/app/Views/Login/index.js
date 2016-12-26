@@ -74,14 +74,13 @@ class Login extends View {
             .addCheckbox('agreeToTOS', {label: 'I agree to the TOS', required: true})
             .addSubmit('Register', {color: 'warning', isBlock: true});
 
-        signUp.setOnComplete(() => this.removeAlert() );
-        signUp.setOnSuccess(() => this.showAlert('The agent has been successfully registered!', 'success'));
-        signUp.setOnGlobalError(e => this.showAlert(e, 'danger'));
+        signUp.addOnComplete(() => this.removeAlert() );
+        signUp.addOnSuccess(() => this.showAlert('The agent has been successfully registered!', 'success'));
+        signUp.addOnGlobalError(e => this.showAlert(e, 'danger'));
 
-        signIn.setOnComplete(() => this.removeAlert() );
-        signIn.setOnGlobalError(e => this.showAlert(e, 'danger'));
-
-        signIn.setOnSuccess(() => page('/'));
+        signIn.addOnComplete(() => this.removeAlert() );
+        signIn.addOnGlobalError(e => this.showAlert(e, 'danger'));
+        signIn.addOnSuccess(() => page('/'));
 
 
         el.find('#signUp').html(signUp.render());

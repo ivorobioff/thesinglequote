@@ -1,6 +1,7 @@
 <?php
 namespace ImmediateSolutions\Core\Agent\Services;
 use Doctrine\ORM\QueryBuilder;
+use ImmediateSolutions\Core\Agent\Criteria\PostSorterResolver;
 use ImmediateSolutions\Core\Agent\Entities\Agent;
 use ImmediateSolutions\Core\Agent\Entities\Post;
 use ImmediateSolutions\Core\Agent\Options\FetchPostsOptions;
@@ -9,6 +10,7 @@ use ImmediateSolutions\Core\Agent\Validation\PostValidator;
 use ImmediateSolutions\Core\Support\Service;
 use ImmediateSolutions\Support\Core\Criteria\Paginator;
 use DateTime;
+use ImmediateSolutions\Support\Core\Criteria\Sorting\Sorter;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
@@ -87,6 +89,8 @@ class PostService extends Service
         }
 
         $builder = $this->startQuery($agentId, $options);
+
+        (new Sorter())->apply($builder, $options->getSortables(), new PostSorterResolver());
 
         return (new Paginator())->apply($builder, $options->getPagination());
     }

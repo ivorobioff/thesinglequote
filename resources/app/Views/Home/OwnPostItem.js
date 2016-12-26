@@ -13,6 +13,16 @@ class OwnPostItem extends View {
         return this;
     }
 
+    setOnEdit(callback){
+        this.onEditCallback = callback;
+        return this;
+    }
+
+    setOnShare(callback){
+        this.onShareCallback = callback;
+        return this;
+    }
+
     render(){
         var data = this.data;
         var el = $(`<tr/>`);
@@ -22,7 +32,10 @@ class OwnPostItem extends View {
 
         var ownPostAction = new OwnPostAction(data);
         
-        ownPostAction.setOnDelete(this.onDeleteCallback);
+        ownPostAction
+            .setOnDelete(() => this.onDeleteCallback())
+            .setOnEdit(() => this.onEditCallback())
+            .setOnShare(() => this.onShareCallback());
 
         el.append($('<td/>').html(ownPostAction.render()));
 
