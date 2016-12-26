@@ -46,9 +46,8 @@ class OwnPostsList extends View {
     }
 
     render(){
-        var el = $(`
-            <div>
-                <table class="table table-striped table-bordered table-list">
+        var el = $(`<div>
+            <table class="table table-striped table-bordered table-list">
                   <thead>
                     <tr>
                         <th style="min-width: 90px;">Quote #</th>
@@ -59,8 +58,8 @@ class OwnPostsList extends View {
                   </thead>
                   <tbody></tbody>
                 </table>
-            </div>
-        `);
+        
+        </div>`);
 
         this.container = el.find('tbody');
         

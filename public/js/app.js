@@ -122,7 +122,7 @@
 
 	var _Home2 = _interopRequireDefault(_Home);
 
-	var _AgentNav = __webpack_require__(28);
+	var _AgentNav = __webpack_require__(32);
 
 	var _AgentNav2 = _interopRequireDefault(_AgentNav);
 
@@ -2566,6 +2566,10 @@
 
 	var _Form2 = _interopRequireDefault(_Form);
 
+	var _QuoteRequestsList = __webpack_require__(28);
+
+	var _QuoteRequestsList2 = _interopRequireDefault(_QuoteRequestsList);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2595,7 +2599,7 @@
 	            }, {
 	                resetOnSuccess: true
 	            })).addOnSuccess(function () {
-	                return _this2.ownPostsList.refresh();
+	                return _this2.ownPostsList.refresh(true);
 	            }).addAlert({ onSuccess: 'The post has been successfully added!' });
 
 	            var modal = new _FormModal2.default({ form: form, title: 'New Post' });
@@ -2607,7 +2611,7 @@
 	        value: function render() {
 	            var _this3 = this;
 
-	            var el = $('<div class="container">\n            <header class="jumbotron hero-spacer">\n                <h1 id="greeting"></h1>\n                <p>This page will show quotes. It will also allow them to edit their information.</p>\n                <p><a class="btn btn-primary btn-large">Call to action!</a>\n                </p>\n            </header>\n            <hr/>\n            <div class="panel panel-default panel-table">\n              <div class="panel-heading">\n                <div class="row">\n                  <div class="col col-xs-6">\n                    <h3 class="panel-title">Your Posts</h3>\n                  </div>\n                  <div class="col col-xs-6 text-right">\n                    <a id="newPostClick" class="btn btn-primary btn-sml" href="#">Post New</a>\n                  </div>\n                </div>\n              </div>\n              <div id="ownPostsList" class="panel-body">\n              </div>\n            </div>\n        </div>');
+	            var el = $('<div class="container">\n            <header class="jumbotron hero-spacer">\n                <h1 id="greeting"></h1>\n                <p>This page will show quotes. It will also allow them to edit their information.</p>\n                <p><a class="btn btn-primary btn-large">Call to action!</a>\n                </p>\n            </header>\n            <hr/>\n            <div class="panel panel-default panel-table">\n              <div class="panel-heading">\n                <div class="row">\n                  <div class="col col-xs-6">\n                    <h3 class="panel-title">Your Posts</h3>\n                  </div>\n                  <div class="col col-xs-6 text-right">\n                    <a id="newPostClick" class="btn btn-primary btn-sml" href="#">Post New</a>\n                  </div>\n                </div>\n              </div>\n              <div id="ownPostsList" class="panel-body"></div>\n            </div>\n\n            <div class="panel panel-default panel-table">\n              <div class="panel-heading"><h3 class="panel-title">Posts needing Quotes</h3></div>\n              <div id="quoteRequestsList" class="panel-body"></div>\n            </div>\n\n        </div>');
 
 	            var user = _Session2.default.get().user;
 
@@ -2619,6 +2623,10 @@
 	            this.ownPostsList = new _OwnPostsList2.default();
 
 	            el.find('#ownPostsList').html(this.ownPostsList.render());
+
+	            var quoteRequestsList = new _QuoteRequestsList2.default();
+
+	            el.find('#quoteRequestsList').html(quoteRequestsList.render());
 
 	            return el;
 	        }
@@ -2793,7 +2801,7 @@
 
 	            modal.setOnSubmit(function () {
 	                _OwnPosts2.default.destroy(item.id).done(function () {
-	                    return _this2.pager.load();
+	                    return _this2.refresh();
 	                });
 	                modal.hide();
 	            });
@@ -2808,7 +2816,7 @@
 	            var form = (0, _.buildPostForm)(new _Form2.default(function (data) {
 	                return _OwnPosts2.default.patch(item.id, data);
 	            }), item).addOnSuccess(function () {
-	                return _this3.pager.load();
+	                return _this3.refresh();
 	            }).addAlert({ onSuccess: 'The post has been successfully updated!' });
 
 	            var modal = new _FormModal2.default({ form: form, title: 'Update Post' });
@@ -2821,14 +2829,16 @@
 	    }, {
 	        key: 'refresh',
 	        value: function refresh() {
-	            this.pager.load(1);
+	            var hard = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+	            this.pager.load(hard ? 1 : undefined);
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var _this4 = this;
 
-	            var el = $('\n            <div>\n                <table class="table table-striped table-bordered table-list">\n                  <thead>\n                    <tr>\n                        <th style="min-width: 90px;">Quote #</th>\n                        <th style="min-width: 169px;">Client Name</th>\n                        <th>Public Message</th>\n                        <th style="min-width: 130px;">Status / Actions</th>\n                    </tr> \n                  </thead>\n                  <tbody></tbody>\n                </table>\n            </div>\n        ');
+	            var el = $('<div>\n            <table class="table table-striped table-bordered table-list">\n                  <thead>\n                    <tr>\n                        <th style="min-width: 90px;">Quote #</th>\n                        <th style="min-width: 169px;">Client Name</th>\n                        <th>Public Message</th>\n                        <th style="min-width: 130px;">Status / Actions</th>\n                    </tr> \n                  </thead>\n                  <tbody></tbody>\n                </table>\n        \n        </div>');
 
 	            this.container = el.find('tbody');
 
@@ -2970,12 +2980,6 @@
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _sparrowUi = __webpack_require__(2);
-
-	var _OwnPosts = __webpack_require__(21);
-
-	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -3280,7 +3284,7 @@
 	        _this.loader = loader;
 	        _this.page = 1;
 	        _this.onLoadCallbacks = [];
-	        _this.meta = { totalPages: 1 };
+	        _this.totalPages = 1;
 	        _this.isLoading = false;
 	        return _this;
 	    }
@@ -3312,10 +3316,14 @@
 	                _this2.handlePrevDisplay();
 	                _this2.handleNextDisplay();
 	            }).done(function (data) {
-	                _this2.meta = data.meta.pagination;
+	                _this2.totalPages = data.meta.pagination.totalPages;
 
-	                if (_this2.page > _this2.meta.totalPages) {
-	                    _this2.page = _this2.meta.totalPages;
+	                if (_this2.totalPages == 0) {
+	                    _this2.totalPages = 1;
+	                }
+
+	                if (_this2.page > _this2.totalPages) {
+	                    _this2.page = _this2.totalPages;
 	                    _this2.load();
 	                }
 
@@ -3353,7 +3361,7 @@
 	        value: function onNextClick(e) {
 	            e.preventDefault();
 
-	            if (this.page == this.meta.totalPages || this.isLoading) {
+	            if (this.page == this.totalPages || this.isLoading) {
 	                return;
 	            }
 
@@ -3364,7 +3372,7 @@
 	    }, {
 	        key: 'handleNextDisplay',
 	        value: function handleNextDisplay() {
-	            if (this.page == this.meta.totalPages) {
+	            if (this.page == this.totalPages) {
 	                this.next.addClass('disabled');
 	            } else {
 	                this.next.removeClass('disabled');
@@ -3398,6 +3406,226 @@
 
 /***/ },
 /* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	var _QuoteRequests = __webpack_require__(29);
+
+	var _QuoteRequests2 = _interopRequireDefault(_QuoteRequests);
+
+	var _QuoteRequestItem = __webpack_require__(30);
+
+	var _QuoteRequestItem2 = _interopRequireDefault(_QuoteRequestItem);
+
+	var _Pager = __webpack_require__(27);
+
+	var _Pager2 = _interopRequireDefault(_Pager);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var QuoteRequestsList = function (_View) {
+	    _inherits(QuoteRequestsList, _View);
+
+	    function QuoteRequestsList() {
+	        _classCallCheck(this, QuoteRequestsList);
+
+	        return _possibleConstructorReturn(this, (QuoteRequestsList.__proto__ || Object.getPrototypeOf(QuoteRequestsList)).apply(this, arguments));
+	    }
+
+	    _createClass(QuoteRequestsList, [{
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+
+	            var el = $('\n            <div>\n                <table class="table table-striped table-bordered table-list">\n                    <thead>\n                        <tr>\n                            <th>Title</th>\n                            <th>Public Message</th>\n                            <th style="min-width: 130px;">Status / Actions</th>\n                        </tr> \n                    </thead>\n                    <tbody></tbody>\n                </table>\n            </div>\n        ');
+
+	            this.container = el.find('tbody');
+
+	            this.pager = new _Pager2.default(function (page) {
+	                return _QuoteRequests2.default.load(page);
+	            });
+
+	            this.pager.addOnLoad(function (data) {
+
+	                _this2.container.empty();
+
+	                data.forEach(function (request) {
+
+	                    var item = new _QuoteRequestItem2.default(request);
+
+	                    _this2.container.append(item.render());
+	                });
+	            });
+
+	            el.append(this.pager.render());
+
+	            this.pager.load();
+
+	            return el;
+	        }
+	    }]);
+
+	    return QuoteRequestsList;
+	}(_sparrowUi.View);
+
+	exports.default = QuoteRequestsList;
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _Helpers = __webpack_require__(9);
+
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var QuoteRequests = {
+	    load: function load() {
+	        var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+
+	        return (0, _Helpers.backend)({ method: 'GET', url: '/agents/posts', data: {
+	                orderBy: 'id:desc', page: page
+	            } });
+	    }
+	};
+
+	exports.default = QuoteRequests;
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	var _QuoteRequestAction = __webpack_require__(31);
+
+	var _QuoteRequestAction2 = _interopRequireDefault(_QuoteRequestAction);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var QuoteRequestItem = function (_View) {
+	    _inherits(QuoteRequestItem, _View);
+
+	    function QuoteRequestItem(data) {
+	        _classCallCheck(this, QuoteRequestItem);
+
+	        var _this = _possibleConstructorReturn(this, (QuoteRequestItem.__proto__ || Object.getPrototypeOf(QuoteRequestItem)).call(this));
+
+	        _this.data = data;
+	        return _this;
+	    }
+
+	    _createClass(QuoteRequestItem, [{
+	        key: 'render',
+	        value: function render() {
+	            var data = this.data;
+
+	            var el = $('<tr/>');
+	            el.append($('<td/>').text(data.title));
+	            el.append($('<td/>').text(data.publicMessage));
+
+	            var quoteRequestAction = new _QuoteRequestAction2.default(data);
+
+	            el.append($('<td/>').html(quoteRequestAction.render()));
+
+	            return el;
+	        }
+	    }]);
+
+	    return QuoteRequestItem;
+	}(_sparrowUi.View);
+
+	exports.default = QuoteRequestItem;
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _sparrowUi = __webpack_require__(2);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var QuoteRequestAction = function (_View) {
+	    _inherits(QuoteRequestAction, _View);
+
+	    function QuoteRequestAction(data) {
+	        _classCallCheck(this, QuoteRequestAction);
+
+	        var _this = _possibleConstructorReturn(this, (QuoteRequestAction.__proto__ || Object.getPrototypeOf(QuoteRequestAction)).call(this));
+
+	        _this.data = data;
+	        return _this;
+	    }
+
+	    _createClass(QuoteRequestAction, [{
+	        key: 'render',
+	        value: function render() {
+	            var data = this.data;
+	            var el = $('\n            <div class="btn-group">\n                <button id="statusButton" type="button"  data-toggle="dropdown" class="btn dropdown-toggle"></button>\n                <ul class="dropdown-menu">\n                    <li><a href="#" id="uploadAction">Upload a Quote</a></li>\n                </ul>\n            </div>\n        ');
+
+	            el.find('#statusButton').addClass('btn-default').text('Open' + ' ').append('<span class="caret"></span>');
+
+	            return el;
+	        }
+	    }]);
+
+	    return QuoteRequestAction;
+	}(_sparrowUi.View);
+
+	exports.default = QuoteRequestAction;
+
+/***/ },
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

@@ -4,6 +4,7 @@ import OwnPosts from '../../Providers/OwnPosts';
 import OwnPostsList from './OwnPostsList';
 import FormModal from '../Modal/FormModal';
 import Form from '../Form';
+import QuoteRequestsList from './QuoteRequestsList';
 
 class Home extends View {
 
@@ -41,9 +42,14 @@ class Home extends View {
                   </div>
                 </div>
               </div>
-              <div id="ownPostsList" class="panel-body">
-              </div>
+              <div id="ownPostsList" class="panel-body"></div>
             </div>
+
+            <div class="panel panel-default panel-table">
+              <div class="panel-heading"><h3 class="panel-title">Posts needing Quotes</h3></div>
+              <div id="quoteRequestsList" class="panel-body"></div>
+            </div>
+
         </div>`);
 
         var user = Session.get().user;
@@ -54,6 +60,10 @@ class Home extends View {
         this.ownPostsList = new OwnPostsList();
 
         el.find('#ownPostsList').html(this.ownPostsList.render());
+
+        var quoteRequestsList = new QuoteRequestsList();
+
+        el.find('#quoteRequestsList').html(quoteRequestsList.render());
         
         return el;
     }

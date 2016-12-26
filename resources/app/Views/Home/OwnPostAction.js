@@ -1,5 +1,4 @@
 import { View } from 'sparrow-ui';
-import OwnPosts from '../../Providers/OwnPosts';
 
 class OwnPostAction extends View {
 

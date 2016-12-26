@@ -7,7 +7,7 @@ class Pager extends View {
         this.loader = loader;
         this.page = 1;
         this.onLoadCallbacks = [];
-        this.meta = { totalPages: 1 };
+        this.totalPages = 1;
         this.isLoading = false;
     }
 
@@ -33,10 +33,14 @@ class Pager extends View {
                 this.handleNextDisplay();
             })
             .done(data => {
-                this.meta = data.meta.pagination;
+                this.totalPages = data.meta.pagination.totalPages;
+
+                if (this.totalPages == 0){
+                    this.totalPages = 1;
+                }
                 
-                if (this.page > this.meta.totalPages){
-                    this.page = this.meta.totalPages;
+                if (this.page > this.totalPages){
+                    this.page = this.totalPages;
                     this.load();
                 }
 
@@ -69,7 +73,7 @@ class Pager extends View {
     onNextClick(e){
         e.preventDefault();
 
-        if (this.page == this.meta.totalPages || this.isLoading){
+        if (this.page == this.totalPages || this.isLoading){
             return ;
         }
 
@@ -79,13 +83,12 @@ class Pager extends View {
     }
 
     handleNextDisplay(){
-        if (this.page == this.meta.totalPages){
+        if (this.page == this.totalPages){
             this.next.addClass('disabled');
         } else {
             this.next.removeClass('disabled');
         }
     }
-
 
     render(){
         var el = $(`<nav aria-label="...">
