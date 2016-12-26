@@ -5,6 +5,7 @@ use ImmediateSolutions\Api\Agent\Serializers\QuoteSerializer;
 use ImmediateSolutions\Api\Support\Controller;
 use ImmediateSolutions\Core\Agent\Services\AgentService;
 use ImmediateSolutions\Core\Agent\Services\QuoteService;
+use ImmediateSolutions\Support\Framework\Exceptions\NotFoundHttpException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -32,10 +33,13 @@ class QuoteController extends Controller
      */
     public function show($agentId, $requestId)
     {
-        return $this->reply->single(
-            $this->quoteService->getByRequestAndOwnerId($requestId, $agentId),
-            $this->serializer(QuoteSerializer::class)
-        );
+        $quote = $this->quoteService->getByRequestAndOwnerId($requestId, $agentId);
+
+        if ($quote === null){
+            throw new NotFoundHttpException();
+        }
+
+        return $this->reply->single($quote, $this->serializer(QuoteSerializer::class));
     }
 
     /**
