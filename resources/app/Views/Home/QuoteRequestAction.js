@@ -90,7 +90,7 @@ class QuoteRequestAction extends View {
 
         if (data.status === 'active' && data.quote !== null){
             status = statuses.proposed;
-        } else if (data.status === 'done' && data.quote !== null) {
+        } else if (data.status === 'done' && data.quote !== null && data.quote.isPicked) {
             status = statuses.shared;
         } else {
             status = statuses.open;

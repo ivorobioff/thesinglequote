@@ -74,6 +74,10 @@ class Quote
         $this->document = $document;
     }
 
+    private $isPicked = false;
+    public function setPicked($flag) { $this->isPicked = $flag; }
+    public function isPicked() { return $this->isPicked; }
+
     /**
      * @var DateTime
      */

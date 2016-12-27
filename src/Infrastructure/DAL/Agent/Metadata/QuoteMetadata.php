@@ -39,6 +39,11 @@ class QuoteMetadata extends AbstractMetadataProvider
             ->createField('commission', 'integer')
             ->build();
 
+
+        $builder
+            ->createField('isPicked', 'boolean')
+            ->build();
+
         $builder
             ->createField('note', 'text')
             ->nullable(true)

@@ -16,6 +16,7 @@ class QuoteSerializer extends Serializer
             'price' => $quote->getPrice(),
             'plan' => $this->enum($quote->getPlan()),
             'commission' => $quote->getCommission(),
+            'isPicked' => $quote->isPicked(),
             'document' => $this->delegate(DocumentSerializer::class, $quote->getDocument()),
             'createdAt' => $this->datetime($quote->getCreatedAt())
         ];
