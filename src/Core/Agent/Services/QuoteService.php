@@ -17,6 +17,16 @@ use ImmediateSolutions\Support\Validation\PresentableException;
 class QuoteService extends Service
 {
     /**
+     * @param int $postId
+     * @return Post[]
+     */
+    public function getAll($postId)
+    {
+        return $this->entityManager->getRepository(Quote::class)
+            ->findBy(['request' => $postId]);
+    }
+
+    /**
      * @param int $requestId
      * @param int $ownerId
      * @return Quote
@@ -206,12 +216,20 @@ class QuoteService extends Service
             'owner' => $ownerId
         ]);
 
-        $quote->setDocument(null);
+        $this->deleteInMemory($quote);
 
-        $this->entityManager->remove($quote);
         $this->entityManager->flush();
 
         $this->adjustRequestStatus($requestId);
+    }
+
+    /**
+     * @param Quote $quote
+     */
+    public function deleteInMemory(Quote $quote)
+    {
+        $quote->setDocument(null);
+        $this->entityManager->remove($quote);
     }
 
     /**

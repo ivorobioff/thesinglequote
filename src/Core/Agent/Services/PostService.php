@@ -4,6 +4,7 @@ use Doctrine\ORM\QueryBuilder;
 use ImmediateSolutions\Core\Agent\Criteria\PostSorterResolver;
 use ImmediateSolutions\Core\Agent\Entities\Agent;
 use ImmediateSolutions\Core\Agent\Entities\Post;
+use ImmediateSolutions\Core\Agent\Entities\Quote;
 use ImmediateSolutions\Core\Agent\Enums\Status;
 use ImmediateSolutions\Core\Agent\Options\FetchPostsOptions;
 use ImmediateSolutions\Core\Agent\Payloads\PostPayload;
@@ -163,12 +164,77 @@ class PostService extends Service
         return $builder;
     }
 
-
     /**
      * @param int $id
      */
     public function delete($id)
     {
-        $this->entityManager->getRepository(Post::class)->delete(['id' => $id]);
+        $quotes = $this->entityManager->getRepository(Quote::class)
+            ->findBy(['request' => $id]);
+
+        if (count($quotes) > 0){
+            /**
+             * @var QuoteService $quoteService
+             */
+            $quoteService = $this->container->get(QuoteService::class);
+
+            foreach ($quotes as $quote){
+                $quoteService->deleteInMemory($quote);
+            }
+        }
+
+        /**
+         * @var Post $post
+         */
+        $post = $this->entityManager->getReference(Post::class, $id);
+
+        $this->entityManager->remove($post);
+
+        $this->entityManager->flush();
+    }
+
+
+    /**
+     * @param int $ownerId
+     */
+    public function deleteAllByOwnerIdInMemory($ownerId)
+    {
+        $posts = $this->entityManager->getRepository(Post::class)
+            ->findBy(['owner' => $ownerId]);
+
+        if (count($posts) == 0){
+            return ;
+        }
+
+        $postIds = array_map(function(Post $post) { return $post->getId(); }, $posts);
+
+        $quotes = $this->entityManager->getRepository(Quote::class)
+            ->retrieveAll(['request' => ['in', $postIds]]);
+
+        /**
+         * @var QuoteService $quoteService
+         */
+        $quoteService = $this->container->get(QuoteService::class);
+
+        foreach ($quotes as $quote){
+            $quoteService->deleteInMemory($quote);
+        }
+
+        foreach ($posts as $post){
+            $this->entityManager->remove($post);
+        }
+    }
+
+    /**
+     * @param int $postId
+     * @param int $quoteId
+     * @return bool
+     */
+    public function hasQuote($postId, $quoteId)
+    {
+        return $this->entityManager->getRepository(Quote::class)->exists([
+            'request' => $postId,
+            'id' => $quoteId
+        ]);
     }
 }

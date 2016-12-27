@@ -84,7 +84,21 @@ class AgentService extends Service
      */
     public function delete($id)
     {
-        $this->entityManager->getRepository(Agent::class)->delete(['id' => $id]);
+        /**
+         * @var PostService $postService
+         */
+        $postService = $this->container->get(PostService::class);
+
+        $postService->deleteAllByOwnerIdInMemory($id);
+
+        /**
+         * @var Agent $agent
+         */
+        $agent = $this->entityManager->getReference(Agent::class, $id);
+
+        $this->entityManager->remove($agent);
+
+        $this->entityManager->flush();
     }
 
     /**
