@@ -8,47 +8,76 @@ class Input extends Control {
     }
 
     getValue(){
-        return this.el.val();
+        var value = this.el.val();
+
+        if (value === ''){
+            return null;
+        }
+
+        if (this.options.cast === 'float'){
+            return parseFloat(value);
+        }
+
+        if (this.options.cast === 'int'){
+            return parseInt(value);
+        }
+
+        return value;
     }
 
     render(){
-        var wrapper = $('<div class="form-group"></div>');
-        this.wrapper = wrapper;
-        var name = this.name;
-        var options = this.options;
+        this.wrapper = $('<div class="form-group"></div>');
 
-        if (options.label){
+        if (this.options.label){
             var label = $('<label></label>');
-            label.text(options.label);
-            label.attr('for', '_id-' + name);
+            label.text(this.options.label);
+            label.attr('for', '_id-' + this.name);
             label.addClass('control-label');
-            wrapper.append(label);
+            this.wrapper.append(label);
         }
 
-        var control = $('<input />')
+        this.el = $('<input />')
             .addClass('form-control')
-            .attr('name', name)
-            .attr('type', options.type ? options.type : 'text')
-            .attr('id', '_id-' + name);
+            .attr('name', this.name)
+            .attr('type', this.options.type ? this.options.type : 'text')
+            .attr('id', '_id-' + this.name);
 
+        if (this.options.step){
+            this.el.attr('step', this.options.step);
+        }
+
+        var controlHolder = this.el;
+
+        if (this.options.icon){
+            var iconWrapper = $('<div/>').addClass('input-group');
+            var icon = $('<div/>').addClass('input-group-addon').text(this.options.icon.sign);
+
+            if (this.options.icon.position === 'left'){
+                iconWrapper.append(icon);
+                iconWrapper.append(this.el);
+            } else {
+                iconWrapper.append(this.el);
+                iconWrapper.append(icon);
+            }
+
+            controlHolder = iconWrapper;
+        }
 
         if (this.options.value){
-            control.val(this.options.value);
+            this.el.val(this.options.value);
         }
 
-        this.el = control;
-
-        if (options.placeholder){
-            control.attr('placeholder', options.placeholder);
+        if (this.options.placeholder){
+            this.el.attr('placeholder', this.options.placeholder);
         }
 
-        if (options.required){
-            control.attr('required', 'required');
+        if (this.options.required){
+            this.el.attr('required', 'required');
         }
 
-        wrapper.append(control);
+        this.wrapper.append(controlHolder);
 
-        return wrapper
+        return this.wrapper
     }
 }
 

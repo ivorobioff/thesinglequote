@@ -114,6 +114,10 @@
                 "data": [
                     {
                         ... Agent Post Object
+                        
+                        "quote": {
+                            ... Agent Quote Object
+                        }
                     }
                 ],
                 "meta": {

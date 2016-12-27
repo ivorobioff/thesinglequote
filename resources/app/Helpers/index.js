@@ -24,3 +24,19 @@ export function backend (options) {
 
     return $.ajax(config);
 }
+
+export function upload(file){
+    
+    var data = new FormData();
+
+    data.append('document', file);
+
+    return $.ajax({
+        url: '/api/documents',
+        type: 'POST',
+        data,
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+}

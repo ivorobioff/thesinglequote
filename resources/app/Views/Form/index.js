@@ -7,6 +7,8 @@ import Textarea from './Textarea';
 import Control from './Control';
 import Content from './Content';
 import Alert from './Alert';
+import Select from './Select';
+import Upload from './Upload';
 
 class Form extends View {
     
@@ -30,6 +32,15 @@ class Form extends View {
 
      addInput(name, options){
         this.controls.push(new Input(name, options));
+        return this;
+     }
+
+     addNumber(name, options){
+         return this.addInput(name, Object.assign({ cast: 'int', step: 1}, options, { type: 'number' }));
+     }
+
+     addUpload(name, options){
+        this.controls.push(new Upload(this, name, options));
         return this;
      }
 
@@ -64,6 +75,11 @@ class Form extends View {
          return this;
      }
 
+     addSelect(name, options = {}){
+         this.controls.push(new Select(name, options));
+         return this;
+     }
+
      onSubmit(e){
         e.preventDefault();
 
@@ -83,16 +99,13 @@ class Form extends View {
             var promise = backend(config);
         }
 
-        this.controls.forEach(c =>  {
-            if (c instanceof Control){
-                c.disable()
-            }
-        });
+        this.disable();
 
         promise.always(() => {
+            this.enable();
+
             this.controls.forEach(c => { 
                 if (c instanceof Control){
-                    c.enable();
                     c.removeError();
                 }
             });
@@ -152,6 +165,22 @@ class Form extends View {
          }
          
          submit.click();
+     }
+
+     enable(){
+         this.controls.forEach(c =>  {
+            if (c instanceof Control){
+                c.enable()
+            }
+        });
+     }
+
+     disable(){
+        this.controls.forEach(c =>  {
+            if (c instanceof Control){
+                c.disable()
+            }
+        });
      }
      
     render(){

@@ -72,6 +72,7 @@ class QuoteValidator extends AbstractThrowableValidator
             });
 
         $documentInflator = new DocumentInflator($this->container);
+        $documentInflator->setRequired(true);
 
         if ($this->currentQuote){
             $documentInflator->setTrustedDocuments([$this->currentQuote->getDocument()]);

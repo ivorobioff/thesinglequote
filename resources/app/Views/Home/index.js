@@ -2,7 +2,7 @@ import { View } from 'sparrow-ui';
 import Session from '../../Providers/Session';
 import OwnPosts from '../../Providers/OwnPosts';
 import OwnPostsList from './OwnPostsList';
-import FormModal from '../Modal/FormModal';
+import Modal from '../Modal';
 import Form from '../Form';
 import QuoteRequestsList from './QuoteRequestsList';
 
@@ -17,7 +17,9 @@ class Home extends View {
         .addOnSuccess(() => this.ownPostsList.refresh(true))
         .addAlert({ onSuccess: 'The post has been successfully added!' });
 
-        var modal = new FormModal({ form, title: 'New Post' });
+        var modal = new Modal({ content: form.render(), title: 'New Post' });
+
+        modal.setOnSubmit(() => form.submit());
         
         modal.show();
     }
@@ -91,6 +93,7 @@ export function buildPostForm(form, data = {}){
             value: data.publicMessage ? data.publicMessage : undefined, 
             label: 'Public Message', 
             required: true, 
+            rows: 10,
             placeholder: 'I need a quote for 3 cars and 2 drivers that live in zip code of 90210. A 2005 toyota Camry, 2011 Ford Fiesta, and 2013 Ford Mustang. 100/300 liability and 15/30 Uninsured Motorist and comp/coll deductibles of 500/500 for all cars. Female married driver born on 11/08/1973 and Male married driver born 05/12/1971. No tickets or accidents.'})
         .addContent(`<div>
             <h1>Private Information
@@ -116,6 +119,7 @@ export function buildPostForm(form, data = {}){
             value: data.privateMessage ? data.privateMessage : undefined,
             label: 'Private Message', 
             required: true, 
+            rows: 10,
             placeholder: 'First driver is Mary Allen and second driver is David Allen. They live on 123 Sunshine Rd. Beverly Hills, CA 90210.'})
         .addCheckbox('noPersonalInfoInPublic', { 
             value: data.noPersonalInfoInPublic ? data.noPersonalInfoInPublic : undefined,

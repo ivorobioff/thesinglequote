@@ -114,15 +114,15 @@
 
 	var _Login2 = _interopRequireDefault(_Login);
 
-	var _Error = __webpack_require__(19);
+	var _Error = __webpack_require__(21);
 
 	var _Error2 = _interopRequireDefault(_Error);
 
-	var _Home = __webpack_require__(20);
+	var _Home = __webpack_require__(22);
 
 	var _Home2 = _interopRequireDefault(_Home);
 
-	var _AgentNav = __webpack_require__(32);
+	var _AgentNav = __webpack_require__(34);
 
 	var _AgentNav2 = _interopRequireDefault(_AgentNav);
 
@@ -1494,7 +1494,7 @@
 
 	var _Session2 = _interopRequireDefault(_Session);
 
-	var _Agents = __webpack_require__(18);
+	var _Agents = __webpack_require__(20);
 
 	var _Agents2 = _interopRequireDefault(_Agents);
 
@@ -1638,6 +1638,14 @@
 
 	var _Alert2 = _interopRequireDefault(_Alert);
 
+	var _Select = __webpack_require__(18);
+
+	var _Select2 = _interopRequireDefault(_Select);
+
+	var _Upload = __webpack_require__(19);
+
+	var _Upload2 = _interopRequireDefault(_Upload);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1686,6 +1694,17 @@
 	            return this;
 	        }
 	    }, {
+	        key: 'addNumber',
+	        value: function addNumber(name, options) {
+	            return this.addInput(name, Object.assign({ cast: 'int', step: 1 }, options, { type: 'number' }));
+	        }
+	    }, {
+	        key: 'addUpload',
+	        value: function addUpload(name, options) {
+	            this.controls.push(new _Upload2.default(this, name, options));
+	            return this;
+	        }
+	    }, {
 	        key: 'addSubmit',
 	        value: function addSubmit(title) {
 	            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -1729,6 +1748,14 @@
 	            return this;
 	        }
 	    }, {
+	        key: 'addSelect',
+	        value: function addSelect(name) {
+	            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	            this.controls.push(new _Select2.default(name, options));
+	            return this;
+	        }
+	    }, {
 	        key: 'onSubmit',
 	        value: function onSubmit(e) {
 	            var _this2 = this;
@@ -1751,16 +1778,13 @@
 	                var promise = (0, _Helpers.backend)(config);
 	            }
 
-	            this.controls.forEach(function (c) {
-	                if (c instanceof _Control2.default) {
-	                    c.disable();
-	                }
-	            });
+	            this.disable();
 
 	            promise.always(function () {
+	                _this2.enable();
+
 	                _this2.controls.forEach(function (c) {
 	                    if (c instanceof _Control2.default) {
-	                        c.enable();
 	                        c.removeError();
 	                    }
 	                });
@@ -1828,6 +1852,24 @@
 	            submit.click();
 	        }
 	    }, {
+	        key: 'enable',
+	        value: function enable() {
+	            this.controls.forEach(function (c) {
+	                if (c instanceof _Control2.default) {
+	                    c.enable();
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'disable',
+	        value: function disable() {
+	            this.controls.forEach(function (c) {
+	                if (c instanceof _Control2.default) {
+	                    c.disable();
+	                }
+	            });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var _this3 = this;
@@ -1862,6 +1904,7 @@
 	    value: true
 	});
 	exports.backend = backend;
+	exports.upload = upload;
 
 	var _Session = __webpack_require__(10);
 
@@ -1892,6 +1935,22 @@
 	    }
 
 	    return $.ajax(config);
+	}
+
+	function upload(file) {
+
+	    var data = new FormData();
+
+	    data.append('document', file);
+
+	    return $.ajax({
+	        url: '/api/documents',
+	        type: 'POST',
+	        data: data,
+	        cache: false,
+	        contentType: false,
+	        processData: false
+	    });
 	}
 
 /***/ },
@@ -1996,43 +2055,73 @@
 	    _createClass(Input, [{
 	        key: 'getValue',
 	        value: function getValue() {
-	            return this.el.val();
+	            var value = this.el.val();
+
+	            if (value === '') {
+	                return null;
+	            }
+
+	            if (this.options.cast === 'float') {
+	                return parseFloat(value);
+	            }
+
+	            if (this.options.cast === 'int') {
+	                return parseInt(value);
+	            }
+
+	            return value;
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var wrapper = $('<div class="form-group"></div>');
-	            this.wrapper = wrapper;
-	            var name = this.name;
-	            var options = this.options;
+	            this.wrapper = $('<div class="form-group"></div>');
 
-	            if (options.label) {
+	            if (this.options.label) {
 	                var label = $('<label></label>');
-	                label.text(options.label);
-	                label.attr('for', '_id-' + name);
+	                label.text(this.options.label);
+	                label.attr('for', '_id-' + this.name);
 	                label.addClass('control-label');
-	                wrapper.append(label);
+	                this.wrapper.append(label);
 	            }
 
-	            var control = $('<input />').addClass('form-control').attr('name', name).attr('type', options.type ? options.type : 'text').attr('id', '_id-' + name);
+	            this.el = $('<input />').addClass('form-control').attr('name', this.name).attr('type', this.options.type ? this.options.type : 'text').attr('id', '_id-' + this.name);
+
+	            if (this.options.step) {
+	                this.el.attr('step', this.options.step);
+	            }
+
+	            var controlHolder = this.el;
+
+	            if (this.options.icon) {
+	                var iconWrapper = $('<div/>').addClass('input-group');
+	                var icon = $('<div/>').addClass('input-group-addon').text(this.options.icon.sign);
+
+	                if (this.options.icon.position === 'left') {
+	                    iconWrapper.append(icon);
+	                    iconWrapper.append(this.el);
+	                } else {
+	                    iconWrapper.append(this.el);
+	                    iconWrapper.append(icon);
+	                }
+
+	                controlHolder = iconWrapper;
+	            }
 
 	            if (this.options.value) {
-	                control.val(this.options.value);
+	                this.el.val(this.options.value);
 	            }
 
-	            this.el = control;
-
-	            if (options.placeholder) {
-	                control.attr('placeholder', options.placeholder);
+	            if (this.options.placeholder) {
+	                this.el.attr('placeholder', this.options.placeholder);
 	            }
 
-	            if (options.required) {
-	                control.attr('required', 'required');
+	            if (this.options.required) {
+	                this.el.attr('required', 'required');
 	            }
 
-	            wrapper.append(control);
+	            this.wrapper.append(controlHolder);
 
-	            return wrapper;
+	            return this.wrapper;
 	        }
 	    }]);
 
@@ -2157,28 +2246,25 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var options = this.options;
+	            this.wrapper = $('<div class="form-group"><div></div></div>');
 
-	            var wrapper = $('<div class="form-group"><div></div></div>');
+	            this.el = $('<button></button>');
 
-	            var control = $('<button></button>');
-	            this.el = control;
+	            this.el.text(this.options.title).attr('type', this.options.type).addClass('btn');
 
-	            control.text(options.title).attr('type', options.type).addClass('btn');
-
-	            if (options.color) {
-	                control.addClass('btn-' + options.color);
+	            if (this.options.color) {
+	                this.el.addClass('btn-' + this.options.color);
 	            } else {
-	                control.addClass('btn-default');
+	                this.el.addClass('btn-default');
 	            }
 
-	            if (options.isBlock) {
-	                control.addClass('btn-block');
+	            if (this.options.isBlock) {
+	                this.el.addClass('btn-block');
 	            }
 
-	            wrapper.find('div:first-child').html(control);
+	            this.wrapper.find('div:first-child').html(this.el);
 
-	            return wrapper;
+	            return this.wrapper;
 	        }
 	    }]);
 
@@ -2234,30 +2320,24 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var name = this.name;
-	            var options = this.options;
-
-	            var wrapper = $('<div class="form-group"><div class="checkbox"></div></div>');
-	            this.wrapper = wrapper;
-	            var control = $('<input />', { type: 'checkbox', name: name });
+	            this.wrapper = $('<div class="form-group"><div class="checkbox"></div></div>');
+	            this.el = $('<input />', { type: 'checkbox', name: this.name });
 
 	            if (this.options.value) {
-	                control.prop('checked', 'checked');
+	                this.el.prop('checked', 'checked');
 	            }
 
-	            if (options.required) {
-	                control.attr('required', 'required');
+	            if (this.options.required) {
+	                this.el.attr('required', 'required');
 	            }
 
-	            this.el = control;
-
-	            if (options.label) {
-	                control = $('<label></label>').text(options.label).prepend(control);
+	            if (this.options.label) {
+	                this.el = $('<label></label>').text(this.options.label).prepend(this.el);
 	            }
 
-	            wrapper.find('div:first-child').html(control);
+	            this.wrapper.find('div:first-child').html(this.el);
 
-	            return wrapper;
+	            return this.wrapper;
 	        }
 	    }]);
 
@@ -2306,50 +2386,51 @@
 	    _createClass(Textarea, [{
 	        key: 'getValue',
 	        value: function getValue() {
-	            return this.el.val();
+	            var value = this.el.val();
+
+	            if (value === '') {
+	                return null;
+	            }
+
+	            return value;
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var wrapper = $('<div class="form-group"></div>');
-	            this.wrapper = wrapper;
-	            var name = this.name;
-	            var options = this.options;
+	            this.wrapper = $('<div class="form-group"></div>');
 
-	            if (options.label) {
+	            if (this.options.label) {
 	                var label = $('<label></label>');
-	                label.text(options.label);
-	                label.attr('for', '_id-' + name);
+	                label.text(this.options.label);
+	                label.attr('for', '_id-' + this.name);
 	                label.addClass('control-label');
-	                wrapper.append(label);
+	                this.wrapper.append(label);
 	            }
 
-	            var control = $('<textarea />', {
+	            this.el = $('<textarea />', {
 	                'class': 'form-control',
-	                name: name,
-	                type: options.type ? options.type : 'text',
-	                id: '_id-' + name,
-	                cols: options.cols ? options.cols : 40,
-	                rows: options.rows ? options.rows : 10
+	                name: this.name,
+	                type: this.options.type ? this.options.type : 'text',
+	                id: '_id-' + this.name,
+	                cols: this.options.cols ? this.options.cols : undefined,
+	                rows: this.options.rows ? this.options.rows : undefined
 	            });
 
 	            if (this.options.value) {
-	                control.val(this.options.value);
+	                this.el.val(this.options.value);
 	            }
 
-	            this.el = control;
-
-	            if (options.placeholder) {
-	                control.attr('placeholder', options.placeholder);
+	            if (this.options.placeholder) {
+	                this.el.attr('placeholder', this.options.placeholder);
 	            }
 
-	            if (options.required) {
-	                control.attr('required', 'required');
+	            if (this.options.required) {
+	                this.el.attr('required', 'required');
 	            }
 
-	            wrapper.append(control);
+	            this.wrapper.append(this.el);
 
-	            return wrapper;
+	            return this.wrapper;
 	        }
 	    }]);
 
@@ -2479,6 +2560,180 @@
 	    value: true
 	});
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _Control2 = __webpack_require__(12);
+
+	var _Control3 = _interopRequireDefault(_Control2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Select = function (_Control) {
+	    _inherits(Select, _Control);
+
+	    function Select(name, options) {
+	        _classCallCheck(this, Select);
+
+	        var _this = _possibleConstructorReturn(this, (Select.__proto__ || Object.getPrototypeOf(Select)).call(this));
+
+	        _this.name = name;
+	        _this.options = options;
+	        return _this;
+	    }
+
+	    _createClass(Select, [{
+	        key: 'getValue',
+	        value: function getValue() {
+	            return this.el.val();
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+
+	            this.wrapper = $('<div class="form-group"></div>');
+
+	            if (this.options.label) {
+	                var label = $('<label></label>');
+	                label.text(this.options.label);
+	                label.attr('for', '_id-' + name);
+	                label.addClass('control-label');
+	                this.wrapper.append(label);
+	            }
+
+	            this.el = $('<select />').addClass('form-control').attr('name', this.name).attr('id', '_id-' + name);
+
+	            this.options.options.forEach(function (option) {
+	                _this2.el.append($('<option/>', { value: option.value, text: option.title }));
+	            });
+
+	            if (this.options.required) {
+	                this.el.attr('required', 'required');
+	            }
+
+	            this.wrapper.append(this.el);
+
+	            return this.wrapper;
+	        }
+	    }]);
+
+	    return Select;
+	}(_Control3.default);
+
+	exports.default = Select;
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _Control2 = __webpack_require__(12);
+
+	var _Control3 = _interopRequireDefault(_Control2);
+
+	var _Helpers = __webpack_require__(9);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Upload = function (_Control) {
+	    _inherits(Upload, _Control);
+
+	    function Upload(form, name, options) {
+	        _classCallCheck(this, Upload);
+
+	        var _this = _possibleConstructorReturn(this, (Upload.__proto__ || Object.getPrototypeOf(Upload)).call(this));
+
+	        _this.form = form;
+	        _this.name = name;
+	        _this.options = options;
+	        return _this;
+	    }
+
+	    _createClass(Upload, [{
+	        key: 'onChange',
+	        value: function onChange(e) {
+	            var _this2 = this;
+
+	            this.form.disable();
+	            (0, _Helpers.upload)(e.target.files[0]).always(function () {
+	                return _this2.form.enable();
+	            }).done(function (data) {
+	                return _this2.data = data;
+	            });
+	        }
+	    }, {
+	        key: 'getValue',
+	        value: function getValue() {
+
+	            if (!this.data) {
+	                return null;
+	            }
+
+	            return { id: this.data.id, token: this.data.token };
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this3 = this;
+
+	            this.wrapper = $('<div class="form-group"></div>');
+
+	            if (this.options.label) {
+	                var label = $('<label />', {
+	                    for: '_id-' + this.name,
+	                    'class': 'control-label',
+	                    text: this.options.label
+	                });
+
+	                this.wrapper.append(label);
+	            }
+
+	            this.el = $('<input />', { type: 'file', name: this.name, id: '_id-' + this.name });
+
+	            this.el.change(function (e) {
+	                return _this3.onChange(e);
+	            });
+
+	            this.wrapper.append(this.el);
+
+	            return this.wrapper;
+	        }
+	    }]);
+
+	    return Upload;
+	}(_Control3.default);
+
+	exports.default = Upload;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
 	var _Helpers = __webpack_require__(9);
 
 	var Agents = {
@@ -2490,7 +2745,7 @@
 	exports.default = Agents;
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2531,7 +2786,7 @@
 	exports.default = Error404;
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2550,23 +2805,23 @@
 
 	var _Session2 = _interopRequireDefault(_Session);
 
-	var _OwnPosts = __webpack_require__(21);
+	var _OwnPosts = __webpack_require__(23);
 
 	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
 
-	var _OwnPostsList = __webpack_require__(22);
+	var _OwnPostsList = __webpack_require__(24);
 
 	var _OwnPostsList2 = _interopRequireDefault(_OwnPostsList);
 
-	var _FormModal = __webpack_require__(25);
+	var _Modal = __webpack_require__(27);
 
-	var _FormModal2 = _interopRequireDefault(_FormModal);
+	var _Modal2 = _interopRequireDefault(_Modal);
 
 	var _Form = __webpack_require__(8);
 
 	var _Form2 = _interopRequireDefault(_Form);
 
-	var _QuoteRequestsList = __webpack_require__(28);
+	var _QuoteRequestsList = __webpack_require__(29);
 
 	var _QuoteRequestsList2 = _interopRequireDefault(_QuoteRequestsList);
 
@@ -2602,7 +2857,11 @@
 	                return _this2.ownPostsList.refresh(true);
 	            }).addAlert({ onSuccess: 'The post has been successfully added!' });
 
-	            var modal = new _FormModal2.default({ form: form, title: 'New Post' });
+	            var modal = new _Modal2.default({ content: form.render(), title: 'New Post' });
+
+	            modal.setOnSubmit(function () {
+	                return form.submit();
+	            });
 
 	            modal.show();
 	        }
@@ -2648,6 +2907,7 @@
 	        value: data.publicMessage ? data.publicMessage : undefined,
 	        label: 'Public Message',
 	        required: true,
+	        rows: 10,
 	        placeholder: 'I need a quote for 3 cars and 2 drivers that live in zip code of 90210. A 2005 toyota Camry, 2011 Ford Fiesta, and 2013 Ford Mustang. 100/300 liability and 15/30 Uninsured Motorist and comp/coll deductibles of 500/500 for all cars. Female married driver born on 11/08/1973 and Male married driver born 05/12/1971. No tickets or accidents.' }).addContent('<div>\n            <h1>Private Information\n            </h1>\n            <span class="help-block" id="hint_Title">\n            Will be shared only with the agent you select\n            </span>\n            <hr/>\n        </div>').addInput('clientName', {
 	        value: data.clientName ? data.clientName : undefined,
 	        label: 'Client Name',
@@ -2662,6 +2922,7 @@
 	        value: data.privateMessage ? data.privateMessage : undefined,
 	        label: 'Private Message',
 	        required: true,
+	        rows: 10,
 	        placeholder: 'First driver is Mary Allen and second driver is David Allen. They live on 123 Sunshine Rd. Beverly Hills, CA 90210.' }).addCheckbox('noPersonalInfoInPublic', {
 	        value: data.noPersonalInfoInPublic ? data.noPersonalInfoInPublic : undefined,
 	        label: 'I have not posted any personal information in the public information sections'
@@ -2671,7 +2932,7 @@
 	}
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2731,7 +2992,7 @@
 	exports.default = OwnPosts;
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2744,29 +3005,25 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _OwnPosts = __webpack_require__(21);
+	var _OwnPosts = __webpack_require__(23);
 
 	var _OwnPosts2 = _interopRequireDefault(_OwnPosts);
 
-	var _OwnPostItem = __webpack_require__(23);
+	var _OwnPostItem = __webpack_require__(25);
 
 	var _OwnPostItem2 = _interopRequireDefault(_OwnPostItem);
 
-	var _ = __webpack_require__(20);
+	var _ = __webpack_require__(22);
 
-	var _FormModal = __webpack_require__(25);
+	var _Modal = __webpack_require__(27);
 
-	var _FormModal2 = _interopRequireDefault(_FormModal);
+	var _Modal2 = _interopRequireDefault(_Modal);
 
 	var _Form = __webpack_require__(8);
 
 	var _Form2 = _interopRequireDefault(_Form);
 
-	var _Modal = __webpack_require__(26);
-
-	var _Modal2 = _interopRequireDefault(_Modal);
-
-	var _Pager = __webpack_require__(27);
+	var _Pager = __webpack_require__(28);
 
 	var _Pager2 = _interopRequireDefault(_Pager);
 
@@ -2819,7 +3076,11 @@
 	                return _this3.refresh();
 	            }).addAlert({ onSuccess: 'The post has been successfully updated!' });
 
-	            var modal = new _FormModal2.default({ form: form, title: 'Update Post' });
+	            var modal = new _Modal2.default({ content: form.render(), title: 'Update Post' });
+
+	            modal.setOnSubmit(function () {
+	                return form.submit();
+	            });
 
 	            modal.show();
 	        }
@@ -2880,7 +3141,7 @@
 	exports.default = OwnPostsList;
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2893,7 +3154,7 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _OwnPostAction = __webpack_require__(24);
+	var _OwnPostAction = __webpack_require__(26);
 
 	var _OwnPostAction2 = _interopRequireDefault(_OwnPostAction);
 
@@ -2968,7 +3229,7 @@
 	exports.default = OwnPostItem;
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3060,6 +3321,10 @@
 	                open: {
 	                    text: 'Waiting',
 	                    color: 'default'
+	                },
+	                active: {
+	                    text: 'Active',
+	                    color: 'primary'
 	                }
 	            }[data.status];
 
@@ -3085,51 +3350,7 @@
 	exports.default = OwnPostAction;
 
 /***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _ = __webpack_require__(26);
-
-	var _2 = _interopRequireDefault(_);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var FormModal = function () {
-	    function FormModal(options) {
-	        _classCallCheck(this, FormModal);
-
-	        var form = options.form;
-	        options.content = form.render();
-	        this.modal = new _2.default(options);
-	        this.modal.setOnSubmit(function () {
-	            return form.submit();
-	        });
-	    }
-
-	    _createClass(FormModal, [{
-	        key: 'show',
-	        value: function show() {
-	            this.modal.show();
-	        }
-	    }]);
-
-	    return FormModal;
-	}();
-
-	exports.default = FormModal;
-
-/***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3254,7 +3475,7 @@
 	exports.default = Modal;
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3405,7 +3626,7 @@
 	exports.default = Pager;
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3418,17 +3639,29 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _QuoteRequests = __webpack_require__(29);
+	var _QuoteRequests = __webpack_require__(30);
 
 	var _QuoteRequests2 = _interopRequireDefault(_QuoteRequests);
 
-	var _QuoteRequestItem = __webpack_require__(30);
+	var _Quote = __webpack_require__(31);
+
+	var _Quote2 = _interopRequireDefault(_Quote);
+
+	var _QuoteRequestItem = __webpack_require__(32);
 
 	var _QuoteRequestItem2 = _interopRequireDefault(_QuoteRequestItem);
 
-	var _Pager = __webpack_require__(27);
+	var _Pager = __webpack_require__(28);
 
 	var _Pager2 = _interopRequireDefault(_Pager);
+
+	var _Form = __webpack_require__(8);
+
+	var _Form2 = _interopRequireDefault(_Form);
+
+	var _Modal = __webpack_require__(27);
+
+	var _Modal2 = _interopRequireDefault(_Modal);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3448,9 +3681,60 @@
 	    }
 
 	    _createClass(QuoteRequestsList, [{
+	        key: 'onItemProposeQuote',
+	        value: function onItemProposeQuote(request) {
+	            var _this2 = this;
+
+	            var form = new _Form2.default(function (data) {
+	                return _Quote2.default.store(request.id, data);
+	            });
+
+	            form.addContent($('<div/>').addClass('well').text(request.publicMessage)).addNumber('price', {
+	                label: 'Premium',
+	                placeholder: '99.99',
+	                required: true,
+	                icon: { sign: '$', position: 'left' },
+	                cast: 'float',
+	                step: 0.01
+	            }).addSelect('plan', { required: true, label: 'Premium is', options: [{ value: 'per-6-months', title: 'Per 6 Months' }, { value: 'annual', title: 'Annual' }] }).addTextarea('note', { label: 'Note', rows: 5 }).addNumber('commission', {
+	                label: 'Commission',
+	                placeholder: '30',
+	                required: true,
+	                icon: { sign: '%', position: 'right' }
+	            }).addUpload('document', { label: 'Upload Document' });
+
+	            var modal = new _Modal2.default({ content: form.render(), title: 'Propose a Quote' });
+
+	            modal.setOnSubmit(function () {
+	                return form.submit();
+	            });
+
+	            form.addOnSuccess(function () {
+	                _this2.pager.load();
+	                modal.hide();
+	            });
+
+	            modal.show();
+	        }
+	    }, {
+	        key: 'onItemViewQuote',
+	        value: function onItemViewQuote(request) {}
+	    }, {
+	        key: 'onItemCancelQuote',
+	        value: function onItemCancelQuote(request) {
+	            var _this3 = this;
+
+	            _Quote2.default.destroy(request.id).done(function () {
+	                return _this3.pager.load();
+	            });
+	        }
+	    }, {
+	        key: 'onItemViewDetails',
+	        value: function onItemViewDetails(request) {}
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this2 = this;
+	            var _this4 = this;
 
 	            var el = $('\n            <div>\n                <table class="table table-striped table-bordered table-list">\n                    <thead>\n                        <tr>\n                            <th>Title</th>\n                            <th>Public Message</th>\n                            <th style="min-width: 130px;">Status / Actions</th>\n                        </tr> \n                    </thead>\n                    <tbody></tbody>\n                </table>\n            </div>\n        ');
 
@@ -3462,13 +3746,26 @@
 
 	            this.pager.addOnLoad(function (data) {
 
-	                _this2.container.empty();
+	                _this4.container.empty();
 
 	                data.forEach(function (request) {
 
 	                    var item = new _QuoteRequestItem2.default(request);
 
-	                    _this2.container.append(item.render());
+	                    item.setOnProposeQuote(function () {
+	                        return _this4.onItemProposeQuote(request);
+	                    });
+	                    item.setOnCancelQuote(function () {
+	                        return _this4.onItemCancelQuote(request);
+	                    });
+	                    item.setOnViewQuote(function () {
+	                        return _this4.onItemViewQuote(request);
+	                    });
+	                    item.setOnViewDetails(function () {
+	                        return _this4.onItemViewDetails(request);
+	                    });
+
+	                    _this4.container.append(item.render());
 	                });
 	            });
 
@@ -3486,7 +3783,7 @@
 	exports.default = QuoteRequestsList;
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3519,7 +3816,38 @@
 	exports.default = QuoteRequests;
 
 /***/ },
-/* 30 */
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _Helpers = __webpack_require__(9);
+
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Quote = {
+	    store: function store(requestId, data) {
+	        var session = _Session2.default.get();
+	        return (0, _Helpers.backend)({ method: 'POST', url: '/agents/' + session.user.id + '/requests/' + requestId + '/quote', data: data });
+	    },
+	    destroy: function destroy(requestId) {
+	        var session = _Session2.default.get();
+	        return (0, _Helpers.backend)({ method: 'DELETE', url: '/agents/' + session.user.id + '/requests/' + requestId + '/quote' });
+	    }
+	};
+
+	exports.default = Quote;
+
+/***/ },
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3532,7 +3860,7 @@
 
 	var _sparrowUi = __webpack_require__(2);
 
-	var _QuoteRequestAction = __webpack_require__(31);
+	var _QuoteRequestAction = __webpack_require__(33);
 
 	var _QuoteRequestAction2 = _interopRequireDefault(_QuoteRequestAction);
 
@@ -3557,6 +3885,30 @@
 	    }
 
 	    _createClass(QuoteRequestItem, [{
+	        key: 'setOnProposeQuote',
+	        value: function setOnProposeQuote(callback) {
+	            this.onProposeQuoteCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'setOnViewQuote',
+	        value: function setOnViewQuote(callback) {
+	            this.onViewQuoteCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'setOnCancelQuote',
+	        value: function setOnCancelQuote(callback) {
+	            this.onCancelQuoteCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'setOnViewDetails',
+	        value: function setOnViewDetails(callback) {
+	            this.onViewDetailsCallback = callback;
+	            return this;
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var data = this.data;
@@ -3565,9 +3917,14 @@
 	            el.append($('<td/>').text(data.title));
 	            el.append($('<td/>').text(data.publicMessage));
 
-	            var quoteRequestAction = new _QuoteRequestAction2.default(data);
+	            var action = new _QuoteRequestAction2.default(data);
 
-	            el.append($('<td/>').html(quoteRequestAction.render()));
+	            action.setOnProposeQuote(this.onProposeQuoteCallback);
+	            action.setOnCancelQuote(this.onCancelQuoteCallback);
+	            action.setOnViewQuote(this.onViewQuoteCallback);
+	            action.setOnViewDetails(this.onViewDetailsCallback);
+
+	            el.append($('<td/>').html(action.render()));
 
 	            return el;
 	        }
@@ -3579,7 +3936,7 @@
 	exports.default = QuoteRequestItem;
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3611,12 +3968,136 @@
 	    }
 
 	    _createClass(QuoteRequestAction, [{
+	        key: 'onProposeQuoteClick',
+	        value: function onProposeQuoteClick(e) {
+	            e.preventDefault();
+
+	            if (this.onProposeQuoteCallback) {
+	                this.onProposeQuoteCallback();
+	            }
+	        }
+	    }, {
+	        key: 'setOnProposeQuote',
+	        value: function setOnProposeQuote(callback) {
+	            this.onProposeQuoteCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'onCancelQuoteClick',
+	        value: function onCancelQuoteClick(e) {
+	            e.preventDefault();
+
+	            if (this.onCancelQuoteCallback) {
+	                this.onCancelQuoteCallback();
+	            }
+	        }
+	    }, {
+	        key: 'setOnCancelQuote',
+	        value: function setOnCancelQuote(callback) {
+	            this.onCancelQuoteCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'onViewQuoteClick',
+	        value: function onViewQuoteClick(e) {
+	            e.preventDefault();
+
+	            if (this.onViewQuoteCallback) {
+	                this.onViewQuoteCallback();
+	            }
+	        }
+	    }, {
+	        key: 'setOnViewQuote',
+	        value: function setOnViewQuote(callback) {
+	            this.onViewQuoteCallback = callback;
+	            return this;
+	        }
+	    }, {
+	        key: 'onViewDetailsClick',
+	        value: function onViewDetailsClick(e) {
+	            e.preventDefault();
+
+	            if (this.onViewDetailsCallback) {
+	                this.onViewDetailsCallback();
+	            }
+	        }
+	    }, {
+	        key: 'setOnViewDetails',
+	        value: function setOnViewDetails(callback) {
+	            this.onViewDetailsCallback = callback;
+	            return this;
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var data = this.data;
-	            var el = $('\n            <div class="btn-group">\n                <button id="statusButton" type="button"  data-toggle="dropdown" class="btn dropdown-toggle"></button>\n                <ul class="dropdown-menu">\n                    <li><a href="#" id="uploadAction">Propose a Quote</a></li>\n                </ul>\n            </div>\n        ');
+	            var _this2 = this;
 
-	            el.find('#statusButton').addClass('btn-default').text('Open' + ' ').append('<span class="caret"></span>');
+	            var data = this.data;
+	            var el = $('\n            <div class="btn-group">\n                <button id="statusButton" type="button"  data-toggle="dropdown" class="btn dropdown-toggle"></button>\n                <ul id="menu" class="dropdown-menu"></ul>\n            </div>\n        ');
+
+	            var statuses = {
+	                open: {
+	                    name: 'open',
+	                    title: 'Open',
+	                    color: 'default'
+	                },
+	                proposed: {
+	                    name: 'proposed',
+	                    title: 'Proposed',
+	                    color: 'primary'
+	                },
+	                shared: {
+	                    name: 'shared',
+	                    title: 'Shared',
+	                    color: 'success'
+	                }
+	            };
+
+	            var status;
+
+	            if (data.status === 'active' && data.quote !== null) {
+	                status = statuses.proposed;
+	            } else if (data.status === 'done' && data.quote !== null) {
+	                status = statuses.shared;
+	            } else {
+	                status = statuses.open;
+	            }
+
+	            el.find('#statusButton').addClass('btn-' + status.color).text(status.title + ' ').append('<span class="caret"></span>');
+
+	            var menu = el.find('#menu');
+
+	            if (status.name === 'open') {
+	                var action = $('<a/>', { href: '#', text: 'Propose a Quote' });
+	                action.click(function (e) {
+	                    return _this2.onProposeQuoteClick(e);
+	                });
+	                menu.append($('<li/>').html(action));
+	            } else if (status.name === 'proposed') {
+	                var action = $('<a/>', { href: '#', text: 'View My Quote' });
+	                action.click(function (e) {
+	                    return _this2.onViewQuoteClick(e);
+	                });
+	                menu.append($('<li/>').html(action));
+
+	                action = $('<a/>', { href: '#', text: 'Cancel My Quote' });
+	                action.click(function (e) {
+	                    return _this2.onCancelQuoteClick(e);
+	                });
+	                menu.append($('<li/>').html(action));
+	            } else if (status.name === 'shared') {
+	                var action = $('<a/>', { href: '#', text: 'View All Details' });
+	                action.click(function (e) {
+	                    return _this2.onViewDetailsClick(e);
+	                });
+	                menu.append($('<li/>').html(action));
+
+	                action = $('<a/>', { href: '#', text: 'View My Quote' });
+	                action.click(function (e) {
+	                    return _this2.onViewQuoteClick(e);
+	                });
+	                menu.append($('<li/>').html(action));
+	            }
 
 	            return el;
 	        }
@@ -3628,7 +4109,7 @@
 	exports.default = QuoteRequestAction;
 
 /***/ },
-/* 32 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

@@ -12,28 +12,25 @@ class Button extends Control {
     }
     
     render(){
-        var options = this.options;
+        this.wrapper = $('<div class="form-group"><div></div></div>');
 
-        var wrapper = $('<div class="form-group"><div></div></div>');
-
-        var control = $('<button></button>');
-        this.el = control;
+        this.el = $('<button></button>');
         
-        control.text(options.title).attr('type', options.type).addClass('btn');
+        this.el.text(this.options.title).attr('type', this.options.type).addClass('btn');
 
-        if (options.color){
-            control.addClass('btn-' + options.color);
+        if (this.options.color){
+            this.el.addClass('btn-' + this.options.color);
         } else {
-            control.addClass('btn-default');
+            this.el.addClass('btn-default');
         }
 
-        if (options.isBlock){
-            control.addClass('btn-block');
+        if (this.options.isBlock){
+            this.el.addClass('btn-block');
         }
 
-        wrapper.find('div:first-child').html(control);
+        this.wrapper.find('div:first-child').html(this.el);
 
-        return wrapper;
+        return this.wrapper;
     }
 }
 

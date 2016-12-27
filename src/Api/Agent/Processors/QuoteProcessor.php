@@ -32,7 +32,7 @@ class QuoteProcessor extends Processor
         $this->set($payload, 'plan', $this->asEnum(Plan::class));
         $this->set($payload, 'note');
         $this->set($payload, 'commission');
-        $this->set($payload, 'document', $this->asDocument());
+        $this->set($payload, 'document', $this->asDocument(), false);
 
         return $payload;
     }

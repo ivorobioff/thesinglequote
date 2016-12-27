@@ -7,7 +7,26 @@ class QuoteRequestItem extends View {
         super();
         this.data = data;
     }
-    
+
+    setOnProposeQuote(callback){
+        this.onProposeQuoteCallback = callback;
+        return this;
+    }
+
+    setOnViewQuote(callback){
+        this.onViewQuoteCallback = callback;
+        return this;
+    }
+
+    setOnCancelQuote(callback){
+        this.onCancelQuoteCallback = callback;
+        return this;
+    }
+
+    setOnViewDetails(callback){
+        this.onViewDetailsCallback = callback;
+        return this;
+    }
 
     render(){
         var data = this.data;
@@ -16,9 +35,15 @@ class QuoteRequestItem extends View {
         el.append($('<td/>').text(data.title));
         el.append($('<td/>').text(data.publicMessage));
 
-        var quoteRequestAction = new QuoteRequestAction(data);
+        var action = new QuoteRequestAction(data);
 
-        el.append($('<td/>').html(quoteRequestAction.render()));
+        action.setOnProposeQuote(this.onProposeQuoteCallback);
+        action.setOnCancelQuote(this.onCancelQuoteCallback);
+        action.setOnViewQuote(this.onViewQuoteCallback);
+        action.setOnViewDetails(this.onViewDetailsCallback);
+
+
+        el.append($('<td/>').html(action.render()));
 
         return el;
     }

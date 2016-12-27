@@ -13,31 +13,25 @@ class Checkbox extends Control {
     }
 
     render(){
-        var name = this.name;
-        var options = this.options;
-
-        var wrapper = $('<div class="form-group"><div class="checkbox"></div></div>');
-        this.wrapper = wrapper;
-        var control = $('<input />', { type: 'checkbox', name });
+        this.wrapper = $('<div class="form-group"><div class="checkbox"></div></div>');
+        this.el = $('<input />', { type: 'checkbox', name: this.name });
 
         if (this.options.value){
-            control.prop('checked', 'checked');
+            this.el.prop('checked', 'checked');
         }
 
 
-        if (options.required){
-            control.attr('required', 'required');
+        if (this.options.required){
+            this.el.attr('required', 'required');
         }
 
-        this.el = control;
-
-        if (options.label){
-            control = $('<label></label>').text(options.label).prepend(control);
+        if (this.options.label){
+            this.el = $('<label></label>').text(this.options.label).prepend(this.el);
         }
 
-        wrapper.find('div:first-child').html(control);
+        this.wrapper.find('div:first-child').html(this.el);
 
-        return wrapper;
+        return this.wrapper;
     }
 }
 

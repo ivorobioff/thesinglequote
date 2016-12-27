@@ -68,6 +68,10 @@ class OwnPostAction extends View {
             open: {
                 text: 'Waiting',
                 color: 'default'
+            },
+            active: {
+                text: 'Active',
+                color: 'primary'
             }
         }[data.status];
         

@@ -6,6 +6,7 @@ use ImmediateSolutions\Support\Framework\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use ImmediateSolutions\Support\Framework\Exceptions\NotFoundHttpException;
+use ReflectionMethod;
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
  */
@@ -42,7 +43,27 @@ class VerifyMiddleware implements ActionMiddlewareInterface
             throw new RuntimeException('The "verify" method is missing even though the controller is verifiable.');
         }
 
-        $result = $this->container->call([$controller, 'verify'], $arguments);
+        $method = new ReflectionMethod($action->getController(), 'verify');
+
+        foreach ($method->getParameters() as $index => $argument){
+            $class = $argument->getClass();
+
+            if (!$class){
+                continue ;
+            }
+
+            $class = $class->getName();
+
+            if ($class === Action::class || is_subclass_of($class, Action::class)){
+                $instance = $action;
+            } else {
+                $instance = $this->container->get($class);
+            }
+
+            array_splice($arguments, $index, 0, [$instance]);
+        }
+
+        $result = call_user_func_array([$controller, 'verify'], $arguments);
 
         if (!$result){
             throw new NotFoundHttpException();

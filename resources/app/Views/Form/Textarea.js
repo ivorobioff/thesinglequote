@@ -8,49 +8,50 @@ class Textarea extends Control {
     }
 
     getValue(){
-        return this.el.val();
+        var value = this.el.val();
+
+        if (value === ''){
+            return null;
+        }
+
+        return value;
     }
 
     render(){
-        var wrapper = $('<div class="form-group"></div>');
-        this.wrapper = wrapper;
-        var name = this.name;
-        var options = this.options;
+        this.wrapper = $('<div class="form-group"></div>');
 
-        if (options.label){
+        if (this.options.label){
             var label = $('<label></label>');
-            label.text(options.label);
-            label.attr('for', '_id-' + name);
+            label.text(this.options.label);
+            label.attr('for', '_id-' + this.name);
             label.addClass('control-label');
-            wrapper.append(label);
+            this.wrapper.append(label);
         }
 
-        var control = $('<textarea />', {
+        this.el = $('<textarea />', {
             'class': 'form-control',
-            name,
-            type: options.type ? options.type : 'text',
-            id: '_id-' + name,
-            cols: options.cols ? options.cols : 40,
-            rows: options.rows ? options.rows : 10
+            name: this.name,
+            type: this.options.type ? this.options.type : 'text',
+            id: '_id-' + this.name,
+            cols: this.options.cols ? this.options.cols : undefined,
+            rows: this.options.rows ? this.options.rows : undefined
         });
 
         if (this.options.value){
-            control.val(this.options.value);
+            this.el.val(this.options.value);
         }
 
-        this.el = control;
-
-        if (options.placeholder){
-            control.attr('placeholder', options.placeholder);
+        if (this.options.placeholder){
+            this.el.attr('placeholder', this.options.placeholder);
         }
         
-        if (options.required){
-            control.attr('required', 'required');
+        if (this.options.required){
+            this.el.attr('required', 'required');
         }
         
-        wrapper.append(control);
+        this.wrapper.append(this.el);
 
-        return wrapper
+        return this.wrapper
     }
 }
 

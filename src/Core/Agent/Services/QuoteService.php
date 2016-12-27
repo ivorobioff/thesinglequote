@@ -3,6 +3,7 @@ namespace ImmediateSolutions\Core\Agent\Services;
 use ImmediateSolutions\Core\Agent\Entities\Agent;
 use ImmediateSolutions\Core\Agent\Entities\Post;
 use ImmediateSolutions\Core\Agent\Entities\Quote;
+use ImmediateSolutions\Core\Agent\Enums\Status;
 use ImmediateSolutions\Core\Agent\Payloads\QuotePayload;
 use ImmediateSolutions\Core\Agent\Validation\QuoteValidator;
 use ImmediateSolutions\Core\Document\Entities\Document;
@@ -52,9 +53,11 @@ class QuoteService extends Service
         /**
          * @var Post $request
          */
-        $request = $this->entityManager->getReference(Post::class, $requestId);
+        $request = $this->entityManager->find(Post::class, $requestId);
 
         $quote->setRequest($request);
+
+        $request->setStatus(new Status(Status::ACTIVE));
 
         /**
          * @var Agent $owner
@@ -128,5 +131,18 @@ class QuoteService extends Service
 
         $this->entityManager->remove($quote);
         $this->entityManager->flush();
+    }
+
+    /**
+     * @param int $requestId
+     * @param int $ownerId
+     * @return bool
+     */
+    public function existsByRequestAndOwnerId($requestId, $ownerId)
+    {
+        return $this->entityManager->getRepository(Quote::class)->exists([
+            'request' => $requestId,
+            'owner' => $ownerId
+        ]);
     }
 }

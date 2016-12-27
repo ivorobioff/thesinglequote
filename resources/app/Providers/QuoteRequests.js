@@ -2,6 +2,7 @@ import { backend } from '../Helpers';
 import Session from './Session';
 
 const QuoteRequests = {
+    
     load(page = 1){
 
         var session = Session.get();

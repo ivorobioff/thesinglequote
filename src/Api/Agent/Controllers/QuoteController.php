@@ -5,7 +5,7 @@ use ImmediateSolutions\Api\Agent\Serializers\QuoteSerializer;
 use ImmediateSolutions\Api\Support\Controller;
 use ImmediateSolutions\Core\Agent\Services\AgentService;
 use ImmediateSolutions\Core\Agent\Services\QuoteService;
-use ImmediateSolutions\Support\Framework\Exceptions\NotFoundHttpException;
+use ImmediateSolutions\Support\Framework\Action;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -33,13 +33,10 @@ class QuoteController extends Controller
      */
     public function show($agentId, $requestId)
     {
-        $quote = $this->quoteService->getByRequestAndOwnerId($requestId, $agentId);
-
-        if ($quote === null){
-            throw new NotFoundHttpException();
-        }
-
-        return $this->reply->single($quote, $this->serializer(QuoteSerializer::class));
+        return $this->reply->single(
+            $this->quoteService->getByRequestAndOwnerId($requestId, $agentId),
+            $this->serializer(QuoteSerializer::class)
+        );
     }
 
     /**
@@ -82,13 +79,18 @@ class QuoteController extends Controller
     }
 
     /**
+     * @param Action $action
      * @param AgentService $agentService
      * @param int $agentId
      * @param int $requestId
      * @return bool
      */
-    public function verify(AgentService $agentService, $agentId, $requestId)
+    public function verify(Action $action, AgentService $agentService, $agentId, $requestId)
     {
-        return $agentService->hasRequest($agentId, $requestId);
+        if ($action->is('store')){
+            return $agentService->hasRequest($agentId, $requestId);
+        }
+
+        return $this->quoteService->existsByRequestAndOwnerId($requestId, $agentId);
     }
 }

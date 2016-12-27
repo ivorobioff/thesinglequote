@@ -2,9 +2,8 @@ import { View } from 'sparrow-ui';
 import OwnPosts from '../../Providers/OwnPosts';
 import OwnPostItem from './OwnPostItem';
 import { buildPostForm } from './';
-import FormModal from '../Modal/FormModal';
-import Form from '../Form';
 import Modal from '../Modal';
+import Form from '../Form';
 import Pager from '../Pager';
 
 
@@ -32,8 +31,10 @@ class OwnPostsList extends View {
             .addOnSuccess(() => this.refresh())
             .addAlert({ onSuccess: 'The post has been successfully updated!' });
 
-        var modal = new FormModal({ form, title: 'Update Post' });
-        
+        var modal = new Modal({ content: form.render(), title: 'Update Post' });
+
+        modal.setOnSubmit(() => form.submit());
+
         modal.show();
     }
 

@@ -1,7 +1,7 @@
 <?php
 namespace ImmediateSolutions\Api\Agent\Controllers;
 use ImmediateSolutions\Api\Agent\Processors\PostsSearchableProcessor;
-use ImmediateSolutions\Api\Agent\Serializers\PostSerializer;
+use ImmediateSolutions\Api\Agent\Serializers\RequestSerializer;
 use ImmediateSolutions\Api\Support\Controller;
 use ImmediateSolutions\Core\Agent\Options\FetchPostsOptions;
 use ImmediateSolutions\Core\Agent\Services\AgentService;
@@ -51,7 +51,7 @@ class RequestsController extends Controller
             }
         ]);
 
-        return $this->reply->collection($this->paginator($adapter), $this->serializer(PostSerializer::class));
+        return $this->reply->collection($this->paginator($adapter), $this->serializer(RequestSerializer::class));
     }
 
     /**
