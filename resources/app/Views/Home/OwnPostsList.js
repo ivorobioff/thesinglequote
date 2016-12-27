@@ -5,9 +5,10 @@ import { buildPostForm } from './';
 import Modal from '../Modal';
 import Form from '../Form';
 import Pager from '../Pager';
-
+import QuotesList from './QuotesList';
 
 class OwnPostsList extends View {
+
 
     onItemDelete(item){
         var modal = new Modal({ 
@@ -39,7 +40,19 @@ class OwnPostsList extends View {
     }
 
     onItemShare(item){
+        var quotesList = new QuotesList(item);
 
+        quotesList.setOnItemPick(() => this.refresh());
+
+        var modal = new Modal({
+            content: quotesList.render(),
+            title: 'Review Quotes',
+            hideSubmitButton: true,
+            cancelButtonTitle: 'Close',
+            isLarge: true
+        });
+
+        modal.show();
     }
 
     refresh(hard = false){

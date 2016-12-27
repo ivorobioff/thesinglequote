@@ -56,18 +56,20 @@ class QuoteService extends Service
             throw new PresentableException('You have already proposed a quote to this request.');
         }
 
-        (new QuoteValidator($this->container))->validate($payload);
-
-        $quote = new Quote();
-
         /**
          * @var Post $request
          */
         $request = $this->entityManager->find(Post::class, $requestId);
 
-        $quote->setRequest($request);
+        if ($request->getStatus()->is(Status::DONE)){
+            throw new PresentableException('The request has been resolved already.');
+        }
 
-        $request->setStatus(new Status(Status::ACTIVE));
+        (new QuoteValidator($this->container))->validate($payload);
+
+        $quote = new Quote();
+
+        $quote->setRequest($request);
 
         /**
          * @var Agent $owner
@@ -80,6 +82,8 @@ class QuoteService extends Service
 
         $this->entityManager->persist($quote);
         $this->entityManager->flush();
+
+        $this->adjustRequestStatus($request->getId());
 
         return $quote;
     }
@@ -175,7 +179,7 @@ class QuoteService extends Service
 
         $this->entityManager->flush();
 
-        $this->adjustRequestStatus($quote->getId());
+        $this->adjustRequestStatus($quote->getRequest()->getId());
     }
 
     /**

@@ -51,25 +51,23 @@ class OwnPostAction extends View {
         var el = $(`
             <div class="btn-group">
                 <button id="statusButton" type="button"  data-toggle="dropdown" class="btn dropdown-toggle"></button>
-                <ul class="dropdown-menu">
-                    <li><a href="#" id="editAction">Edit</a></li>
-                    <li><a href="#" id="deleteAction">Delete</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#" id="shareAction">Share</a></li>
-                </ul>
+                <ul id="menu" class="dropdown-menu"></ul>
             </div>
         `);
 
         var status = {
             done: {
-                text: 'Done!',
+                name: 'done',
+                text: 'Done',
                 color: 'success'
             },
             open: {
+                name: 'open',
                 text: 'Waiting',
                 color: 'default'
             },
             active: {
+                name: 'active',
                 text: 'Active',
                 color: 'primary'
             }
@@ -79,10 +77,23 @@ class OwnPostAction extends View {
             .addClass('btn-' + status.color)
             .text(status.text + ' ')
             .append(`<span class="caret"></span>`);
-        
-        el.find('#editAction').click(e => this.onEditClick(e));
-        el.find('#deleteAction').click(e => this.onDeleteClick(e));
-        el.find('#shareAction').click(e => this.onShareClick(e));
+
+        var menu = el.find('#menu');
+
+        var edit = $('<a/>', { href: '#', text: 'Edit' });
+        edit.click(e => this.onEditClick(e));
+        menu.append($('<li/>').append(edit));
+
+        var del = $('<a/>', { href: '#', text: 'Delete' });
+        del.click(e => this.onDeleteClick(e));
+        menu.append($('<li/>').append(del));
+
+        if (status.name !== 'open'){
+            var share = $('<a/>', { href: '#', text: 'Review Quotes' });
+            share.click(e => this.onShareClick(e));
+            menu.append($('<li/>', { role: 'separator', 'class': 'divider' }));
+            menu.append($('<li/>').append(share));
+        }
 
         return el;
     }

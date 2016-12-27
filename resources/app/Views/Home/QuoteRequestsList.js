@@ -5,11 +5,22 @@ import QuoteRequestItem from './QuoteRequestItem';
 import Pager from '../Pager';
 import Form from '../Form';
 import Modal from '../Modal';
+import { PLANS } from '../../Constants';
+
 
 class QuoteRequestsList extends View {
 
     onItemProposeQuote(request){
         var form = new Form(data => Quote.store(request.id, data));
+
+        var plans = [];
+
+        for (var v in PLANS){
+            plans.push({
+                value: v,
+                title: PLANS[v]
+            });
+        }
 
         form
             .addContent($('<div/>').addClass('well').text(request.publicMessage))
@@ -21,10 +32,7 @@ class QuoteRequestsList extends View {
                 cast: 'float',
                 step: 0.01
             })
-            .addSelect('plan', { required: true, label: 'Premium is', options: [
-                { value: 'per-6-months', title: 'Per 6 Months'},
-                { value: 'annual', title: 'Annual'}
-            ]})
+            .addSelect('plan', { required: true, label: 'Premium is', options: plans})
             .addTextarea('note', { label: 'Note', rows: 5})
             .addNumber('commission', {
                 label: 'Commission',
@@ -72,13 +80,8 @@ class QuoteRequestsList extends View {
 
         var quote = request.quote;
     
-        var plans = {
-            'annual': 'Annual',
-            'per-6-months': 'Per 6 Months'
-        }
-
         content.find('#price').text('$' + quote.price);
-        content.find('#plan').text(plans[quote.plan]);
+        content.find('#plan').text(PLANS[quote.plan]);
         content.find('#note').text(quote.note);
         content.find('#commission').text(quote.commission + '%');
         content.find('#document').html($('<a/>', { href: quote.document.url, text: quote.document.name }));        
