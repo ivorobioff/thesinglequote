@@ -114,6 +114,49 @@ class QuoteRequestsList extends View {
 
     onItemViewDetails(request){
 
+        var content = $(`
+            <div>
+                <h4>Public Information</h4>
+                 <div class="row">
+                    <div class="col-xs-4"><b>Title:</b></div>
+                    <div id="title" class="col-xs-8"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4"><b> Public Message:</b></div>
+                    <div id="publicMessage" class="col-xs-8"></div>
+                </div>
+                <hr/>
+                <h4>Private Information</h4>
+                <div class="row">
+                    <div class="col-xs-4"><b>Client Name:</b></div>
+                    <div id="clientName" class="col-xs-8"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4"><b>Client Phone:</b></div>
+                    <div id="clientPhone" class="col-xs-8"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4"><b>Private Message:</b></div>
+                    <div id="privateMessage" class="col-xs-8"></div>
+                </div>
+            </div>
+        `);
+
+
+        content.find('#title').text(request.title);
+        content.find('#publicMessage').text(request.publicMessage);
+        content.find('#clientName').text(request.clientName);
+        content.find('#clientPhone').text(request.clientPhone);
+        content.find('#privateMessage').text(request.privateMessage);
+
+        var modal = new Modal({
+            content,
+            title: 'View All Details',
+            hideSubmitButton: true,
+            cancelButtonTitle: 'OK' 
+        });
+
+        modal.show();
     }
 
     render(){

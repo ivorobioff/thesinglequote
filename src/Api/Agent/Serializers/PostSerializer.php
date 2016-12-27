@@ -2,6 +2,7 @@
 namespace ImmediateSolutions\Api\Agent\Serializers;
 use ImmediateSolutions\Api\Support\Serializer;
 use ImmediateSolutions\Core\Agent\Entities\Post;
+use ImmediateSolutions\Core\Agent\Enums\Status;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
@@ -22,7 +23,7 @@ class PostSerializer extends Serializer
             'status' => $this->enum($post->getStatus())
         ];
 
-        if ($this->session->getUser()->getId() == $post->getOwner()->getId()){
+        if ($this->session->getUser()->getId() == $post->getOwner()->getId() || $post->getStatus()->is(Status::DONE)){
             $data = array_merge($data, [
                 'privateMessage' => $post->getPrivateMessage(),
                 'clientName' => $post->getClientName(),

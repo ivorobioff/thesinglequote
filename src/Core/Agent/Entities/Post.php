@@ -1,5 +1,6 @@
 <?php
 namespace ImmediateSolutions\Core\Agent\Entities;
+use Doctrine\Common\Collections\ArrayCollection;
 use ImmediateSolutions\Core\Agent\Enums\Status;
 use DateTime;
 
@@ -59,7 +60,7 @@ class Post
      */
     private $clientPhone;
     public function setClientPhone($phone) { $this->clientPhone = $phone; }
-    public function getClientPhone() { return $this->clientName; }
+    public function getClientPhone() { return $this->clientPhone; }
 
     /**
      * @var bool
@@ -82,9 +83,15 @@ class Post
     public function setUpdatedAt(DateTime $datetime) { $this->updatedAt = $datetime; }
     public function getUpdatedAt() { return $this->updatedAt; }
 
+    /**
+     * @var Quote[]
+     */
+    private $quotes;
+
     public function __construct()
     {
         $this->setStatus(new Status(Status::OPEN));
         $this->setCreatedAt(new DateTime());
+        $this->quotes = new ArrayCollection();
     }
 }

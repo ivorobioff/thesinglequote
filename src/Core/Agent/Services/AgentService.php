@@ -142,12 +142,11 @@ class AgentService extends Service
      */
     public function hasRequest($agentId, $postId)
     {
-        return $this->entityManager
-            ->getRepository(Post::class)
-            ->exists([
-                'id' => $postId,
-                'owner' => ['!=', $agentId],
-                'status' => ['!=', Status::DONE]
-            ]);
+        /**
+         * @var PostService $postService
+         */
+        $postService = $this->container->get(PostService::class);
+
+        return $postService->existsRequestForAgentId($postId, $agentId);
     }
 }

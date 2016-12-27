@@ -61,6 +61,7 @@ class QuoteMetadata extends AbstractMetadataProvider
         $builder
             ->createManyToOne('owner', Agent::class)
             ->addJoinColumn('owner_id', 'id', true, false, 'CASCADE')
+            ->inversedBy('quotes')
             ->build();
 
         $builder

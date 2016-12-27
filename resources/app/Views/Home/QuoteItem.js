@@ -25,6 +25,7 @@ class QuotesItem extends View {
                         <div id="commission" class="col-xs-6"></div>
                         <div id="document" class="col-xs-6"></div>
                     </div>
+                    <br/>
                     <div class="row">
                         <div id="note" class="col-xs-12"></div>
                     </div>
@@ -52,7 +53,7 @@ class QuotesItem extends View {
         this.el.find('#price').append($('<b/>', { text: 'Premium:'})).append(' $' + this.data.price);
         this.el.find('#plan').append($('<b/>', { text: 'Premium:'})).append(' ' + PLANS[this.data.plan]);
         this.el.find('#commission').append($('<b/>', { text: 'Commission:'})).append(' ' + this.data.commission + '%');
-        this.el.find('#document').html($('<a/>', { href: this.data.document.url, text: this.data.document.name }));
+        this.el.find('#document').append($('<b/>', { text: 'Document: '})).append($('<a/>', { href: this.data.document.url, text: this.data.document.name }));
 
         this.el.find('#note').append($('<b/>', { text: 'Note:'})).append(' ' + this.data.note);
 

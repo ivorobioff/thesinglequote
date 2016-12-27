@@ -64,8 +64,6 @@ class Modal {
         `);
 
         this.el = el;
-
-        this.body = el.find('#body').html(this.options.content);
         
         if (this.options.title){
             el.find('#title').text(this.options.title);
@@ -102,6 +100,10 @@ class Modal {
 
             buttons.append(submit);
         }
+
+        // this must be in the very end so that ids in the content don't conflicts with ids of the modal 
+        
+        this.body = el.find('#body').html(this.options.content);
 
         return el;
     }

@@ -83,7 +83,7 @@ class QuoteService extends Service
         $this->entityManager->persist($quote);
         $this->entityManager->flush();
 
-        $this->adjustRequestStatus($request->getId());
+        $this->adjustRequestStatus($request);
 
         return $quote;
     }
@@ -158,7 +158,7 @@ class QuoteService extends Service
 
         $this->entityManager->flush();
 
-        $this->adjustRequestStatus($request->getId());
+        $this->adjustRequestStatus($request);
     }
 
     /**
@@ -179,24 +179,19 @@ class QuoteService extends Service
 
         $this->entityManager->flush();
 
-        $this->adjustRequestStatus($quote->getRequest()->getId());
+        $this->adjustRequestStatus($quote->getRequest());
     }
 
     /**
-     * @param int $requestId
+     * @param Post $request
      */
-    private function adjustRequestStatus($requestId)
+    private function adjustRequestStatus(Post $request)
     {
-        /**
-         * @var Post $request
-         */
-        $request = $this->entityManager->find(Post::class, $requestId);
-
         if ($this->entityManager->getRepository(Quote::class)->exists([
-            'request' => $requestId, 'isPicked' => true])){
+            'request' => $request->getId(), 'isPicked' => true])){
             $request->setStatus(new Status(Status::DONE));
         } elseif ($this->entityManager->getRepository(Quote::class)->exists([
-            'request' => $requestId
+            'request' => $request->getId()
         ])) {
             $request->setStatus(new Status(Status::ACTIVE));
         } else {
@@ -220,11 +215,20 @@ class QuoteService extends Service
             'owner' => $ownerId
         ]);
 
+        if ($quote->isPicked()){
+            throw new PresentableException('The quote cannot be deleted while being picked.');
+        }
+
         $this->deleteInMemory($quote);
 
         $this->entityManager->flush();
 
-        $this->adjustRequestStatus($requestId);
+        /**
+         * @var Post $request
+         */
+        $request = $this->entityManager->find(Post::class, $requestId);
+
+        $this->adjustRequestStatus($request);
     }
 
     /**

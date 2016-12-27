@@ -119,7 +119,7 @@ class PostService extends Service
             $options = new FetchPostsOptions();
         }
 
-        $builder = $this->startQuery($forAgentId, false, true);
+        $builder = $this->startRequestsQuery($forAgentId);
 
         (new Sorter())->apply($builder, $options->getSortables(), new PostSorterResolver());
 
@@ -132,34 +132,63 @@ class PostService extends Service
      */
     public function getTotalRequests($forAgentId)
     {
-        $builder = $this->startQuery($forAgentId, true, true);
+        $builder = $this->startRequestsQuery($forAgentId, true);
 
         return (int) $builder->getQuery()->getSingleScalarResult();
     }
 
     /**
+     * @param int $requestId
+     * @param int $forAgentId
+     * @return  bool
+     */
+    public function existsRequestForAgentId($requestId, $forAgentId)
+    {
+        $builder = $this->startRequestsQuery($forAgentId, true);
+
+        $builder->andWhere($builder->expr()->eq('p.id', ':post'))
+            ->setParameter('post', $requestId);
+
+        return $builder->getQuery()->getSingleScalarResult() > 0;
+    }
+
+    /**
      * @param int $agentId
      * @param bool $isCount
-     * @param bool $asRequests
      * @return QueryBuilder
      */
-    private function startQuery($agentId, $isCount = false, $asRequests = false)
+    private function startQuery($agentId, $isCount = false)
     {
         $builder = $this->entityManager->createQueryBuilder();
 
         $builder
             ->select($isCount ? $builder->expr()->countDistinct('p') : 'p')
-            ->from(Post::class, 'p');
+            ->from(Post::class, 'p')
+            ->andWhere($builder->expr()->eq('p.owner', ':owner'))
+            ->setParameter('owner', $agentId);
 
-        if ($asRequests){
-            $builder->andWhere($builder->expr()->neq('p.owner', ':owner'));
-            $builder->andWhere($builder->expr()->neq('p.status', ':unwantedStatus'))
-                ->setParameter('unwantedStatus', Status::DONE);
-        } else {
-            $builder->andWhere($builder->expr()->eq('p.owner', ':owner'));
-        }
+        return $builder;
+    }
 
-        $builder->setParameter('owner', $agentId);
+    /**
+     * @param int $forAgentId
+     * @param bool $isCount
+     * @return QueryBuilder
+     */
+    private function startRequestsQuery($forAgentId, $isCount = false)
+    {
+        $builder = $this->entityManager->createQueryBuilder();
+
+        $builder
+            ->select($isCount ? $builder->expr()->countDistinct('p') : 'p')
+            ->from(Post::class, 'p')
+            ->leftJoin('p.quotes', 'q')
+            ->andWhere($builder->expr()->neq('p.owner', ':owner'))
+            ->andWhere('(p.status != :unwantedStatus OR (q.isPicked = :isPicked AND q.owner = :quoteOwner))')
+            ->setParameter('quoteOwner', $forAgentId)
+            ->setParameter('owner', $forAgentId)
+            ->setParameter('unwantedStatus', Status::DONE)
+            ->setParameter('isPicked', true);
 
         return $builder;
     }

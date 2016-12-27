@@ -81,7 +81,7 @@ class QuoteRequestAction extends View {
             },
             shared: {
                 name: 'shared',
-                title: 'Shared',
+                title: 'Accepted',
                 color: 'success',
             }
         }

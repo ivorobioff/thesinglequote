@@ -3467,8 +3467,6 @@
 
 	            this.el = el;
 
-	            this.body = el.find('#body').html(this.options.content);
-
 	            if (this.options.title) {
 	                el.find('#title').text(this.options.title);
 	            }
@@ -3510,6 +3508,10 @@
 
 	                buttons.append(submit);
 	            }
+
+	            // this must be in the very end so that ids in the content don't conflicts with ids of the modal 
+
+	            this.body = el.find('#body').html(this.options.content);
 
 	            return el;
 	        }
@@ -3857,7 +3859,7 @@
 	        value: function render() {
 	            var _this2 = this;
 
-	            this.el = $('\n            <div class="row">\n                <div class="col-xs-10">\n                    <div class="row">\n                        <div id="price" class="col-xs-6"></div>\n                        <div id="plan" class="col-xs-6"></div>\n                    </div>\n                    <div class="row">\n                        <div id="commission" class="col-xs-6"></div>\n                        <div id="document" class="col-xs-6"></div>\n                    </div>\n                    <div class="row">\n                        <div id="note" class="col-xs-12"></div>\n                    </div>\n                </div>\n                <div class="col-xs-2">\n                    <button id="selector" class="btn"></button>\n                </div>\n            </div>\n        ');
+	            this.el = $('\n            <div class="row">\n                <div class="col-xs-10">\n                    <div class="row">\n                        <div id="price" class="col-xs-6"></div>\n                        <div id="plan" class="col-xs-6"></div>\n                    </div>\n                    <div class="row">\n                        <div id="commission" class="col-xs-6"></div>\n                        <div id="document" class="col-xs-6"></div>\n                    </div>\n                    <br/>\n                    <div class="row">\n                        <div id="note" class="col-xs-12"></div>\n                    </div>\n                </div>\n                <div class="col-xs-2">\n                    <button id="selector" class="btn"></button>\n                </div>\n            </div>\n        ');
 
 	            var selector = this.el.find('#selector');
 
@@ -3878,7 +3880,7 @@
 	            this.el.find('#price').append($('<b/>', { text: 'Premium:' })).append(' $' + this.data.price);
 	            this.el.find('#plan').append($('<b/>', { text: 'Premium:' })).append(' ' + _Constants.PLANS[this.data.plan]);
 	            this.el.find('#commission').append($('<b/>', { text: 'Commission:' })).append(' ' + this.data.commission + '%');
-	            this.el.find('#document').html($('<a/>', { href: this.data.document.url, text: this.data.document.name }));
+	            this.el.find('#document').append($('<b/>', { text: 'Document: ' })).append($('<a/>', { href: this.data.document.url, text: this.data.document.name }));
 
 	            this.el.find('#note').append($('<b/>', { text: 'Note:' })).append(' ' + this.data.note);
 
@@ -4052,7 +4054,25 @@
 	        }
 	    }, {
 	        key: 'onItemViewDetails',
-	        value: function onItemViewDetails(request) {}
+	        value: function onItemViewDetails(request) {
+
+	            var content = $('\n            <div>\n                <h4>Public Information</h4>\n                 <div class="row">\n                    <div class="col-xs-4"><b>Title:</b></div>\n                    <div id="title" class="col-xs-8"></div>\n                </div>\n                <div class="row">\n                    <div class="col-xs-4"><b> Public Message:</b></div>\n                    <div id="publicMessage" class="col-xs-8"></div>\n                </div>\n                <hr/>\n                <h4>Private Information</h4>\n                <div class="row">\n                    <div class="col-xs-4"><b>Client Name:</b></div>\n                    <div id="clientName" class="col-xs-8"></div>\n                </div>\n                <div class="row">\n                    <div class="col-xs-4"><b>Client Phone:</b></div>\n                    <div id="clientPhone" class="col-xs-8"></div>\n                </div>\n                <div class="row">\n                    <div class="col-xs-4"><b>Private Message:</b></div>\n                    <div id="privateMessage" class="col-xs-8"></div>\n                </div>\n            </div>\n        ');
+
+	            content.find('#title').text(request.title);
+	            content.find('#publicMessage').text(request.publicMessage);
+	            content.find('#clientName').text(request.clientName);
+	            content.find('#clientPhone').text(request.clientPhone);
+	            content.find('#privateMessage').text(request.privateMessage);
+
+	            var modal = new _Modal2.default({
+	                content: content,
+	                title: 'View All Details',
+	                hideSubmitButton: true,
+	                cancelButtonTitle: 'OK'
+	            });
+
+	            modal.show();
+	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
@@ -4370,7 +4390,7 @@
 	                },
 	                shared: {
 	                    name: 'shared',
-	                    title: 'Shared',
+	                    title: 'Accepted',
 	                    color: 'success'
 	                }
 	            };

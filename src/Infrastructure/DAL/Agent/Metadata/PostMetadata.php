@@ -2,6 +2,7 @@
 namespace ImmediateSolutions\Infrastructure\DAL\Agent\Metadata;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use ImmediateSolutions\Core\Agent\Entities\Agent;
+use ImmediateSolutions\Core\Agent\Entities\Quote;
 use ImmediateSolutions\Infrastructure\DAL\Agent\Types\StatusType;
 use ImmediateSolutions\Infrastructure\Doctrine\Metadata\AbstractMetadataProvider;
 
@@ -65,6 +66,11 @@ class PostMetadata extends AbstractMetadataProvider
         $builder
             ->createManyToOne('owner', Agent::class)
             ->addJoinColumn('owner_id', 'id', true, false, 'CASCADE')
+            ->build();
+
+        $builder
+            ->createOneToMany('quotes', Quote::class)
+            ->mappedBy('request')
             ->build();
     }
 }
