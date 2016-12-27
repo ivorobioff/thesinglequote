@@ -55,9 +55,8 @@ class Modal {
                         <h4 id="title" class="modal-title"></h4>
                     </div>
                     <div id="body" class="modal-body"></div>
-                    <div class="modal-footer">
-                        <button id="cancel" type="button" class="btn btn-default">Cancel</button>
-                        <button id="submit" type="button" class="btn btn-primary">Submit</button>
+                    <div id="buttons" class="modal-footer">
+                        
                     </div>
                     </div>
                 </div>
@@ -80,21 +79,29 @@ class Modal {
         
         close.click(() => this.onCloseClick());
 
-        var cancel = el.find('#cancel');
-        
-        if (this.options.cancelButtonTitle){
-            cancel.text(this.options.cancelButtonTitle);
-        }
+        var buttons = el.find('#buttons');
 
+        var cancel = $('<button/>', {
+            'class': 'btn btn-default',
+            text: this.options.cancelButtonTitle ? this.options.cancelButtonTitle : 'Cancel',
+            type: 'button'
+        });
+    
         cancel.click(() => this.onCancelClick());
+
+        buttons.append(cancel);
         
-        var submit = el.find('#submit');
+        if (!this.options.hideSubmitButton){
+            var submit = $('<button/>', {
+                'class': 'btn btn-primary',
+                text: this.options.submitButtonTitle ? this.options.submitButtonTitle : 'Submit',
+                type: 'button'
+            });
 
-        if (this.options.submitButtonTitle){
-            submit.text(this.options.submitButtonTitle);
+            submit.click(() => this.onSubmitClick());
+
+            buttons.append(submit);
         }
-
-        submit.click(() => this.onSubmitClick());
 
         return el;
     }

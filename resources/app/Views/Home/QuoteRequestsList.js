@@ -47,9 +47,47 @@ class QuoteRequestsList extends View {
     }
 
     onItemViewQuote(request){
+        var content = $(`<div>
+            <div class="row">
+                <div class="col-xs-4"><b>Premium:</b></div>
+                <div id="price" class="col-xs-8"></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4"><b>Plan:</b></div>
+                <div id="plan" class="col-xs-8"></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4"><b>Note:</b></div>
+                <div id="note" class="col-xs-8"></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4"><b>Commission:</b></div>
+                <div id="commission" class="col-xs-8">20%</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4"><b>Document:</b></div>
+                <div id="document" class="col-xs-8"></div>
+            </div>
+        </div>`);
+
+        var quote = request.quote;
+    
+        var plans = {
+            'annual': 'Annual',
+            'per-6-months': 'Per 6 Months'
+        }
+
+        content.find('#price').text('$' + quote.price);
+        content.find('#plan').text(plans[quote.plan]);
+        content.find('#note').text(quote.note);
+        content.find('#commission').text(quote.commission + '%');
+        content.find('#document').html($('<a/>', { href: quote.document.url, text: quote.document.name }));        
+
         var modal = new Modal({
-            content: ``,
-            title: 'View My Qoute'
+            content,
+            title: 'View My Qoute',
+            hideSubmitButton: true,
+            cancelButtonTitle: 'OK' 
         });
 
         modal.show();

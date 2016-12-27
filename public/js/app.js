@@ -3425,7 +3425,7 @@
 	        value: function render() {
 	            var _this = this;
 
-	            var el = $('\n            <div class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">\n                <div id="dialog" class="modal-dialog">\n                    <div class="modal-content">\n                    <div class="modal-header">\n                        <button id="close" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n                        <h4 id="title" class="modal-title"></h4>\n                    </div>\n                    <div id="body" class="modal-body"></div>\n                    <div class="modal-footer">\n                        <button id="cancel" type="button" class="btn btn-default">Cancel</button>\n                        <button id="submit" type="button" class="btn btn-primary">Submit</button>\n                    </div>\n                    </div>\n                </div>\n            </div>\n        ');
+	            var el = $('\n            <div class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">\n                <div id="dialog" class="modal-dialog">\n                    <div class="modal-content">\n                    <div class="modal-header">\n                        <button id="close" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n                        <h4 id="title" class="modal-title"></h4>\n                    </div>\n                    <div id="body" class="modal-body"></div>\n                    <div id="buttons" class="modal-footer">\n                        \n                    </div>\n                    </div>\n                </div>\n            </div>\n        ');
 
 	            this.el = el;
 
@@ -3445,25 +3445,33 @@
 	                return _this.onCloseClick();
 	            });
 
-	            var cancel = el.find('#cancel');
+	            var buttons = el.find('#buttons');
 
-	            if (this.options.cancelButtonTitle) {
-	                cancel.text(this.options.cancelButtonTitle);
-	            }
+	            var cancel = $('<button/>', {
+	                'class': 'btn btn-default',
+	                text: this.options.cancelButtonTitle ? this.options.cancelButtonTitle : 'Cancel',
+	                type: 'button'
+	            });
 
 	            cancel.click(function () {
 	                return _this.onCancelClick();
 	            });
 
-	            var submit = el.find('#submit');
+	            buttons.append(cancel);
 
-	            if (this.options.submitButtonTitle) {
-	                submit.text(this.options.submitButtonTitle);
+	            if (!this.options.hideSubmitButton) {
+	                var submit = $('<button/>', {
+	                    'class': 'btn btn-primary',
+	                    text: this.options.submitButtonTitle ? this.options.submitButtonTitle : 'Submit',
+	                    type: 'button'
+	                });
+
+	                submit.click(function () {
+	                    return _this.onSubmitClick();
+	                });
+
+	                buttons.append(submit);
 	            }
-
-	            submit.click(function () {
-	                return _this.onSubmitClick();
-	            });
 
 	            return el;
 	        }
@@ -3719,9 +3727,26 @@
 	    }, {
 	        key: 'onItemViewQuote',
 	        value: function onItemViewQuote(request) {
+	            var content = $('<div>\n            <div class="row">\n                <div class="col-xs-4"><b>Premium:</b></div>\n                <div id="price" class="col-xs-8"></div>\n            </div>\n            <div class="row">\n                <div class="col-xs-4"><b>Plan:</b></div>\n                <div id="plan" class="col-xs-8"></div>\n            </div>\n            <div class="row">\n                <div class="col-xs-4"><b>Note:</b></div>\n                <div id="note" class="col-xs-8"></div>\n            </div>\n            <div class="row">\n                <div class="col-xs-4"><b>Commission:</b></div>\n                <div id="commission" class="col-xs-8">20%</div>\n            </div>\n            <div class="row">\n                <div class="col-xs-4"><b>Document:</b></div>\n                <div id="document" class="col-xs-8"></div>\n            </div>\n        </div>');
+
+	            var quote = request.quote;
+
+	            var plans = {
+	                'annual': 'Annual',
+	                'per-6-months': 'Per 6 Months'
+	            };
+
+	            content.find('#price').text('$' + quote.price);
+	            content.find('#plan').text(plans[quote.plan]);
+	            content.find('#note').text(quote.note);
+	            content.find('#commission').text(quote.commission + '%');
+	            content.find('#document').html($('<a/>', { href: quote.document.url, text: quote.document.name }));
+
 	            var modal = new _Modal2.default({
-	                content: '',
-	                title: 'View My Qoute'
+	                content: content,
+	                title: 'View My Qoute',
+	                hideSubmitButton: true,
+	                cancelButtonTitle: 'OK'
 	            });
 
 	            modal.show();
@@ -4076,7 +4101,7 @@
 
 	            if (data.status === 'active' && data.quote !== null) {
 	                status = statuses.proposed;
-	            } else if (data.status === 'done' && data.quote !== null) {
+	            } else if (data.status === 'done' && data.quote !== null && data.quote.isPicked) {
 	                status = statuses.shared;
 	            } else {
 	                status = statuses.open;

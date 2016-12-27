@@ -128,6 +128,31 @@
             }
 
 
+##### Gets quotes per post
+
+##### `GET /agents/{agentId}/posts/{postId}/quotes`
+
++ Response 
+
+            {
+                "data": [
+                    {
+                        ... Agent Quote Object
+                    },
+                    ...
+                ]
+            }
+            
+            
+##### Picks a quote
+
+##### `POST /agents/{agentId}/posts/{postId}/quotes/{quoteId}/pick`
+
+##### Unpick a quote
+
+##### `POST /agents/{agentId}/posts/{postId}/quotes/{quoteId}/unpick`
+
+
 ##### Creates a quote
 
 ##### `POST /agents/{agentId}/requests/{requestId}/quote`

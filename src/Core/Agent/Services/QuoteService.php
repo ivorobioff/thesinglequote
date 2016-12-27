@@ -114,6 +114,85 @@ class QuoteService extends Service
     }
 
     /**
+     * @param int $quoteId
+     */
+    public function pick($quoteId)
+    {
+        /**
+         * @var Quote $quote
+         */
+        $quote = $this->entityManager->find(Quote::class, $quoteId);
+
+        if ($quote->isPicked()){
+            return ;
+        }
+
+        $request = $quote->getRequest();
+
+        /**
+         * @var Quote $picked
+         */
+        $picked = $this->entityManager->getRepository(Quote::class)->findOneBy([
+            'isPicked' => true, 'request' => $request->getId()
+        ]);
+
+        if ($picked){
+            $picked->setPicked(false);
+        }
+
+        $quote->setPicked(true);
+
+        $this->entityManager->flush();
+
+        $this->adjustRequestStatus($request->getId());
+    }
+
+    /**
+     * @param int $quoteId
+     */
+    public function unpick($quoteId)
+    {
+        /**
+         * @var Quote $quote
+         */
+        $quote = $this->entityManager->find(Quote::class, $quoteId);
+
+        if (!$quote->isPicked()){
+            return ;
+        }
+
+        $quote->setPicked(false);
+
+        $this->entityManager->flush();
+
+        $this->adjustRequestStatus($quote->getId());
+    }
+
+    /**
+     * @param int $requestId
+     */
+    private function adjustRequestStatus($requestId)
+    {
+        /**
+         * @var Post $request
+         */
+        $request = $this->entityManager->find(Post::class, $requestId);
+
+        if ($this->entityManager->getRepository(Quote::class)->exists([
+            'request' => $requestId, 'isPicked' => true])){
+            $request->setStatus(new Status(Status::DONE));
+        } elseif ($this->entityManager->getRepository(Quote::class)->exists([
+            'request' => $requestId
+        ])) {
+            $request->setStatus(new Status(Status::ACTIVE));
+        } else {
+            $request->setStatus(new Status(Status::OPEN));
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
      * @param int $requestId
      * @param int $ownerId
      */
@@ -132,18 +211,7 @@ class QuoteService extends Service
         $this->entityManager->remove($quote);
         $this->entityManager->flush();
 
-        $hasMore = $this->entityManager->getRepository(Quote::class)
-            ->exists(['request' => $requestId]);
-
-        if (!$hasMore){
-            /**
-             * @var Post $request
-             */
-            $request = $this->entityManager->find(Post::class, $requestId);
-
-            $request->setStatus(new Status(Status::OPEN));
-            $this->entityManager->flush();
-        }
+        $this->adjustRequestStatus($requestId);
     }
 
     /**
