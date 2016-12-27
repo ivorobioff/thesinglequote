@@ -3718,7 +3718,14 @@
 	        }
 	    }, {
 	        key: 'onItemViewQuote',
-	        value: function onItemViewQuote(request) {}
+	        value: function onItemViewQuote(request) {
+	            var modal = new _Modal2.default({
+	                content: '',
+	                title: 'View My Qoute'
+	            });
+
+	            modal.show();
+	        }
 	    }, {
 	        key: 'onItemCancelQuote',
 	        value: function onItemCancelQuote(request) {

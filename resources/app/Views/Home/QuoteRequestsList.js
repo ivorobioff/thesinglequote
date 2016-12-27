@@ -47,7 +47,12 @@ class QuoteRequestsList extends View {
     }
 
     onItemViewQuote(request){
-        
+        var modal = new Modal({
+            content: ``,
+            title: 'View My Qoute'
+        });
+
+        modal.show();
     }
 
     onItemCancelQuote(request){
