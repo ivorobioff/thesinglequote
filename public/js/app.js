@@ -3724,9 +3724,21 @@
 	        value: function onItemCancelQuote(request) {
 	            var _this3 = this;
 
-	            _Quote2.default.destroy(request.id).done(function () {
-	                return _this3.pager.load();
+	            var modal = new _Modal2.default({
+	                content: '<p>Do you want to cancel this quote?</p>',
+	                title: 'Action',
+	                submitButtonTitle: 'Yes',
+	                cancelButtonTitle: 'No'
 	            });
+
+	            modal.setOnSubmit(function () {
+	                _Quote2.default.destroy(request.id).done(function () {
+	                    return _this3.pager.load();
+	                });
+	                modal.hide();
+	            });
+
+	            modal.show();
 	        }
 	    }, {
 	        key: 'onItemViewDetails',

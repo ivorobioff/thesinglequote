@@ -131,6 +131,19 @@ class QuoteService extends Service
 
         $this->entityManager->remove($quote);
         $this->entityManager->flush();
+
+        $hasMore = $this->entityManager->getRepository(Quote::class)
+            ->exists(['request' => $requestId]);
+
+        if (!$hasMore){
+            /**
+             * @var Post $request
+             */
+            $request = $this->entityManager->find(Post::class, $requestId);
+
+            $request->setStatus(new Status(Status::OPEN));
+            $this->entityManager->flush();
+        }
     }
 
     /**

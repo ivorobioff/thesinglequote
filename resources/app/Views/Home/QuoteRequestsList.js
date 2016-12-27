@@ -51,7 +51,19 @@ class QuoteRequestsList extends View {
     }
 
     onItemCancelQuote(request){
-        Quote.destroy(request.id).done(() => this.pager.load());
+        var modal = new Modal({ 
+            content: '<p>Do you want to cancel this quote?</p>', 
+            title: 'Action',
+            submitButtonTitle: 'Yes',
+            cancelButtonTitle: 'No' 
+        });
+
+        modal.setOnSubmit(() => {
+            Quote.destroy(request.id).done(() => this.pager.load());
+            modal.hide();
+        });
+
+        modal.show();
     }
 
     onItemViewDetails(request){
