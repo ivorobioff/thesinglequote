@@ -55,7 +55,7 @@ class QuotesItem extends View {
         this.el.find('#commission').append($('<b/>', { text: 'Commission:'})).append(' ' + this.data.commission + '%');
         this.el.find('#document').append($('<b/>', { text: 'Document: '})).append($('<a/>', { href: this.data.document.url, text: this.data.document.name }));
 
-        this.el.find('#note').append($('<b/>', { text: 'Note:'})).append(' ' + this.data.note);
+        this.el.find('#note').append($('<b/>', { text: 'Note:'})).append(' ' + (this.data.note === null ? '' : this.data.note));
 
         return this.el;
     }

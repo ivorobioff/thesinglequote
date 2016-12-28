@@ -153,7 +153,13 @@
 	    _createClass(App, [{
 	        key: 'render',
 	        value: function render() {
-	            var el = $('\n            <div>\n                <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">\n                    <div class="container">\n                        <div class="navbar-header">\n                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">\n                                <span class="sr-only">Toggle navigation</span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                            </button>\n                            <a class="navbar-brand" href="index.html">TheSingleQuote.com</a>\n                        </div>\n                        <div id="navContent" class="collapse navbar-collapse"></div>\n                    </div>\n                </nav>\n            </div>\n        ');
+	            var el = $('\n            <div>\n                <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">\n                    <div class="container">\n                        <div id="navHeader" class="navbar-header">\n                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">\n                                <span class="sr-only">Toggle navigation</span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                            </button>\n                        </div>\n                        <div id="navContent" class="collapse navbar-collapse"></div>\n                    </div>\n                </nav>\n            </div>\n        ');
+	            //<a class="navbar-brand" href="index.html">TheSingleQuote.com</a>
+	            el.find('#navHeader').append(new _sparrowUi.Link({
+	                'class': 'navbar-brand',
+	                href: '/',
+	                text: 'TheSingleQuote.com'
+	            }).render());
 
 	            if (_Session2.default.has()) {
 	                el.find('#navContent').append(new _AgentNav2.default().render());
@@ -234,18 +240,16 @@
 	    _createClass(Link, [{
 	        key: 'render',
 	        value: function render() {
-	            var el = $('<a/>').attr('href', this.options.href).text(title);
+	            var _this2 = this;
 
-	            if (this.options['class']) {
-	                el.addClass(this.options['class']);
-	            }
-
-	            el.click(function (e) {
+	            return $('<a/>', {
+	                href: this.options.href,
+	                text: this.options.text,
+	                'class': this.options['class']
+	            }).click(function (e) {
 	                e.preventDefault();
-	                (0, _page2.default)(href);
+	                (0, _page2.default)(_this2.options.href);
 	            });
-
-	            return el;
 	        }
 	    }]);
 
@@ -3992,7 +3996,7 @@
 	            this.el.find('#commission').append($('<b/>', { text: 'Commission:' })).append(' ' + this.data.commission + '%');
 	            this.el.find('#document').append($('<b/>', { text: 'Document: ' })).append($('<a/>', { href: this.data.document.url, text: this.data.document.name }));
 
-	            this.el.find('#note').append($('<b/>', { text: 'Note:' })).append(' ' + this.data.note);
+	            this.el.find('#note').append($('<b/>', { text: 'Note:' })).append(' ' + (this.data.note === null ? '' : this.data.note));
 
 	            return this.el;
 	        }

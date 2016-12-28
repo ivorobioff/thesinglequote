@@ -12,17 +12,14 @@ export class Link extends View {
     }
 
     render(){
-        var el = $('<a/>').attr('href', this.options.href).text(title);
-
-        if (this.options['class']){
-            el.addClass(this.options['class']);
-        }
-
-        el.click(e => {
+        return $('<a/>', {
+            href: this.options.href,
+            text: this.options.text,
+            'class': this.options['class']
+        })
+        .click(e => {
             e.preventDefault();
-            page(href);
+            page(this.options.href);
         });
-
-        return el;
     }
 }
