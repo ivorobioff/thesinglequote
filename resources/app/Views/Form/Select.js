@@ -12,6 +12,11 @@ class Select extends Control {
         return this.el.val();
     }
 
+    setValue(value){
+        this.el.val(value);
+        return this;
+    }
+
     render() {
         this.wrapper = $('<div class="form-group"></div>');
 
@@ -31,6 +36,10 @@ class Select extends Control {
         this.options.options.forEach(option => {
             this.el.append($('<option/>', { value: option.value, text: option.title }));
         });
+
+        if (typeof this.options.value !== 'undefined'){
+            this.setValue(this.options.value);
+        }
 
         if (this.options.required){
             this.el.attr('required', 'required');

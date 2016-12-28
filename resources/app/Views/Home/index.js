@@ -5,6 +5,7 @@ import OwnPostsList from './OwnPostsList';
 import Modal from '../Modal';
 import Form from '../Form';
 import QuoteRequestsList from './QuoteRequestsList';
+import Profile from '../../Providers/Profile';
 
 class Home extends View {
 
@@ -23,13 +24,42 @@ class Home extends View {
         
         modal.show();
     }
+
+    onEditProfileClick(e){
+        e.preventDefault();
+
+        var form = new Form(data => Profile.patch(data));
+
+        form
+            .addAlert({ onSuccess: 'Your profile has been successfully updated!'})
+            .addInput('fullName', { label: 'Full Name', placeholder: 'Full Name', required: true})
+            .addEmail('email', { label: 'Email', placeholder: 'Email', required: true})
+            .addPassword('password', { label: 'Password', placeholder: 'Password'})
+            .addFilter('password', value => value !== null && value !== '')
+            .addInput('insuranceLicenseNumber', { label: 'Insurance License #', placeholder: 'A123456', required: true });
+
+        form.addOnSuccess(() => Session.reload().done(data => this.adjustGreeting()));
+
+        var modal = new Modal({ content: form.render(), title: 'Edit Profile'});
+
+        modal.setOnSubmit(() => form.submit());
+
+        modal.show();
+
+        Profile.load().done(data => form.populate(data));
+    }
+
+    adjustGreeting(){
+        var session = Session.get();
+        this.greeting.text('Welcome back ' + session.user.fullName);
+    }
     
     render(){
         var el = $(`<div class="container">
             <header class="jumbotron hero-spacer">
                 <h1 id="greeting"></h1>
                 <p>This page will show quotes. It will also allow them to edit their information.</p>
-                <p><a class="btn btn-primary btn-large">Call to action!</a>
+                <p><a id="editProfile" class="btn btn-primary btn-large">Edit Profile</a>
                 </p>
             </header>
             <hr/>
@@ -54,10 +84,12 @@ class Home extends View {
 
         </div>`);
 
-        var user = Session.get().user;
+        this.greeting = el.find('#greeting');
 
-        el.find('#greeting').text('Welcome back ' + user.fullName);
+        this.adjustGreeting();
+
         el.find('#newPostClick').click(e => this.onNewPostClick(e));
+        el.find('#editProfile').click(e => this.onEditProfileClick(e));
 
         this.ownPostsList = new OwnPostsList();
 
@@ -84,13 +116,13 @@ export function buildPostForm(form, data = {}){
             </span>
         </div>`)
         .addInput('title', { 
-            value: data.title ? data.title : undefined, 
+            value: data.title, 
             label: 'Title - Explain your post', 
             placeholder: 'Car Insurance quote', 
             required: true
         })
         .addTextarea('publicMessage', { 
-            value: data.publicMessage ? data.publicMessage : undefined, 
+            value: data.publicMessage, 
             label: 'Public Message', 
             required: true, 
             rows: 10,
@@ -104,25 +136,25 @@ export function buildPostForm(form, data = {}){
             <hr/>
         </div>`)
         .addInput('clientName', { 
-            value: data.clientName ? data.clientName : undefined,            
+            value: data.clientName,            
             label: 'Client Name', 
             placeholder: 'Mary Allen', 
             required: true
         })
         .addInput('clientPhone', { 
-            value: data.clientPhone ? data.clientPhone : undefined,
+            value: data.clientPhone,
             label: 'Client Phone', 
             placeholder: '1-234-567-8910', 
             required: true
         })
         .addTextarea('privateMessage', { 
-            value: data.privateMessage ? data.privateMessage : undefined,
+            value: data.privateMessage,
             label: 'Private Message', 
             required: true, 
             rows: 10,
             placeholder: 'First driver is Mary Allen and second driver is David Allen. They live on 123 Sunshine Rd. Beverly Hills, CA 90210.'})
         .addCheckbox('noPersonalInfoInPublic', { 
-            value: data.noPersonalInfoInPublic ? data.noPersonalInfoInPublic : undefined,
+            value: data.noPersonalInfoInPublic,
             label: 'I have not posted any personal information in the public information sections'
         })
 

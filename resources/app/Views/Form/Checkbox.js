@@ -9,27 +9,33 @@ class Checkbox extends Control {
     }
 
     getValue(){
-        return this.el.prop('checked') ? true : false;
+        return this.el.prop('checked');
+    }
+
+    setValue(value){
+        this.el.prop('checked', value);
+        return this;
     }
 
     render(){
         this.wrapper = $('<div class="form-group"><div class="checkbox"></div></div>');
         this.el = $('<input />', { type: 'checkbox', name: this.name });
-
-        if (this.options.value){
-            this.el.prop('checked', 'checked');
+        
+        if (typeof this.options.value !== 'undefined'){
+            this.setValue(this.options.value);
         }
-
 
         if (this.options.required){
             this.el.attr('required', 'required');
         }
 
+        var control  = this.el;
+
         if (this.options.label){
-            this.el = $('<label></label>').text(this.options.label).prepend(this.el);
+            control = $('<label></label>').text(this.options.label).prepend(this.el);
         }
 
-        this.wrapper.find('div:first-child').html(this.el);
+        this.wrapper.find('div:first-child').html(control);
 
         return this.wrapper;
     }

@@ -20,6 +20,7 @@ class Form extends View {
          this.onSuccessCallbacks = [];
          this.onGlobalErrorCallbacks = [];
          this.onCompleteCallbacks = [];
+         this.filters = {};
      }
 
      addPassword(name, options = {}){
@@ -54,9 +55,7 @@ class Form extends View {
      }
 
      addCheckbox(name, options = {}){
-
         this.controls.push(new Checkbox(name, options));
-
         return this;
      }
 
@@ -87,7 +86,17 @@ class Form extends View {
 
         this.controls.forEach(c => {
             if (c.getValue){
-                data[c.name] = c.getValue();
+                var isAllowed = true;
+
+                var value = c.getValue();
+
+                if (this.filters[c.name]){
+                    isAllowed = this.filters[c.name](value);
+                }
+
+                if (isAllowed){
+                    data[c.name] = value;
+                }
             }
         });
 
@@ -181,6 +190,21 @@ class Form extends View {
                 c.disable()
             }
         });
+     }
+
+     populate(data){
+         this.controls.forEach(c =>  {
+            if (c instanceof Control){
+                if (c.name && c.setValue && data[c.name]){
+                    c.setValue(data[c.name]);
+                }
+            }
+        });
+     }
+
+     addFilter(field, callback){
+         this.filters[field] = callback;
+         return this;
      }
      
     render(){

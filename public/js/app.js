@@ -122,7 +122,7 @@
 
 	var _Home2 = _interopRequireDefault(_Home);
 
-	var _AgentNav = __webpack_require__(38);
+	var _AgentNav = __webpack_require__(39);
 
 	var _AgentNav2 = _interopRequireDefault(_AgentNav);
 
@@ -1670,6 +1670,7 @@
 	        _this.onSuccessCallbacks = [];
 	        _this.onGlobalErrorCallbacks = [];
 	        _this.onCompleteCallbacks = [];
+	        _this.filters = {};
 	        return _this;
 	    }
 
@@ -1722,9 +1723,7 @@
 	        value: function addCheckbox(name) {
 	            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-
 	            this.controls.push(new _Checkbox2.default(name, options));
-
 	            return this;
 	        }
 	    }, {
@@ -1766,7 +1765,17 @@
 
 	            this.controls.forEach(function (c) {
 	                if (c.getValue) {
-	                    data[c.name] = c.getValue();
+	                    var isAllowed = true;
+
+	                    var value = c.getValue();
+
+	                    if (_this2.filters[c.name]) {
+	                        isAllowed = _this2.filters[c.name](value);
+	                    }
+
+	                    if (isAllowed) {
+	                        data[c.name] = value;
+	                    }
 	                }
 	            });
 
@@ -1868,6 +1877,23 @@
 	                    c.disable();
 	                }
 	            });
+	        }
+	    }, {
+	        key: 'populate',
+	        value: function populate(data) {
+	            this.controls.forEach(function (c) {
+	                if (c instanceof _Control2.default) {
+	                    if (c.name && c.setValue && data[c.name]) {
+	                        c.setValue(data[c.name]);
+	                    }
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'addFilter',
+	        value: function addFilter(field, callback) {
+	            this.filters[field] = callback;
+	            return this;
 	        }
 	    }, {
 	        key: 'render',
@@ -1994,14 +2020,21 @@
 	            return _this.set(data);
 	        });
 	    },
-	    refresh: function refresh() {
+	    reload: function reload() {
 	        var _this2 = this;
+
+	        return (0, _Helpers.backend)({ method: 'GET', url: '/sessions/' + this.get().id }).done(function (data) {
+	            return _this2.set(data);
+	        });
+	    },
+	    refresh: function refresh() {
+	        var _this3 = this;
 
 	        return (0, _Helpers.backend)({
 	            method: 'POST',
 	            url: '/sessions/' + this.get().id + '/refresh'
 	        }).done(function (data) {
-	            return _this2.set(data);
+	            return _this3.set(data);
 	        });
 	    },
 	    has: function has() {
@@ -2072,6 +2105,12 @@
 	            return value;
 	        }
 	    }, {
+	        key: 'setValue',
+	        value: function setValue(value) {
+	            this.el.val(value);
+	            return this;
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            this.wrapper = $('<div class="form-group"></div>');
@@ -2107,8 +2146,8 @@
 	                controlHolder = iconWrapper;
 	            }
 
-	            if (this.options.value) {
-	                this.el.val(this.options.value);
+	            if (typeof this.options.value !== 'undefined') {
+	                this.setValue(this.options.value);
 	            }
 
 	            if (this.options.placeholder) {
@@ -2315,7 +2354,13 @@
 	    _createClass(Checkbox, [{
 	        key: 'getValue',
 	        value: function getValue() {
-	            return this.el.prop('checked') ? true : false;
+	            return this.el.prop('checked');
+	        }
+	    }, {
+	        key: 'setValue',
+	        value: function setValue(value) {
+	            this.el.prop('checked', value);
+	            return this;
 	        }
 	    }, {
 	        key: 'render',
@@ -2323,19 +2368,21 @@
 	            this.wrapper = $('<div class="form-group"><div class="checkbox"></div></div>');
 	            this.el = $('<input />', { type: 'checkbox', name: this.name });
 
-	            if (this.options.value) {
-	                this.el.prop('checked', 'checked');
+	            if (typeof this.options.value !== 'undefined') {
+	                this.setValue(this.options.value);
 	            }
 
 	            if (this.options.required) {
 	                this.el.attr('required', 'required');
 	            }
 
+	            var control = this.el;
+
 	            if (this.options.label) {
-	                this.el = $('<label></label>').text(this.options.label).prepend(this.el);
+	                control = $('<label></label>').text(this.options.label).prepend(this.el);
 	            }
 
-	            this.wrapper.find('div:first-child').html(this.el);
+	            this.wrapper.find('div:first-child').html(control);
 
 	            return this.wrapper;
 	        }
@@ -2395,6 +2442,12 @@
 	            return value;
 	        }
 	    }, {
+	        key: 'setValue',
+	        value: function setValue(value) {
+	            this.el.val(value);
+	            return this;
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            this.wrapper = $('<div class="form-group"></div>');
@@ -2416,8 +2469,8 @@
 	                rows: this.options.rows ? this.options.rows : undefined
 	            });
 
-	            if (this.options.value) {
-	                this.el.val(this.options.value);
+	            if (typeof this.options.value !== 'undefined') {
+	                this.setValue(this.options.value);
 	            }
 
 	            if (this.options.placeholder) {
@@ -2540,7 +2593,7 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            this.el = $('<div class="alert" />');
+	            this.el = $('<div />');
 	            return this.el;
 	        }
 	    }]);
@@ -2593,6 +2646,12 @@
 	            return this.el.val();
 	        }
 	    }, {
+	        key: 'setValue',
+	        value: function setValue(value) {
+	            this.el.val(value);
+	            return this;
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var _this2 = this;
@@ -2612,6 +2671,10 @@
 	            this.options.options.forEach(function (option) {
 	                _this2.el.append($('<option/>', { value: option.value, text: option.title }));
 	            });
+
+	            if (typeof this.options.value !== 'undefined') {
+	                this.setValue(this.options.value);
+	            }
 
 	            if (this.options.required) {
 	                this.el.attr('required', 'required');
@@ -2825,6 +2888,10 @@
 
 	var _QuoteRequestsList2 = _interopRequireDefault(_QuoteRequestsList);
 
+	var _Profile = __webpack_require__(38);
+
+	var _Profile2 = _interopRequireDefault(_Profile);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2866,17 +2933,60 @@
 	            modal.show();
 	        }
 	    }, {
-	        key: 'render',
-	        value: function render() {
+	        key: 'onEditProfileClick',
+	        value: function onEditProfileClick(e) {
 	            var _this3 = this;
 
-	            var el = $('<div class="container">\n            <header class="jumbotron hero-spacer">\n                <h1 id="greeting"></h1>\n                <p>This page will show quotes. It will also allow them to edit their information.</p>\n                <p><a class="btn btn-primary btn-large">Call to action!</a>\n                </p>\n            </header>\n            <hr/>\n            <div class="panel panel-default panel-table">\n              <div class="panel-heading">\n                <div class="row">\n                  <div class="col col-xs-6">\n                    <h3 class="panel-title">Your Posts</h3>\n                  </div>\n                  <div class="col col-xs-6 text-right">\n                    <a id="newPostClick" class="btn btn-primary btn-sml" href="#">Post New</a>\n                  </div>\n                </div>\n              </div>\n              <div id="ownPostsList" class="panel-body"></div>\n            </div>\n\n            <div class="panel panel-default panel-table">\n              <div class="panel-heading"><h3 class="panel-title">Posts needing Quotes</h3></div>\n              <div id="quoteRequestsList" class="panel-body"></div>\n            </div>\n\n        </div>');
+	            e.preventDefault();
 
-	            var user = _Session2.default.get().user;
+	            var form = new _Form2.default(function (data) {
+	                return _Profile2.default.patch(data);
+	            });
 
-	            el.find('#greeting').text('Welcome back ' + user.fullName);
+	            form.addAlert({ onSuccess: 'Your profile has been successfully updated!' }).addInput('fullName', { label: 'Full Name', placeholder: 'Full Name', required: true }).addEmail('email', { label: 'Email', placeholder: 'Email', required: true }).addPassword('password', { label: 'Password', placeholder: 'Password' }).addFilter('password', function (value) {
+	                return value !== null && value !== '';
+	            }).addInput('insuranceLicenseNumber', { label: 'Insurance License #', placeholder: 'A123456', required: true });
+
+	            form.addOnSuccess(function () {
+	                return _Session2.default.reload().done(function (data) {
+	                    return _this3.adjustGreeting();
+	                });
+	            });
+
+	            var modal = new _Modal2.default({ content: form.render(), title: 'Edit Profile' });
+
+	            modal.setOnSubmit(function () {
+	                return form.submit();
+	            });
+
+	            modal.show();
+
+	            _Profile2.default.load().done(function (data) {
+	                return form.populate(data);
+	            });
+	        }
+	    }, {
+	        key: 'adjustGreeting',
+	        value: function adjustGreeting() {
+	            var session = _Session2.default.get();
+	            this.greeting.text('Welcome back ' + session.user.fullName);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this4 = this;
+
+	            var el = $('<div class="container">\n            <header class="jumbotron hero-spacer">\n                <h1 id="greeting"></h1>\n                <p>This page will show quotes. It will also allow them to edit their information.</p>\n                <p><a id="editProfile" class="btn btn-primary btn-large">Edit Profile</a>\n                </p>\n            </header>\n            <hr/>\n            <div class="panel panel-default panel-table">\n              <div class="panel-heading">\n                <div class="row">\n                  <div class="col col-xs-6">\n                    <h3 class="panel-title">Your Posts</h3>\n                  </div>\n                  <div class="col col-xs-6 text-right">\n                    <a id="newPostClick" class="btn btn-primary btn-sml" href="#">Post New</a>\n                  </div>\n                </div>\n              </div>\n              <div id="ownPostsList" class="panel-body"></div>\n            </div>\n\n            <div class="panel panel-default panel-table">\n              <div class="panel-heading"><h3 class="panel-title">Posts needing Quotes</h3></div>\n              <div id="quoteRequestsList" class="panel-body"></div>\n            </div>\n\n        </div>');
+
+	            this.greeting = el.find('#greeting');
+
+	            this.adjustGreeting();
+
 	            el.find('#newPostClick').click(function (e) {
-	                return _this3.onNewPostClick(e);
+	                return _this4.onNewPostClick(e);
+	            });
+	            el.find('#editProfile').click(function (e) {
+	                return _this4.onEditProfileClick(e);
 	            });
 
 	            this.ownPostsList = new _OwnPostsList2.default();
@@ -2899,32 +3009,32 @@
 	    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	    form.addContent('<div>\n            <h1>Public Information\n            </h1>\n            <span class="help-block" id="hint_Title">\n            Will be shared with all agents\n            </span>\n        </div>').addInput('title', {
-	        value: data.title ? data.title : undefined,
+	        value: data.title,
 	        label: 'Title - Explain your post',
 	        placeholder: 'Car Insurance quote',
 	        required: true
 	    }).addTextarea('publicMessage', {
-	        value: data.publicMessage ? data.publicMessage : undefined,
+	        value: data.publicMessage,
 	        label: 'Public Message',
 	        required: true,
 	        rows: 10,
 	        placeholder: 'I need a quote for 3 cars and 2 drivers that live in zip code of 90210. A 2005 toyota Camry, 2011 Ford Fiesta, and 2013 Ford Mustang. 100/300 liability and 15/30 Uninsured Motorist and comp/coll deductibles of 500/500 for all cars. Female married driver born on 11/08/1973 and Male married driver born 05/12/1971. No tickets or accidents.' }).addContent('<div>\n            <h1>Private Information\n            </h1>\n            <span class="help-block" id="hint_Title">\n            Will be shared only with the agent you select\n            </span>\n            <hr/>\n        </div>').addInput('clientName', {
-	        value: data.clientName ? data.clientName : undefined,
+	        value: data.clientName,
 	        label: 'Client Name',
 	        placeholder: 'Mary Allen',
 	        required: true
 	    }).addInput('clientPhone', {
-	        value: data.clientPhone ? data.clientPhone : undefined,
+	        value: data.clientPhone,
 	        label: 'Client Phone',
 	        placeholder: '1-234-567-8910',
 	        required: true
 	    }).addTextarea('privateMessage', {
-	        value: data.privateMessage ? data.privateMessage : undefined,
+	        value: data.privateMessage,
 	        label: 'Private Message',
 	        required: true,
 	        rows: 10,
 	        placeholder: 'First driver is Mary Allen and second driver is David Allen. They live on 123 Sunshine Rd. Beverly Hills, CA 90210.' }).addCheckbox('noPersonalInfoInPublic', {
-	        value: data.noPersonalInfoInPublic ? data.noPersonalInfoInPublic : undefined,
+	        value: data.noPersonalInfoInPublic,
 	        label: 'I have not posted any personal information in the public information sections'
 	    });
 
@@ -4452,6 +4562,37 @@
 
 /***/ },
 /* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _Session = __webpack_require__(10);
+
+	var _Session2 = _interopRequireDefault(_Session);
+
+	var _Helpers = __webpack_require__(9);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Profile = {
+	    load: function load() {
+	        var session = _Session2.default.get();
+	        return (0, _Helpers.backend)({ method: 'GET', url: '/agents/' + session.user.id });
+	    },
+	    patch: function patch(data) {
+	        var session = _Session2.default.get();
+	        return (0, _Helpers.backend)({ method: 'PATCH', url: '/agents/' + session.user.id, data: data });
+	    }
+	};
+
+	exports.default = Profile;
+
+/***/ },
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

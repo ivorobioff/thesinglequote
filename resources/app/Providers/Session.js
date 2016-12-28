@@ -29,6 +29,10 @@ const Session = {
             .done(data => this.set(data));
     },
 
+    reload(){
+        return backend({ method: 'GET', url: '/sessions/' + this.get().id }).done(data => this.set(data));
+    },
+
     refresh(){
         return backend({ 
             method: 'POST', 

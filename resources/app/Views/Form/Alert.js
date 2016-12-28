@@ -21,7 +21,7 @@ class Alert extends View {
     }
 
     render(){
-        this.el = $('<div class="alert" />');
+        this.el = $('<div />');
         return this.el;
     }
 }

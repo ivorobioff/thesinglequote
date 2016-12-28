@@ -17,6 +17,11 @@ class Textarea extends Control {
         return value;
     }
 
+    setValue(value){
+        this.el.val(value);
+        return this;
+    }
+
     render(){
         this.wrapper = $('<div class="form-group"></div>');
 
@@ -37,8 +42,8 @@ class Textarea extends Control {
             rows: this.options.rows ? this.options.rows : undefined
         });
 
-        if (this.options.value){
-            this.el.val(this.options.value);
+        if (typeof this.options.value !== 'undefined'){
+            this.setValue(this.options.value);
         }
 
         if (this.options.placeholder){

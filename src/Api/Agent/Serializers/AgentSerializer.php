@@ -18,7 +18,8 @@ class AgentSerializer extends Serializer
             'id' => $agent->getId(),
             'username' => $agent->getUsername(),
             'email' => $agent->getEmail(),
-            'fullName' => $agent->getFullName()
+            'fullName' => $agent->getFullName(),
+            'insuranceLicenseNumber' => $agent->getInsuranceLicenseNumber()
         ];
     }
 }
