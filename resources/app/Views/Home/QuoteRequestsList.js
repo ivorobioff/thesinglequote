@@ -117,21 +117,21 @@ class QuoteRequestsList extends View {
         var content = $(`
             <div>
                 <h4>Public Information</h4>
-                 <div class="row">
+                 <div class="row mrg-btm-sm">
                     <div class="col-xs-4"><b>Title:</b></div>
                     <div id="title" class="col-xs-8"></div>
                 </div>
-                <div class="row">
+                <div class="row mrg-btm-sm">
                     <div class="col-xs-4"><b> Public Message:</b></div>
                     <div id="publicMessage" class="col-xs-8"></div>
                 </div>
                 <hr/>
                 <h4>Private Information</h4>
-                <div class="row">
+                <div class="row mrg-btm-sm">
                     <div class="col-xs-4"><b>Client Name:</b></div>
                     <div id="clientName" class="col-xs-8"></div>
                 </div>
-                <div class="row">
+                <div class="row mrg-btm-sm">
                     <div class="col-xs-4"><b>Client Phone:</b></div>
                     <div id="clientPhone" class="col-xs-8"></div>
                 </div>
@@ -165,7 +165,7 @@ class QuoteRequestsList extends View {
                 <table class="table table-striped table-bordered table-list">
                     <thead>
                         <tr>
-                            <th>Title</th>
+                            <th style="min-width: 350px;">Title</th>
                             <th>Public Message</th>
                             <th style="min-width: 130px;">Status / Actions</th>
                         </tr> 
