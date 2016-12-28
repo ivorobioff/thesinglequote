@@ -30,7 +30,7 @@ class App extends View {
                 </nav>
             </div>
         `);
-        //<a class="navbar-brand" href="index.html">TheSingleQuote.com</a>
+
         el.find('#navHeader').append(new Link({
             'class': 'navbar-brand',
             href: '/',
