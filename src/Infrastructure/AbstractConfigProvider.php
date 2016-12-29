@@ -1,6 +1,5 @@
 <?php
 namespace ImmediateSolutions\Infrastructure;
-use ImmediateSolutions\Support\Framework\EnvironmentInterface;
 
 /**
  * @author Igor Vorobiov<igor.vorobioff@gmail.com>
@@ -8,29 +7,16 @@ use ImmediateSolutions\Support\Framework\EnvironmentInterface;
 abstract class AbstractConfigProvider
 {
     /**
-     * @var EnvironmentInterface
-     */
-    protected $environment;
-
-    /**
      * @var array
      */
     private $parameters = [];
 
-    /**
-     * @param EnvironmentInterface $environment
-     */
-    public function __construct(EnvironmentInterface $environment)
+
+    public function __construct()
     {
-        $this->environment = $environment;
+        $file = APP_PATH . '/env.php';
 
-        if ($environment->isDevelopment()){
-            $file = APP_PATH.'/dev.env.php';
-        } else {
-            $file = APP_PATH.'/env.php';
-        }
-
-        if (file_exists($file)){
+        if (file_exists($file)) {
             $this->parameters = require $file;
         }
     }

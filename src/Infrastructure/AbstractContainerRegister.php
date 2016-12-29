@@ -11,7 +11,7 @@ use ImmediateSolutions\Support\Framework\ContainerPopulatorInterface;
 use ImmediateSolutions\Support\Framework\ContainerRegisterInterface;
 use ImmediateSolutions\Support\Api\JsonResponseFactory;
 use ImmediateSolutions\Support\Api\ResponseFactoryInterface;
-use ImmediateSolutions\Support\Framework\EnvironmentInterface;
+use ImmediateSolutions\Support\Framework\ContextInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -28,7 +28,7 @@ abstract class AbstractContainerRegister implements ContainerRegisterInterface
             ->service(ConfigInterface::class, Config::class)
             ->instance(ResponseFactoryInterface::class, JsonResponseFactory::class)
             ->service(EntityManagerInterface::class, new EntityManagerFactory())
-            ->service(EnvironmentInterface::class, Environment::class)
+            ->service(ContextInterface::class, Context::class)
             ->service(PasswordEncryptorInterface::class, PasswordEncryptor::class)
             ->service(TokenGeneratorInterface::class, TokenGenerator::class)
             ->service(StorageInterface::class, Storage::class)

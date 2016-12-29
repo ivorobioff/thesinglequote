@@ -25,6 +25,8 @@ class ConfigProvider extends AbstractConfigProvider
                 'Document'
             ],
 
+            'debug' => $this->parameter('debug', false),
+
             'base_url' => $this->parameter('base_url'),
 
             'doctrine' => [
