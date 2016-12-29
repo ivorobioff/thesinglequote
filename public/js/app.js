@@ -154,7 +154,7 @@
 	        key: 'render',
 	        value: function render() {
 	            var el = $('\n            <div>\n                <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">\n                    <div class="container">\n                        <div id="navHeader" class="navbar-header">\n                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">\n                                <span class="sr-only">Toggle navigation</span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                                <span class="icon-bar"></span>\n                            </button>\n                        </div>\n                        <div id="navContent" class="collapse navbar-collapse"></div>\n                    </div>\n                </nav>\n            </div>\n        ');
-	            //<a class="navbar-brand" href="index.html">TheSingleQuote.com</a>
+
 	            el.find('#navHeader').append(new _sparrowUi.Link({
 	                'class': 'navbar-brand',
 	                href: '/',
@@ -3994,7 +3994,12 @@
 	            this.el.find('#price').append($('<b/>', { text: 'Premium:' })).append(' $' + this.data.price);
 	            this.el.find('#plan').append($('<b/>', { text: 'Premium:' })).append(' ' + _Constants.PLANS[this.data.plan]);
 	            this.el.find('#commission').append($('<b/>', { text: 'Commission:' })).append(' ' + this.data.commission + '%');
-	            this.el.find('#document').append($('<b/>', { text: 'Document: ' })).append($('<a/>', { href: this.data.document.url, text: this.data.document.name }));
+	            this.el.find('#document').append($('<b/>', { text: 'Document: ' })).append($('<a/>', {
+	                target: '_self',
+	                download: this.data.document.name,
+	                href: this.data.document.url,
+	                text: this.data.document.name
+	            }));
 
 	            this.el.find('#note').append($('<b/>', { text: 'Note:' })).append(' ' + (this.data.note === null ? '' : this.data.note));
 
@@ -4134,7 +4139,12 @@
 	            content.find('#plan').text(_Constants.PLANS[quote.plan]);
 	            content.find('#note').text(quote.note);
 	            content.find('#commission').text(quote.commission + '%');
-	            content.find('#document').html($('<a/>', { href: quote.document.url, text: quote.document.name }));
+	            content.find('#document').html($('<a/>', {
+	                target: '_self',
+	                download: quote.document.name,
+	                href: quote.document.url,
+	                text: quote.document.name
+	            }));
 
 	            var modal = new _Modal2.default({
 	                content: content,

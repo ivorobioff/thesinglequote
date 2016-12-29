@@ -84,7 +84,12 @@ class QuoteRequestsList extends View {
         content.find('#plan').text(PLANS[quote.plan]);
         content.find('#note').text(quote.note);
         content.find('#commission').text(quote.commission + '%');
-        content.find('#document').html($('<a/>', { href: quote.document.url, text: quote.document.name }));        
+        content.find('#document').html($('<a/>', { 
+            target: '_self',
+            download: quote.document.name,
+            href: quote.document.url, 
+            text: quote.document.name 
+        }));        
 
         var modal = new Modal({
             content,
