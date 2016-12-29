@@ -25,7 +25,7 @@ class ConfigProvider extends AbstractConfigProvider
                 'Document'
             ],
 
-            'base_url' => 'https://thesinglequote.com',
+            'base_url' => $this->parameter('base_url'),
 
             'doctrine' => [
                 'db' => 'default',
@@ -35,9 +35,9 @@ class ConfigProvider extends AbstractConfigProvider
                         'driver' => 'pdo_mysql',
                         'user' => $this->parameter('database.username'),
                         'password' => $this->parameter('database.password'),
-                        'dbname' => 'thesinglequote',
+                        'dbname' => $this->parameter('database.name'),
                         'charset' => 'utf8',
-                        'host' => '192.168.10.10'
+                        'host' => $this->parameter('database.host')
                     ]
                 ],
 
