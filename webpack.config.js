@@ -1,7 +1,7 @@
 var path = require('path');
 
 module.exports = {
-    entry: './resources/app/main.js',
+    entry: ['babel-polyfill', './resources/app/main.js'],
 
     output: {
         path: './public/js',

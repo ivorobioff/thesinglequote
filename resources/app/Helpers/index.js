@@ -34,6 +34,7 @@ export function upload(file){
     return $.ajax({
         url: '/api/documents',
         type: 'POST',
+        cache: false,
         data,
         cache: false,
         contentType: false,
